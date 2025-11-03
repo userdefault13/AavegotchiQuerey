@@ -117,6 +117,380 @@
               <pre class="svg-code-block"><code>{{ currentSvgView }}</code></pre>
             </details>
           </div>
+          
+          <!-- All Views SVG Code Tabs -->
+          <div class="all-views-code-section" v-if="availableViews.length > 0">
+            <h3 class="section-subtitle">All Views SVG Code</h3>
+            <div class="svg-tabs">
+              <button 
+                v-for="view in availableViews" 
+                :key="view"
+                @click="activeTab = view"
+                :class="['tab-btn', { active: activeTab === view }]"
+              >
+                {{ view }}
+              </button>
+            </div>
+            <div class="tab-content">
+              <div class="code-block-wrapper" v-if="getViewSvgCode(activeTab)">
+                <button 
+                  @click="copyViewCode(activeTab)" 
+                  class="copy-code-btn"
+                  :class="{ 'copied': copiedId === `all-views-svg-${activeTab}` }"
+                >
+                  {{ copiedId === `all-views-svg-${activeTab}` ? '✓ Copied!' : `Copy ${activeTab} SVG` }}
+                </button>
+                <pre class="svg-code-block">
+                  <code>{{ getViewSvgCode(activeTab) }}</code>
+                </pre>
+              </div>
+              <div v-else class="loading-code">
+                <p>Loading {{ activeTab }} view code...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parts & Wearables Breakdown Section -->
+      <div class="breakdown-section" v-if="availableViews.length > 0">
+        <h3 class="section-subtitle">Parts & Wearables Breakdown</h3>
+        <div class="svg-tabs">
+          <button 
+            v-for="view in availableViews" 
+            :key="view"
+            @click="activeBreakdownTab = view"
+            :class="['tab-btn', { active: activeBreakdownTab === view }]"
+          >
+            {{ view }}
+          </button>
+        </div>
+        <div class="tab-content">
+          <div v-if="getBreakdownForView(activeBreakdownTab)" class="breakdown-content">
+            <!-- Gotchi Parts -->
+            <div class="breakdown-category">
+              <h4 class="category-title">Gotchi Parts</h4>
+              <div class="category-list">
+                <div 
+                  v-for="(category, categoryName) in getBreakdownForView(activeBreakdownTab).parts" 
+                  :key="categoryName"
+                  class="category-item"
+                >
+                  <details class="category-details">
+                    <summary class="category-summary">
+                      <span class="category-name">{{ categoryName }}</span>
+                      <span class="category-count">{{ category.elements.length }} element{{ category.elements.length !== 1 ? 's' : '' }}</span>
+                    </summary>
+                    <div class="category-elements">
+                      <div 
+                        v-for="(element, idx) in category.elements" 
+                        :key="idx"
+                        class="element-item"
+                        :class="{ 'is-wearable': element.isWearable }"
+                      >
+                        <div class="element-header">
+                          <div class="element-info">
+                            <span class="element-tag">{{ element.tag }}</span>
+                            <span v-if="element.attributes.class" class="element-class">{{ element.attributes.class }}</span>
+                            <span v-if="element.isWearable" class="wearable-badge">Wearable</span>
+                          </div>
+                          <div class="element-actions">
+                            <button 
+                              @click="copyElementSvg(element.svgCode, `part-${activeBreakdownTab}-${categoryName}-${idx}`)"
+                              class="copy-element-btn"
+                              :class="{ 'copied': copiedId === `part-${activeBreakdownTab}-${categoryName}-${idx}` }"
+                              title="Copy SVG Code"
+                            >
+                              {{ copiedId === `part-${activeBreakdownTab}-${categoryName}-${idx}` ? '✓' : '📋' }}
+                            </button>
+                          </div>
+                        </div>
+                        <div class="element-preview-section">
+                          <div 
+                            v-if="element.svgCode"
+                            class="element-thumbnail-wrapper"
+                            @mouseenter="showPreview = `part-${activeBreakdownTab}-${categoryName}-${idx}`"
+                            @mouseleave="showPreview = null"
+                          >
+                            <div 
+                              class="element-thumbnail"
+                              v-html="element.svgCode"
+                            ></div>
+                            <div 
+                              v-if="showPreview === `part-${activeBreakdownTab}-${categoryName}-${idx}`"
+                              class="element-preview-popup"
+                            >
+                              <div 
+                                class="preview-svg" 
+                                v-html="element.svgCode"
+                                :data-preview-id="`part-${activeBreakdownTab}-${categoryName}-${idx}`"
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="element-details">
+                          <div v-if="element.isWearable && element.wearableClasses" class="element-detail-row">
+                            <span class="detail-label">Wearable Classes:</span>
+                            <span class="detail-value wearable-classes">
+                              <span v-for="(wc, wcIdx) in element.wearableClasses" :key="wcIdx" class="wearable-class-tag">{{ wc }}</span>
+                            </span>
+                          </div>
+                          <div class="element-detail-row">
+                            <span class="detail-label">Offset:</span>
+                            <span class="detail-value">({{ element.offset.x }}, {{ element.offset.y }})</span>
+                          </div>
+                          <div class="element-detail-row">
+                            <span class="detail-label">Dimension:</span>
+                            <span class="detail-value">{{ element.dimension.width }} × {{ element.dimension.height }}</span>
+                          </div>
+                          <div v-if="element.primaryFill" class="element-detail-row">
+                            <span class="detail-label">Primary Fill:</span>
+                            <span class="detail-value fill-color">
+                              <span class="color-swatch" :style="{ backgroundColor: element.primaryFill }"></span>
+                              {{ element.primaryFill }}
+                            </span>
+                          </div>
+                          <div v-if="element.secondaryFill" class="element-detail-row">
+                            <span class="detail-label">Secondary Fill:</span>
+                            <span class="detail-value fill-color">
+                              <span class="color-swatch" :style="{ backgroundColor: element.secondaryFill }"></span>
+                              {{ element.secondaryFill }}
+                            </span>
+                          </div>
+                          <div v-if="element.transform" class="element-detail-row">
+                            <span class="detail-label">Transform:</span>
+                            <span class="detail-value transform-value">{{ element.transform }}</span>
+                          </div>
+                        </div>
+                        <details v-if="element.svgCode" class="element-code-details">
+                          <summary class="element-code-summary">Show SVG Code</summary>
+                          <pre class="element-code-block"><code>{{ element.svgCode }}</code></pre>
+                        </details>
+                      </div>
+                    </div>
+                  </details>
+                </div>
+              </div>
+            </div>
+
+            <!-- Wearables -->
+            <div class="breakdown-category">
+              <h4 class="category-title">Wearables</h4>
+              <div class="category-list">
+                <!-- Standard Wearable Slots -->
+                <div 
+                  v-for="(wearable, idx) in getBreakdownForView(activeBreakdownTab).wearables.filter(w => w.slot !== -1)" 
+                  :key="idx"
+                  class="category-item"
+                >
+                  <div class="wearable-item">
+                    <div class="wearable-header">
+                      <span class="wearable-slot">{{ wearable.slotName }}</span>
+                      <span v-if="wearable.wearableId !== 0" class="wearable-id">ID: {{ wearable.wearableId }}</span>
+                      <span v-else class="wearable-empty">Not equipped</span>
+                    </div>
+                    <div v-if="wearable.elements.length > 0" class="wearable-details">
+                      <div class="wearable-info">
+                        <span>Class: {{ wearable.className }}</span>
+                        <span>{{ wearable.elements.length }} element{{ wearable.elements.length !== 1 ? 's' : '' }}</span>
+                      </div>
+                      <details class="wearable-elements">
+                        <summary class="wearable-summary">Show elements</summary>
+                        <div class="element-list">
+                          <div 
+                            v-for="(element, elemIdx) in wearable.elements" 
+                            :key="elemIdx"
+                            class="element-item"
+                          >
+                            <div class="element-header">
+                              <div class="element-info">
+                                <span class="element-tag">{{ element.tag }}</span>
+                              </div>
+                              <div class="element-actions">
+                                <button 
+                                  @click="copyElementSvg(element.svgCode, `wearable-${activeBreakdownTab}-${wearable.slot}-${elemIdx}`)"
+                                  class="copy-element-btn"
+                                  :class="{ 'copied': copiedId === `wearable-${activeBreakdownTab}-${wearable.slot}-${elemIdx}` }"
+                                  title="Copy SVG Code"
+                                >
+                                  {{ copiedId === `wearable-${activeBreakdownTab}-${wearable.slot}-${elemIdx}` ? '✓' : '📋' }}
+                                </button>
+                              </div>
+                            </div>
+                            <div class="element-preview-section">
+                              <div 
+                                v-if="element.svgCode"
+                                class="element-thumbnail-wrapper"
+                                @mouseenter="showPreview = `wearable-${activeBreakdownTab}-${wearable.slot}-${elemIdx}`"
+                                @mouseleave="showPreview = null"
+                              >
+                                <div 
+                                  class="element-thumbnail"
+                                  v-html="element.svgCode"
+                                ></div>
+                                <div 
+                                  v-if="showPreview === `wearable-${activeBreakdownTab}-${wearable.slot}-${elemIdx}`"
+                                  class="element-preview-popup"
+                                >
+                                  <div 
+                                    class="preview-svg" 
+                                    v-html="element.svgCode"
+                                    :data-preview-id="`wearable-${activeBreakdownTab}-${wearable.slot}-${elemIdx}`"
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="element-details">
+                              <div class="element-detail-row">
+                                <span class="detail-label">Offset:</span>
+                                <span class="detail-value">({{ element.offset.x }}, {{ element.offset.y }})</span>
+                              </div>
+                              <div class="element-detail-row">
+                                <span class="detail-label">Dimension:</span>
+                                <span class="detail-value">{{ element.dimension.width }} × {{ element.dimension.height }}</span>
+                              </div>
+                              <div v-if="element.primaryFill" class="element-detail-row">
+                                <span class="detail-label">Primary Fill:</span>
+                                <span class="detail-value fill-color">
+                                  <span class="color-swatch" :style="{ backgroundColor: element.primaryFill }"></span>
+                                  {{ element.primaryFill }}
+                                </span>
+                              </div>
+                              <div v-if="element.secondaryFill" class="element-detail-row">
+                                <span class="detail-label">Secondary Fill:</span>
+                                <span class="detail-value fill-color">
+                                  <span class="color-swatch" :style="{ backgroundColor: element.secondaryFill }"></span>
+                                  {{ element.secondaryFill }}
+                                </span>
+                              </div>
+                            </div>
+                            <details v-if="element.svgCode" class="element-code-details">
+                              <summary class="element-code-summary">Show SVG Code</summary>
+                              <pre class="element-code-block"><code>{{ element.svgCode }}</code></pre>
+                            </details>
+                          </div>
+                        </div>
+                      </details>
+                    </div>
+                    <div v-else class="wearable-empty-state">
+                      <span>No wearable elements in {{ activeBreakdownTab }} view</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Unidentified Wearables (from Other section) -->
+                <div 
+                  v-for="(wearable, idx) in getBreakdownForView(activeBreakdownTab).wearables.filter(w => w.slot === -1)" 
+                  :key="`unidentified-${idx}`"
+                  class="category-item unidentified-wearables"
+                >
+                  <div class="wearable-item">
+                    <div class="wearable-header">
+                      <span class="wearable-slot">{{ wearable.slotName }}</span>
+                      <span class="wearable-class-info">Classes: {{ wearable.className }}</span>
+                    </div>
+                    <div v-if="wearable.elements.length > 0" class="wearable-details">
+                      <div class="wearable-info">
+                        <span>Class: {{ wearable.className }}</span>
+                        <span>{{ wearable.elements.length }} element{{ wearable.elements.length !== 1 ? 's' : '' }}</span>
+                      </div>
+                      <details class="wearable-elements">
+                        <summary class="wearable-summary">Show elements</summary>
+                        <div class="element-list">
+                          <div 
+                            v-for="(element, elemIdx) in wearable.elements" 
+                            :key="elemIdx"
+                            class="element-item is-wearable"
+                          >
+                            <div class="element-header">
+                              <div class="element-info">
+                                <span class="element-tag">{{ element.tag }}</span>
+                                <span v-if="element.attributes.class" class="element-class">{{ element.attributes.class }}</span>
+                                <span class="wearable-badge">Wearable</span>
+                              </div>
+                              <div class="element-actions">
+                                <button 
+                                  @click="copyElementSvg(element.svgCode, `unidentified-wearable-${activeBreakdownTab}-${idx}-${elemIdx}`)"
+                                  class="copy-element-btn"
+                                  :class="{ 'copied': copiedId === `unidentified-wearable-${activeBreakdownTab}-${idx}-${elemIdx}` }"
+                                  title="Copy SVG Code"
+                                >
+                                  {{ copiedId === `unidentified-wearable-${activeBreakdownTab}-${idx}-${elemIdx}` ? '✓' : '📋' }}
+                                </button>
+                              </div>
+                            </div>
+                            <div class="element-preview-section">
+                              <div 
+                                v-if="element.svgCode"
+                                class="element-thumbnail-wrapper"
+                                @mouseenter="showPreview = `unidentified-wearable-${activeBreakdownTab}-${idx}-${elemIdx}`"
+                                @mouseleave="showPreview = null"
+                              >
+                                <div 
+                                  class="element-thumbnail"
+                                  v-html="element.svgCode"
+                                ></div>
+                                <div 
+                                  v-if="showPreview === `unidentified-wearable-${activeBreakdownTab}-${idx}-${elemIdx}`"
+                                  class="element-preview-popup"
+                                >
+                                  <div 
+                                    class="preview-svg" 
+                                    v-html="element.svgCode"
+                                    :data-preview-id="`unidentified-wearable-${activeBreakdownTab}-${idx}-${elemIdx}`"
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="element-details">
+                              <div v-if="element.wearableClasses && element.wearableClasses.length > 0" class="element-detail-row">
+                                <span class="detail-label">Wearable Classes:</span>
+                                <span class="detail-value wearable-classes">
+                                  <span v-for="(wc, wcIdx) in element.wearableClasses" :key="wcIdx" class="wearable-class-tag">{{ wc }}</span>
+                                </span>
+                              </div>
+                              <div class="element-detail-row">
+                                <span class="detail-label">Offset:</span>
+                                <span class="detail-value">({{ element.offset.x }}, {{ element.offset.y }})</span>
+                              </div>
+                              <div class="element-detail-row">
+                                <span class="detail-label">Dimension:</span>
+                                <span class="detail-value">{{ element.dimension.width }} × {{ element.dimension.height }}</span>
+                              </div>
+                              <div v-if="element.primaryFill" class="element-detail-row">
+                                <span class="detail-label">Primary Fill:</span>
+                                <span class="detail-value fill-color">
+                                  <span class="color-swatch" :style="{ backgroundColor: element.primaryFill }"></span>
+                                  {{ element.primaryFill }}
+                                </span>
+                              </div>
+                              <div v-if="element.secondaryFill" class="element-detail-row">
+                                <span class="detail-label">Secondary Fill:</span>
+                                <span class="detail-value fill-color">
+                                  <span class="color-swatch" :style="{ backgroundColor: element.secondaryFill }"></span>
+                                  {{ element.secondaryFill }}
+                                </span>
+                              </div>
+                            </div>
+                            <details v-if="element.svgCode" class="element-code-details">
+                              <summary class="element-code-summary">Show SVG Code</summary>
+                              <pre class="element-code-block"><code>{{ element.svgCode }}</code></pre>
+                            </details>
+                          </div>
+                        </div>
+                      </details>
+                    </div>
+                    <div v-else class="wearable-empty-state">
+                      <span>No unidentified wearable elements in {{ activeBreakdownTab }} view</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="loading-code">
+            <p>Loading {{ activeBreakdownTab }} breakdown...</p>
+          </div>
         </div>
       </div>
 
@@ -206,6 +580,11 @@ const sideViews = ref({})
 const isLoadingSideViews = ref(false)
 const currentViewIndex = ref(0)
 const availableViews = ref(['Front'])
+const activeTab = ref('Front')
+const svgMetadataByView = ref({})
+const activeBreakdownTab = ref('Front')
+const breakdownByView = ref({})
+const showPreview = ref(null)
 
 const currentSvgView = computed(() => {
   const viewName = availableViews.value[currentViewIndex.value] || 'Front'
@@ -390,6 +769,19 @@ async function fetchSideViews() {
     availableViews.value = newViews
     currentViewIndex.value = 0 // Reset to front view
     
+    // Ensure activeTab is valid
+    if (!newViews.includes(activeTab.value)) {
+      activeTab.value = newViews[0] || 'Front'
+    }
+    
+    // Ensure activeBreakdownTab is valid
+    if (!newViews.includes(activeBreakdownTab.value)) {
+      activeBreakdownTab.value = newViews[0] || 'Front'
+    }
+    
+    // Parse metadata for all available views
+    await parseAllViewsMetadata()
+    
     console.log('Side views loaded:', {
       views: newViews,
       sideViews: Object.keys(newSideViews)
@@ -401,6 +793,507 @@ async function fetchSideViews() {
   } finally {
     isLoadingSideViews.value = false
   }
+}
+
+// Parse SVG metadata for all views
+async function parseAllViewsMetadata() {
+  const metadata = {}
+  
+  // Parse front view
+  if (svgViews.value) {
+    try {
+      metadata['Front'] = parseSVG(svgViews.value)
+    } catch (err) {
+      console.error('Error parsing Front view metadata:', err)
+    }
+  }
+  
+  // Parse side views
+  for (const [viewName, svgString] of Object.entries(sideViews.value)) {
+    if (svgString) {
+      try {
+        metadata[viewName] = parseSVG(svgString)
+      } catch (err) {
+        console.error(`Error parsing ${viewName} view metadata:`, err)
+      }
+    }
+  }
+  
+  svgMetadataByView.value = metadata
+  console.log('Parsed metadata for all views:', Object.keys(metadata))
+  
+  // Parse breakdown for all views
+  await parseAllViewsBreakdown()
+}
+
+// Parse parts and wearables breakdown for all views
+async function parseAllViewsBreakdown() {
+  if (!gotchiData.value) return
+  
+  const breakdown = {}
+  const equippedWearables = gotchiData.value.equippedWearables || []
+  
+  // Parse front view
+  if (svgViews.value) {
+    try {
+      breakdown['Front'] = parsePartsAndWearables(svgViews.value, equippedWearables)
+    } catch (err) {
+      console.error('Error parsing Front view breakdown:', err)
+    }
+  }
+  
+  // Parse side views
+  for (const [viewName, svgString] of Object.entries(sideViews.value)) {
+    if (svgString) {
+      try {
+        breakdown[viewName] = parsePartsAndWearables(svgString, equippedWearables)
+      } catch (err) {
+        console.error(`Error parsing ${viewName} view breakdown:`, err)
+      }
+    }
+  }
+  
+  breakdownByView.value = breakdown
+  console.log('Parsed breakdown for all views:', Object.keys(breakdown))
+}
+
+// Helper function to extract SVG string for an element
+function extractElementSvg(element, viewBox = '0 0 64 64') {
+  if (!element) return ''
+  
+  // Clone the element to avoid modifying the original
+  const clone = element.cloneNode(true)
+  
+  // Create a wrapper SVG with viewBox
+  const wrapper = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  wrapper.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+  wrapper.setAttribute('viewBox', viewBox)
+  wrapper.appendChild(clone)
+  
+  // Get outerHTML or serialize
+  const serializer = new XMLSerializer()
+  return serializer.serializeToString(wrapper)
+}
+
+// Parse parts and wearables from SVG
+function parsePartsAndWearables(svgString, equippedWearables) {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(svgString, 'image/svg+xml')
+  const svgElement = doc.documentElement
+  
+  // Get viewBox from original SVG
+  const viewBox = svgElement.getAttribute('viewBox') || '0 0 64 64'
+  
+  // Define wearable slot mapping
+  const wearableSlotMap = {
+    0: { name: 'Body', className: 'wearable-body' },
+    1: { name: 'Face', className: 'wearable-face' },
+    2: { name: 'Eyes', className: 'wearable-eyes' },
+    3: { name: 'Head', className: 'wearable-head' },
+    4: { name: 'Left Hand', className: 'wearable-hand wearable-hand-left' },
+    5: { name: 'Right Hand', className: 'wearable-hand wearable-hand-right' },
+    6: { name: 'Pet', className: 'wearable-pet' },
+    7: { name: 'Background', className: 'wearable-bg' }
+  }
+  
+  // Gotchi parts categories
+  const partsCategories = {
+    'Background': ['gotchi-bg'],
+    'Body': ['gotchi-body', 'gotchi-body-'],
+    'Collateral': ['gotchi-collateral'],
+    'Eyes': ['gotchi-eyeColor', 'gotchi-eyes', 'gotchi-eye'],
+    'Mouth': ['gotchi-primary-mouth', 'gotchi-mouth'],
+    'Hands': ['gotchi-handsDownClosed', 'gotchi-handsDownOpen', 'gotchi-handsUp', 'gotchi-hands', 'gotchi-hand'],
+    'Shadow': ['gotchi-shadow'],
+    'Other': []
+  }
+  
+  // Always show these categories even if empty (all main gotchi parts)
+  const alwaysShowCategories = ['Background', 'Body', 'Collateral', 'Eyes', 'Mouth', 'Hands', 'Shadow']
+  
+  // Initialize category structures
+  const parts = {}
+  Object.keys(partsCategories).forEach(cat => {
+    parts[cat] = { elements: [] }
+  })
+  
+  // Initialize wearables structure
+  const wearables = Object.entries(wearableSlotMap).map(([slot, info]) => ({
+    slot: parseInt(slot),
+    slotName: info.name,
+    className: info.className,
+    wearableId: equippedWearables[parseInt(slot)] || 0,
+    elements: []
+  }))
+  
+  // Extract elements
+  function extractElements(element, parentTransform = '') {
+    const tagName = element.tagName?.toLowerCase()
+    if (!tagName) return
+    
+    const transform = element.getAttribute('transform') || ''
+    const combinedTransform = parentTransform ? `${parentTransform} ${transform}`.trim() : transform
+    const classes = element.getAttribute('class') || ''
+    const classList = classes.split(' ').filter(c => c.trim())
+    
+    // Extract offset from attributes or transform
+    let offsetX = parseFloat(element.getAttribute('x') || '0')
+    let offsetY = parseFloat(element.getAttribute('y') || '0')
+    
+    // Extract translate from transform (can have multiple translates)
+    if (combinedTransform) {
+      const translateMatches = [...combinedTransform.matchAll(/translate\(([\d.-]+)(?:[,\s]+([\d.-]+))?\)/g)]
+      if (translateMatches.length > 0) {
+        // Sum all translate values
+        let totalX = 0
+        let totalY = 0
+        translateMatches.forEach(match => {
+          totalX += parseFloat(match[1]) || 0
+          totalY += parseFloat(match[2] || match[1]) || 0
+        })
+        if (offsetX === 0) offsetX = totalX
+        if (offsetY === 0) offsetY = totalY
+      }
+    }
+    
+    // Get explicit dimensions
+    let computedWidth = parseFloat(element.getAttribute('width') || '0')
+    let computedHeight = parseFloat(element.getAttribute('height') || '0')
+    
+    // Try to calculate bounding box by temporarily rendering the element
+    // getBBox() only works for rendered elements
+    if ((!computedWidth || !computedHeight || computedWidth === 0 || computedHeight === 0) && 
+        (tagName === 'g' || tagName === 'path' || tagName === 'circle' || tagName === 'ellipse')) {
+      try {
+        // Create a temporary SVG container in the document
+        const tempSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+        tempSvg.setAttribute('viewBox', viewBox)
+        tempSvg.setAttribute('width', '100')
+        tempSvg.setAttribute('height', '100')
+        tempSvg.style.position = 'absolute'
+        tempSvg.style.top = '-9999px'
+        tempSvg.style.left = '-9999px'
+        tempSvg.style.visibility = 'hidden'
+        document.body.appendChild(tempSvg)
+        
+        // Clone the element and append it
+        const clone = element.cloneNode(true)
+        tempSvg.appendChild(clone)
+        
+        // Try to get bounding box
+        try {
+          const bbox = clone.getBBox()
+          if (bbox && bbox.width > 0 && bbox.height > 0) {
+            if (!computedWidth || computedWidth === 0) computedWidth = bbox.width
+            if (!computedHeight || computedHeight === 0) computedHeight = bbox.height
+          }
+          // Use bbox position if we don't have offset yet
+          if ((offsetX === 0 && offsetY === 0) || (bbox.x !== 0 || bbox.y !== 0)) {
+            if (offsetX === 0) offsetX = bbox.x
+            if (offsetY === 0) offsetY = bbox.y
+          }
+        } catch (e) {
+          // getBBox failed, element might not be renderable
+        }
+        
+        // Clean up
+        document.body.removeChild(tempSvg)
+      } catch (e) {
+        // Couldn't create temp SVG, continue with other methods
+      }
+    }
+    
+    // Extract SVG code for this element
+    let elementSvg = ''
+    try {
+      elementSvg = extractElementSvg(element, viewBox)
+    } catch (err) {
+      console.warn('Error extracting SVG for element:', err)
+    }
+    
+    // Extract fill colors (primary and secondary)
+    const fill = element.getAttribute('fill') || ''
+    const stroke = element.getAttribute('stroke') || ''
+    
+    // Try to get computed fill from style attribute or inline styles
+    const styleAttr = element.getAttribute('style') || ''
+    let primaryFill = fill
+    let secondaryFill = stroke
+    
+    // Extract fill from style attribute if present
+    const fillMatch = styleAttr.match(/fill:\s*([^;]+)/i)
+    if (fillMatch && !primaryFill) {
+      primaryFill = fillMatch[1].trim()
+    }
+    
+    // If no explicit fill, check for 'currentColor' or 'none'
+    if (!primaryFill || primaryFill === 'none' || primaryFill === 'currentColor') {
+      primaryFill = null
+    }
+    
+    // Extract stroke from style attribute if present
+    const strokeMatch = styleAttr.match(/stroke:\s*([^;]+)/i)
+    if (strokeMatch && !secondaryFill) {
+      secondaryFill = strokeMatch[1].trim()
+    }
+    
+    if (!secondaryFill || secondaryFill === 'none' || secondaryFill === 'currentColor') {
+      secondaryFill = null
+    }
+    
+    // Calculate bounding box dimensions from various sources
+    // For paths, extract from path data
+    if (tagName === 'path' && !computedWidth && !computedHeight) {
+      const pathData = element.getAttribute('d') || ''
+      if (pathData) {
+        // Better path parsing - handle all path commands
+        const allCoords = []
+        const pathCommands = pathData.match(/[MmLlHhVvCcSsQqTtAaZz][\s\d.,-]*/g) || []
+        
+        pathCommands.forEach(cmd => {
+          const command = cmd[0]
+          const numbers = cmd.substring(1).match(/[\d.-]+/g) || []
+          const coords = numbers.map(Number).filter(n => !isNaN(n))
+          
+          if (command === 'M' || command === 'm' || command === 'L' || command === 'l') {
+            // Move/Line - take x,y pairs
+            for (let i = 0; i < coords.length; i += 2) {
+              if (i < coords.length) allCoords.push({ x: coords[i], y: coords[i + 1] || 0 })
+            }
+          } else if (command === 'H' || command === 'h') {
+            // Horizontal line - only x
+            coords.forEach(x => allCoords.push({ x, y: 0 }))
+          } else if (command === 'V' || command === 'v') {
+            // Vertical line - only y
+            coords.forEach(y => allCoords.push({ x: 0, y }))
+          } else if (command === 'C' || command === 'c') {
+            // Cubic bezier - take last point (x,y)
+            for (let i = 4; i < coords.length; i += 6) {
+              if (i < coords.length) allCoords.push({ x: coords[i], y: coords[i + 1] || 0 })
+            }
+          } else if (command === 'Q' || command === 'q') {
+            // Quadratic bezier - take last point
+            for (let i = 2; i < coords.length; i += 4) {
+              if (i < coords.length) allCoords.push({ x: coords[i], y: coords[i + 1] || 0 })
+            }
+          } else if (command === 'A' || command === 'a') {
+            // Arc - take last point
+            for (let i = 5; i < coords.length; i += 7) {
+              if (i < coords.length) allCoords.push({ x: coords[i], y: coords[i + 1] || 0 })
+            }
+          }
+        })
+        
+        if (allCoords.length > 0) {
+          const xValues = allCoords.map(c => c.x).filter(x => !isNaN(x))
+          const yValues = allCoords.map(c => c.y).filter(y => !isNaN(y))
+          if (xValues.length > 0 && yValues.length > 0) {
+            const minX = Math.min(...xValues)
+            const maxX = Math.max(...xValues)
+            const minY = Math.min(...yValues)
+            const maxY = Math.max(...yValues)
+            computedWidth = Math.abs(maxX - minX) || 0
+            computedHeight = Math.abs(maxY - minY) || 0
+          }
+        }
+      }
+    }
+    
+    // For rect elements, get from attributes
+    if (tagName === 'rect') {
+      if (!computedWidth) computedWidth = parseFloat(element.getAttribute('width') || '0')
+      if (!computedHeight) computedHeight = parseFloat(element.getAttribute('height') || '0')
+    }
+    
+    // For circle elements, calculate from radius
+    if (tagName === 'circle') {
+      const r = parseFloat(element.getAttribute('r') || '0')
+      if (r > 0) {
+        computedWidth = r * 2
+        computedHeight = r * 2
+      }
+    }
+    
+    // For ellipse elements, calculate from rx and ry
+    if (tagName === 'ellipse') {
+      const rx = parseFloat(element.getAttribute('rx') || '0')
+      const ry = parseFloat(element.getAttribute('ry') || '0')
+      if (rx > 0) computedWidth = rx * 2
+      if (ry > 0) computedHeight = ry * 2
+    }
+    
+    // Try to get dimensions from viewBox if element is an SVG
+    if (tagName === 'svg') {
+      const vb = element.getAttribute('viewBox')
+      if (vb) {
+        const vbParts = vb.split(/\s+/).map(Number).filter(n => !isNaN(n))
+        if (vbParts.length >= 4) {
+          computedWidth = vbParts[2] || computedWidth
+          computedHeight = vbParts[3] || computedHeight
+        }
+      }
+      if (!computedWidth) computedWidth = parseFloat(element.getAttribute('width') || '0')
+      if (!computedHeight) computedHeight = parseFloat(element.getAttribute('height') || '0')
+    }
+    
+    // For groups, try to estimate from transform scale
+    if (tagName === 'g' && !computedWidth && !computedHeight && combinedTransform) {
+      const scaleMatch = combinedTransform.match(/scale\(([\d.-]+)(?:[,\s]+([\d.-]+))?\)/)
+      if (scaleMatch) {
+        // Scale alone doesn't give us dimensions, but we can try to estimate
+        // This is a limitation - we'd need to measure children
+      }
+    }
+    
+    // Round to reasonable precision
+    offsetX = Math.round(offsetX * 100) / 100
+    offsetY = Math.round(offsetY * 100) / 100
+    computedWidth = Math.round(computedWidth * 100) / 100
+    computedHeight = Math.round(computedHeight * 100) / 100
+    
+    const elementData = {
+      tag: tagName,
+      id: element.getAttribute('id') || '',
+      x: offsetX,
+      y: offsetY,
+      width: computedWidth,
+      height: computedHeight,
+      offset: { x: offsetX, y: offsetY },
+      dimension: { width: computedWidth, height: computedHeight },
+      primaryFill: primaryFill,
+      secondaryFill: secondaryFill,
+      transform: combinedTransform || null,
+      svgCode: elementSvg,
+      attributes: {
+        fill: fill,
+        stroke: stroke,
+        opacity: element.getAttribute('opacity'),
+        class: classes
+      }
+    }
+    
+    // Check if it's a gotchi part
+    let categorized = false
+    for (const [categoryName, categoryClasses] of Object.entries(partsCategories)) {
+      // Check if any class matches exactly or starts with the category class
+      if (categoryClasses.some(cls => {
+        return classList.some(classItem => {
+          // Normalize class names for comparison
+          const normalizedClass = classItem.toLowerCase().trim()
+          const normalizedMatch = cls.toLowerCase().trim()
+          
+          // Exact match
+          if (normalizedClass === normalizedMatch) return true
+          
+          // Starts with match (for classes like gotchi-body-something, gotchi-bodyColor, etc.)
+          if (normalizedClass.startsWith(normalizedMatch)) return true
+          
+          // For body: check if class contains 'gotchi-body' (case-insensitive)
+          if (normalizedMatch === 'gotchi-body' && normalizedClass.includes('gotchi-body')) return true
+          if (normalizedMatch === 'gotchi-body-' && normalizedClass.includes('gotchi-body')) return true
+          
+          // For hands: check if class contains 'gotchi-hand' or 'gotchi-hands' (case-insensitive)
+          if (normalizedMatch.includes('hand') && (normalizedClass.includes('gotchi-hand') || normalizedClass.includes('gotchi-hands'))) return true
+          
+          // Additional checks for hands variations
+          if (categoryName === 'Hands') {
+            if (normalizedClass.includes('hand') && normalizedClass.includes('gotchi')) return true
+          }
+          
+          // Additional checks for body variations
+          if (categoryName === 'Body') {
+            if (normalizedClass.includes('body') && normalizedClass.includes('gotchi')) return true
+          }
+          
+          // Additional checks for mouth variations
+          if (categoryName === 'Mouth') {
+            if (normalizedClass.includes('mouth') && normalizedClass.includes('gotchi')) return true
+          }
+          
+          // Additional checks for eyes variations
+          if (categoryName === 'Eyes') {
+            if ((normalizedClass.includes('eye') || normalizedClass.includes('eyes')) && normalizedClass.includes('gotchi')) return true
+          }
+          
+          return false
+        })
+      })) {
+        parts[categoryName].elements.push(elementData)
+        categorized = true
+        break
+      }
+    }
+    
+    // Check if it's a wearable (before adding to Other)
+    let isWearable = false
+    for (const wearable of wearables) {
+      const wearableClasses = wearable.className.split(' ')
+      if (wearableClasses.some(cls => classList.includes(cls))) {
+        wearable.elements.push(elementData)
+        isWearable = true
+        break
+      }
+    }
+    
+    // Also check for any wearable- classes that might not match standard slots
+    if (!isWearable && classList.some(c => c.startsWith('wearable-'))) {
+      isWearable = true
+      // Add to wearables with a generic "Unidentified" slot
+      let unidentifiedWearable = wearables.find(w => w.slot === -1)
+      if (!unidentifiedWearable) {
+        unidentifiedWearable = {
+          slot: -1,
+          slotName: 'Unidentified Wearables',
+          className: 'wearable-*',
+          wearableId: 0,
+          elements: []
+        }
+        wearables.push(unidentifiedWearable)
+      }
+      unidentifiedWearable.elements.push(elementData)
+      // Mark the element with wearable info
+      elementData.isWearable = true
+      elementData.wearableClasses = classList.filter(c => c.startsWith('wearable-'))
+      categorized = true // Don't add to Other if it's a wearable
+    }
+    
+    // If not in specific categories but has gotchi- class, add to Other
+    // But skip if it's already been categorized as a wearable
+    if (!categorized && classList.some(c => c.startsWith('gotchi-'))) {
+      parts['Other'].elements.push(elementData)
+      categorized = true
+    }
+    
+    // Recursively process children
+    Array.from(element.children || []).forEach(child => {
+      extractElements(child, combinedTransform)
+    })
+  }
+  
+  // Start extraction from root
+  Array.from(svgElement.children || []).forEach(child => {
+    extractElements(child)
+  })
+  
+  // Keep all important categories, even if empty (so Body, Hands, Mouth, Eyes always show)
+  // But filter out truly empty ones if they're not important categories
+  const filteredParts = {}
+  Object.entries(parts).forEach(([name, data]) => {
+    // Always include important categories even if empty, or if they have elements
+    if (alwaysShowCategories.includes(name) || data.elements.length > 0) {
+      filteredParts[name] = data
+    }
+  })
+  
+  return {
+    parts: filteredParts,
+    wearables: wearables.filter(w => w.elements.length > 0 || w.wearableId !== 0)
+  }
+}
+
+// Get breakdown for a specific view
+function getBreakdownForView(viewName) {
+  return breakdownByView.value[viewName] || null
 }
 
 // Navigation functions
@@ -507,6 +1400,11 @@ watch(() => {
         canvasSize: svgMetadata.value?.canvasSize,
         partsCount: svgMetadata.value?.parts?.length
       })
+      
+      // Update metadata for front view in all views metadata
+      if (!svgMetadataByView.value['Front']) {
+        svgMetadataByView.value['Front'] = svgMetadata.value
+      }
     } catch (err) {
       console.error('Error parsing SVG:', err)
     }
@@ -547,6 +1445,27 @@ async function copyToClipboard(text, id) {
   } catch (err) {
     console.error('Failed to copy:', err)
   }
+}
+
+// Helper function to get SVG code for any view
+function getViewSvgCode(viewName) {
+  if (viewName === 'Front') {
+    return svgViews.value || ''
+  }
+  return sideViews.value[viewName] || ''
+}
+
+// Copy code for a specific view
+async function copyViewCode(viewName) {
+  const code = getViewSvgCode(viewName)
+  if (!code) return
+  await copyToClipboard(code, `all-views-svg-${viewName}`)
+}
+
+// Copy SVG code for an element
+async function copyElementSvg(svgCode, id) {
+  if (!svgCode) return
+  await copyToClipboard(svgCode, id)
 }
 </script>
 
@@ -791,6 +1710,298 @@ async function copyToClipboard(text, id) {
 
 .code-summary {
   @apply px-4 py-2 cursor-pointer hover:bg-gray-100 font-medium text-sm text-gray-700;
+}
+
+.all-views-code-section {
+  @apply mt-8 bg-white rounded-lg p-6 shadow-md;
+}
+
+.section-subtitle {
+  @apply text-xl font-semibold text-gray-800 mb-4;
+}
+
+.svg-tabs {
+  @apply flex gap-2 mb-4 border-b border-gray-200;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  @apply px-4 py-2 font-medium text-gray-600 hover:text-gray-800 transition-colors;
+  @apply border-b-2 border-transparent hover:border-gray-300;
+  @apply whitespace-nowrap;
+}
+
+.tab-btn.active {
+  @apply text-blue-600 border-blue-600;
+}
+
+.tab-content {
+  @apply mt-4;
+}
+
+.code-block-wrapper {
+  @apply space-y-2;
+}
+
+.loading-code {
+  @apply flex items-center justify-center py-8 text-gray-500;
+}
+
+.breakdown-section {
+  @apply mt-8 bg-white rounded-lg p-6 shadow-md;
+}
+
+.breakdown-content {
+  @apply space-y-6;
+}
+
+.breakdown-category {
+  @apply space-y-4;
+}
+
+.category-title {
+  @apply text-lg font-semibold text-gray-800 mb-3;
+}
+
+.category-list {
+  @apply space-y-2;
+}
+
+.category-item {
+  @apply bg-gray-50 rounded-lg border border-gray-200;
+}
+
+.category-details {
+  @apply w-full;
+}
+
+.category-summary {
+  @apply flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors;
+  @apply list-none;
+}
+
+.category-summary::-webkit-details-marker {
+  display: none;
+}
+
+.category-name {
+  @apply font-medium text-gray-700;
+}
+
+.category-count {
+  @apply text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded;
+}
+
+.category-elements {
+  @apply px-4 pb-4 space-y-2;
+}
+
+.element-item {
+  @apply bg-white rounded p-3 border border-gray-200 text-sm;
+}
+
+.element-info {
+  @apply flex items-center gap-2 mb-2;
+}
+
+.element-tag {
+  @apply bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-mono font-semibold;
+}
+
+.element-class {
+  @apply text-xs text-gray-600 font-mono;
+}
+
+.element-details {
+  @apply space-y-2 text-xs text-gray-600 mt-2;
+}
+
+.element-detail-row {
+  @apply flex items-center gap-2;
+}
+
+.detail-label {
+  @apply font-semibold text-gray-700 min-w-[100px];
+}
+
+.detail-value {
+  @apply text-gray-600;
+}
+
+.fill-color {
+  @apply flex items-center gap-2;
+}
+
+.color-swatch {
+  @apply inline-block w-4 h-4 rounded border border-gray-300;
+  flex-shrink: 0;
+}
+
+.transform-value {
+  @apply font-mono text-xs break-all;
+  max-width: 300px;
+}
+
+.element-header {
+  @apply flex items-center justify-between mb-2;
+}
+
+.element-actions {
+  @apply flex items-center gap-2;
+}
+
+.copy-element-btn {
+  @apply px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors;
+  @apply min-w-[32px] flex items-center justify-center;
+}
+
+.copy-element-btn.copied {
+  @apply bg-green-600 hover:bg-green-700;
+}
+
+.element-preview-section {
+  @apply my-2;
+}
+
+.element-thumbnail-wrapper {
+  @apply relative inline-block;
+}
+
+.element-thumbnail {
+  @apply border border-gray-300 rounded bg-white p-2;
+  @apply inline-block cursor-pointer;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.element-thumbnail :deep(svg) {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.element-preview-popup {
+  @apply absolute z-50 pointer-events-none;
+  @apply bg-white border-2 border-blue-500 rounded-lg shadow-2xl p-4;
+  top: 100%;
+  left: 50%;
+  margin-top: 8px;
+  transform: translateX(-50%);
+}
+
+.preview-svg {
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.preview-svg :deep(svg) {
+  width: 160px;
+  height: 160px;
+  max-width: 160px;
+  max-height: 160px;
+  display: block;
+}
+
+/* Ensure preview SVG styles are applied */
+.preview-svg :deep(svg) * {
+  /* Allow SVG's internal styles to apply */
+}
+
+.element-code-details {
+  @apply mt-2 bg-gray-50 rounded border border-gray-200;
+}
+
+.element-code-summary {
+  @apply px-3 py-2 cursor-pointer hover:bg-gray-100 font-medium text-xs text-gray-700;
+}
+
+.element-code-block {
+  @apply bg-gray-900 text-green-400 p-3 rounded text-xs font-mono;
+  @apply border-t border-gray-700 overflow-x-auto;
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0;
+}
+
+.element-code-block code {
+  @apply text-green-400;
+  white-space: pre;
+}
+
+.element-item.is-wearable {
+  @apply border-l-4 border-purple-500;
+}
+
+.wearable-badge {
+  @apply bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-semibold ml-2;
+}
+
+.wearable-classes {
+  @apply flex flex-wrap gap-2;
+}
+
+.wearable-class-tag {
+  @apply bg-purple-50 text-purple-700 px-2 py-1 rounded text-xs font-mono border border-purple-200;
+}
+
+.unidentified-wearables {
+  @apply border-l-4 border-purple-400;
+}
+
+.wearable-class-info {
+  @apply text-xs text-gray-600 font-mono;
+}
+
+.wearable-item {
+  @apply bg-gray-50 rounded-lg border border-gray-200 p-4;
+}
+
+.wearable-header {
+  @apply flex items-center gap-3 mb-2;
+}
+
+.wearable-slot {
+  @apply font-semibold text-gray-800;
+}
+
+.wearable-id {
+  @apply bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-mono;
+}
+
+.wearable-empty {
+  @apply text-gray-500 text-sm italic;
+}
+
+.wearable-details {
+  @apply mt-2;
+}
+
+.wearable-info {
+  @apply flex items-center gap-3 text-sm text-gray-600 mb-2;
+}
+
+.wearable-elements {
+  @apply mt-2;
+}
+
+.wearable-summary {
+  @apply text-xs text-blue-600 cursor-pointer hover:underline;
+}
+
+.element-list {
+  @apply mt-2 space-y-2;
+}
+
+.wearable-empty-state {
+  @apply text-sm text-gray-500 italic;
 }
 </style>
 
