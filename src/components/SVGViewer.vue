@@ -118,7 +118,7 @@ async function copySVG() {
 }
 
 .svg-display {
-  @apply bg-white rounded-lg p-4 border-2 border-gray-200;
+  @apply bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-gray-200 dark:border-gray-700 transition-colors;
   max-width: 100%;
   display: flex;
   justify-content: center;
@@ -143,18 +143,18 @@ async function copySVG() {
 }
 
 .svg-placeholder {
-  @apply bg-gray-100 rounded-lg p-8 border-2 border-gray-200;
+  @apply bg-gray-100 dark:bg-gray-700 rounded-lg p-8 border-2 border-gray-200 dark:border-gray-600;
   @apply flex flex-col items-center justify-center gap-2;
   min-height: 200px;
   min-width: 200px;
 }
 
 .loading-spinner {
-  @apply w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin;
+  @apply w-8 h-8 border-4 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin;
 }
 
 .copy-btn {
-  @apply px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors;
+  @apply px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors;
   @apply font-medium min-w-[120px];
 }
 

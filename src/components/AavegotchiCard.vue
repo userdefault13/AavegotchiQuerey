@@ -116,13 +116,13 @@ onUnmounted(() => {
 
 <style scoped>
 .aavegotchi-card {
-  @apply bg-white rounded-lg border-2 border-gray-200 p-4 cursor-pointer;
-  @apply hover:border-blue-500 hover:shadow-lg transition-all;
+  @apply bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-4 cursor-pointer;
+  @apply hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-lg transition-all;
   @apply flex flex-col gap-3;
 }
 
 .aavegotchi-card.selected {
-  @apply border-blue-600 shadow-lg;
+  @apply border-blue-600 dark:border-blue-500 shadow-lg;
 }
 
 .card-header {
@@ -130,15 +130,15 @@ onUnmounted(() => {
 }
 
 .gotchi-id {
-  @apply text-lg font-bold text-gray-800;
+  @apply text-lg font-bold text-gray-800 dark:text-gray-100;
 }
 
 .gotchi-name {
-  @apply text-sm text-gray-600 truncate;
+  @apply text-sm text-gray-600 dark:text-gray-300 truncate;
 }
 
 .card-image {
-  @apply bg-gray-100 rounded-lg p-2 flex items-center justify-center;
+  @apply bg-gray-100 dark:bg-gray-700 rounded-lg p-2 flex items-center justify-center;
   min-height: 150px;
 }
 
@@ -176,7 +176,7 @@ onUnmounted(() => {
 }
 
 .brs-badge {
-  @apply bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium;
+  @apply bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full text-sm font-medium;
 }
 </style>
 

@@ -128,15 +128,15 @@ function handleSelect(tokenId) {
 }
 
 .loading-spinner {
-  @apply w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin;
+  @apply w-12 h-12 border-4 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin;
 }
 
 .error-text {
-  @apply text-red-600 font-medium;
+  @apply text-red-600 dark:text-red-400 font-medium;
 }
 
 .empty-text {
-  @apply text-gray-500 text-lg;
+  @apply text-gray-500 dark:text-gray-400 text-lg;
 }
 
 .gallery-grid {

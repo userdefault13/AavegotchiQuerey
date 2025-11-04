@@ -92,6 +92,74 @@ export const AAVEGOTCHI_ABI = [
     ],
     stateMutability: 'view',
     type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'string', name: '_svgType', type: 'string' },
+      { internalType: 'uint256', name: '_id', type: 'uint256' }
+    ],
+    name: 'getSvg',
+    outputs: [
+      { internalType: 'string', name: 'ag_', type: 'string' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'uint256', name: '_itemId', type: 'uint256' }
+    ],
+    name: 'getItemSvg',
+    outputs: [
+      { internalType: 'string', name: 'ag_', type: 'string' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'uint256', name: '_itemId', type: 'uint256' }
+    ],
+    name: 'getItemType',
+    outputs: [
+      {
+        components: [
+          { internalType: 'string', name: 'name', type: 'string' },
+          { internalType: 'string', name: 'description', type: 'string' },
+          { internalType: 'string', name: 'author', type: 'string' },
+          { internalType: 'int8[6]', name: 'traitModifiers', type: 'int8[6]' },
+          { internalType: 'bool[16]', name: 'slotPositions', type: 'bool[16]' },
+          { internalType: 'uint8[]', name: 'allowedCollaterals', type: 'uint8[]' },
+          {
+            components: [
+              { internalType: 'uint8', name: 'x', type: 'uint8' },
+              { internalType: 'uint8', name: 'y', type: 'uint8' },
+              { internalType: 'uint8', name: 'width', type: 'uint8' },
+              { internalType: 'uint8', name: 'height', type: 'uint8' }
+            ],
+            internalType: 'struct Dimensions',
+            name: 'dimensions',
+            type: 'tuple'
+          },
+          { internalType: 'uint256', name: 'ghstPrice', type: 'uint256' },
+          { internalType: 'uint256', name: 'maxQuantity', type: 'uint256' },
+          { internalType: 'uint256', name: 'totalQuantity', type: 'uint256' },
+          { internalType: 'uint32', name: 'svgId', type: 'uint32' },
+          { internalType: 'uint8', name: 'rarityScoreModifier', type: 'uint8' },
+          { internalType: 'bool', name: 'canPurchaseWithGhst', type: 'bool' },
+          { internalType: 'uint16', name: 'minLevel', type: 'uint16' },
+          { internalType: 'bool', name: 'canBeTransferred', type: 'bool' },
+          { internalType: 'uint8', name: 'category', type: 'uint8' },
+          { internalType: 'int16', name: 'kinshipBonus', type: 'int16' },
+          { internalType: 'uint32', name: 'experienceBonus', type: 'uint32' }
+        ],
+        internalType: 'struct ItemType',
+        name: 'itemType_',
+        type: 'tuple'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
   }
 ]
 

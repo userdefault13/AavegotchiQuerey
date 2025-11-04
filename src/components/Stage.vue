@@ -1,5 +1,5 @@
 <template>
-  <div class="stage-container">
+  <div class="stage-container" :class="{ 'dressing-room-active': isDressingRoomMode }">
     <button @click="$emit('close')" class="close-btn">← Back to Gallery</button>
 
     <div v-if="isLoading" class="loading-container">
@@ -84,6 +84,13 @@
             >
               →
             </button>
+            <button 
+              @click="isDressingRoomMode = !isDressingRoomMode"
+              class="dressing-room-btn"
+              :class="{ 'active': isDressingRoomMode }"
+            >
+              {{ isDressingRoomMode ? 'Exit Dressing Room' : 'Dressing Room' }}
+            </button>
           </div>
         </div>
         <div class="svg-view-container">
@@ -98,6 +105,10 @@
             :gotchi-id="props.gotchiId"
             :data-attribute="'data-gotchi-stage-id'"
           />
+          <div v-else-if="isLoadingPreview && isDressingRoomMode" class="svg-loading-fallback">
+            <div class="loading-spinner-small"></div>
+            <p>Generating preview...</p>
+          </div>
           <div v-else class="svg-loading-fallback">
             <div class="loading-spinner-small"></div>
             <p>Loading SVG view...</p>
@@ -494,6 +505,166 @@
         </div>
       </div>
 
+      <!-- Dressing Room Side Panel -->
+      <div v-if="isDressingRoomMode" class="dressing-room-panel">
+        <div class="panel-header">
+          <h3>Dressing Room</h3>
+          <button @click="isDressingRoomMode = false" class="panel-close-btn" title="Close">×</button>
+        </div>
+        
+        <div class="panel-content">
+          <!-- Error Message (if preview generation failed) -->
+          <div v-if="previewError" class="preview-error-message">
+            <div class="error-content">
+              <strong>⚠️ Preview Error:</strong>
+              <p>{{ previewError }}</p>
+              <div class="error-actions">
+                <button 
+                  v-if="invalidWearableSlots.length > 0" 
+                  @click="removeInvalidWearables()" 
+                  class="error-action-btn error-action-remove"
+                >
+                  Remove Invalid ({{ invalidWearableSlots.length }})
+                </button>
+                <button @click="resetToOriginal(); previewError = null" class="error-action-btn">
+                  Reset to Original
+                </button>
+                <button @click="previewError = null" class="error-close-btn">×</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Slot Tabs -->
+          <div class="slot-tabs">
+            <button
+              v-for="slot in wearableSlots"
+              :key="slot.slot"
+              @click="selectedWearableSlot = slot.slot"
+              class="slot-tab"
+              :class="{ active: selectedWearableSlot === slot.slot }"
+            >
+              {{ slot.name }}
+            </button>
+          </div>
+
+          <!-- Selected Wearables Summary -->
+          <div class="selected-wearables-summary">
+            <h4>Equipped Wearables</h4>
+            <div class="equipped-list">
+              <div
+                v-for="slot in wearableSlots"
+                :key="slot.slot"
+                class="equipped-item"
+                :class="{ 'has-wearable': previewWearables[slot.slot] !== 0 }"
+              >
+                <span class="slot-name">{{ slot.name }}:</span>
+                <span class="wearable-id">{{ previewWearables[slot.slot] || 'None' }}</span>
+                <button
+                  v-if="previewWearables[slot.slot] !== 0"
+                  @click="removeWearable(slot.slot)"
+                  class="remove-btn"
+                  title="Remove"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+            <button @click="resetToOriginal" class="reset-btn">Reset to Original</button>
+          </div>
+
+          <!-- Wearable Browser -->
+          <div class="wearable-browser">
+            <div class="browser-header">
+              <h4>{{ getSlotName(selectedWearableSlot) }} Wearables</h4>
+              <div v-if="isLoadingWearables" class="loading-spinner-small"></div>
+            </div>
+            
+            <div v-if="isLoadingWearables" class="loading-wearables">
+              <p>Loading wearables...</p>
+            </div>
+            
+            <div v-else-if="wearablesError" class="error-wearables">
+              <p>Error loading wearables: {{ wearablesError }}</p>
+              <p class="fallback-note">Using ID-only mode. Enter wearable ID manually.</p>
+            </div>
+            
+            <div v-else class="wearable-list">
+              <!-- Search/Filter -->
+              <input
+                v-model="wearableSearch"
+                type="text"
+                placeholder="Search by ID or name..."
+                class="wearable-search"
+              />
+              
+              <!-- Debug Info (always show for debugging) -->
+              <div class="text-xs text-gray-400 mb-2 p-2 bg-gray-100 rounded border border-gray-300">
+                <strong>Debug Info:</strong><br>
+                filteredWearables.length = {{ filteredWearables.length }}<br>
+                selectedSlot = {{ selectedWearableSlot }}<br>
+                allWearablesCount = {{ wearables?.length || 0 }}<br>
+                isDressingRoomMode = {{ isDressingRoomMode }}
+              </div>
+              
+              <!-- Wearable Grid -->
+              <div v-if="filteredWearables.length === 0" class="empty-wearables">
+                <p>No wearables found for {{ getSlotName(selectedWearableSlot) }} slot.</p>
+                <p class="text-sm text-gray-500">Total wearables: {{ wearables?.value?.length || wearables?.length || 0 }}</p>
+                <p class="text-sm text-gray-500">Selected slot: {{ selectedWearableSlot }}</p>
+                <p class="text-sm text-gray-500">Filtered count: {{ filteredWearables.length }}</p>
+              </div>
+              <div 
+                v-else 
+                ref="wearableGridRef"
+                class="wearable-grid"
+                @scroll="handleWearableGridScroll"
+              >
+                <div
+                  v-for="(wearable, index) in filteredWearables"
+                  :key="`wearable-${wearable.id}-${index}`"
+                  @click="selectWearable(wearable.id)"
+                  class="wearable-item"
+                  :class="{ 
+                    'selected': previewWearables[selectedWearableSlot] === wearable.id,
+                    'equipped': gotchiData?.equippedWearables?.[selectedWearableSlot] === wearable.id
+                  }"
+                  :title="wearable.name || `Wearable #${wearable.id}`"
+                >
+                  <div class="wearable-thumbnail">
+                    <span v-if="wearable.thumbnail" class="thumbnail-img" v-html="wearable.thumbnail"></span>
+                    <span v-else class="thumbnail-placeholder">#{{ wearable.id }}</span>
+                  </div>
+                  <div class="wearable-info">
+                    <span class="wearable-name">{{ wearable.name || `Wearable #${wearable.id}` }}</span>
+                    <span class="wearable-id-label">ID: {{ wearable.id }}</span>
+                  </div>
+                </div>
+                <!-- Loading indicator for infinite scroll -->
+                <div v-if="isLoadingMoreWearables && hasMoreWearables" class="loading-more-wearables">
+                  <div class="loading-spinner-small"></div>
+                  <p>Loading more wearables...</p>
+                </div>
+              </div>
+              
+              <!-- Manual ID Input (Fallback) -->
+              <div class="manual-wearable-input">
+                <label>Or enter wearable ID:</label>
+                <div class="input-group">
+                  <input
+                    v-model.number="manualWearableId"
+                    type="number"
+                    placeholder="Wearable ID"
+                    class="wearable-id-input"
+                    min="0"
+                  />
+                  <button @click="applyManualWearable" class="apply-btn">Apply</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- SVG Metadata Section -->
       <div class="metadata-section" v-if="svgMetadata">
         <h2 class="section-title">SVG Metadata</h2>
@@ -553,6 +724,7 @@
 import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import SVGViewer from './SVGViewer.vue'
 import { useAavegotchi } from '../composables/useAavegotchi.js'
+import { useWearables } from '../composables/useWearables.js'
 import { parseSVG } from '../utils/svgParser.js'
 import { getContract } from '../utils/contract.js'
 
@@ -568,6 +740,10 @@ const emit = defineEmits(['close'])
 const { gotchiDataMap, svgDataMap } = useAavegotchi()
 
 const gotchiData = ref(null)
+// useWearables now fetches individual wearable SVGs directly using getSvg
+const wearablesComposable = useWearables()
+const { isLoadingWearables, wearablesError, getWearablesBySlot, wearableSvgsMap, loadMoreWearables, hasMoreWearables } = wearablesComposable
+const wearables = wearablesComposable.wearables // Keep reactivity by not destructuring
 const svgViews = ref(null)
 const svgMetadata = ref(null)
 const isLoading = ref(true)
@@ -586,7 +762,186 @@ const activeBreakdownTab = ref('Front')
 const breakdownByView = ref({})
 const showPreview = ref(null)
 
+// Dressing Room Mode State
+const isDressingRoomMode = ref(false)
+const previewWearables = ref(new Array(16).fill(0))
+const previewSvgs = ref({})
+const selectedWearableSlot = ref(0)
+const isLoadingPreview = ref(false)
+const previewError = ref(null) // Store preview generation errors
+const invalidWearableSlots = ref([]) // Store slots with invalid wearable IDs
+const wearableSearch = ref('')
+const manualWearableId = ref(null)
+const wearableGridRef = ref(null)
+const isLoadingMoreWearables = ref(false)
+let scrollTimeout = null
+const savedScrollPosition = ref(null)
+const previousScrollHeight = ref(0)
+
+// Wearable slots mapping
+const wearableSlots = [
+  { slot: 0, name: 'Body' },
+  { slot: 1, name: 'Face' },
+  { slot: 2, name: 'Eyes' },
+  { slot: 3, name: 'Head' },
+  { slot: 4, name: 'Left Hand' },
+  { slot: 5, name: 'Right Hand' },
+  { slot: 6, name: 'Pet' },
+  { slot: 7, name: 'Background' }
+]
+
+// Get filtered wearables for current slot
+const filteredWearables = computed(() => {
+  const slot = selectedWearableSlot.value
+  // Access wearables.value directly - this ensures Vue tracks the dependency
+  const allWearables = wearables.value || []
+  
+  console.log('[filteredWearables] Computed running:', {
+    slot,
+    allWearablesCount: allWearables.length,
+    isArray: Array.isArray(allWearables),
+    searchTerm: wearableSearch.value
+  })
+  
+  if (!Array.isArray(allWearables)) {
+    console.warn('[filteredWearables] wearables.value is not an array, returning empty')
+    return []
+  }
+  
+  // Filter by slot - only include wearables with valid slot data
+  let slotWearables = allWearables.filter(w => {
+    if (!w) return false
+    // If slot is null or undefined, exclude it (no valid slot data)
+    if (w.slot === null || w.slot === undefined) return false
+    if (typeof w.slot !== 'number') return false
+    if (slot === undefined || slot === null) return true
+    return w.slot === slot
+  })
+  
+  console.log('[filteredWearables] After slot filter:', slotWearables.length, 'items for slot', slot)
+  
+  // Apply search filter
+  if (wearableSearch.value) {
+    const search = wearableSearch.value.toLowerCase()
+    slotWearables = slotWearables.filter(w => {
+      return w.id.toString().includes(search) || 
+             (w.name && w.name.toLowerCase().includes(search))
+    })
+    console.log('[filteredWearables] After search filter:', slotWearables.length, 'items')
+  }
+  
+  // Return all filtered wearables (pagination handled by useWearables)
+  console.log('[filteredWearables] Final result:', slotWearables.length, 'items. First 3:', slotWearables.slice(0, 3).map(w => `#${w.id}(slot${w.slot})`).join(', '))
+  return slotWearables
+})
+
+// Helper function to get slot name
+function getSlotName(slot) {
+  const slotInfo = wearableSlots.find(s => s.slot === slot)
+  return slotInfo ? slotInfo.name : 'Unknown'
+}
+
+// Debug: Watch wearables to ensure they're populated
+watch(wearables, (newWearables) => {
+  console.log('Wearables changed:', newWearables?.length || 0, 'items')
+  if (newWearables && newWearables.length > 0) {
+    console.log('Sample wearable:', newWearables[0])
+  }
+}, { immediate: true })
+
+// Watch filteredWearables and verify DOM rendering (only when dressing room is open)
+watch([filteredWearables, isDressingRoomMode], async ([newFiltered, isOpen]) => {
+  console.log('filteredWearables changed:', newFiltered?.length || 0, 'items', 'isOpen:', isOpen)
+  if (newFiltered && newFiltered.length > 0 && isOpen) {
+    await nextTick()
+    
+    // Restore scroll position if we saved one (when loading more items)
+    if (savedScrollPosition.value !== null && wearableGridRef.value) {
+      const gridElement = wearableGridRef.value
+      // Wait for DOM to update with new items and queries to complete
+      await nextTick()
+      // Use requestAnimationFrame to ensure DOM is fully updated
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          // Restore the scroll position (it should remain the same since we're appending items below)
+          if (gridElement && savedScrollPosition.value !== null) {
+            gridElement.scrollTop = savedScrollPosition.value
+            // Clear saved position
+            savedScrollPosition.value = null
+            previousScrollHeight.value = 0
+          }
+        }, 150) // Slightly longer delay to ensure all queries have rendered
+      })
+    }
+    
+    // Wait a bit more for panel to fully render
+    setTimeout(() => {
+      const gridElement = document.querySelector('.wearable-grid')
+      if (gridElement) {
+        const itemElements = gridElement.querySelectorAll('.wearable-item')
+        console.log('DOM check - Grid found:', !!gridElement)
+        console.log('DOM check - Items in DOM:', itemElements.length, 'Expected:', newFiltered.length)
+        if (itemElements.length !== newFiltered.length) {
+          console.warn('⚠️ Mismatch: Expected', newFiltered.length, 'items but found', itemElements.length, 'in DOM')
+        } else {
+          console.log('✅ All items rendered correctly in DOM')
+        }
+      } else {
+        console.warn('⚠️ Grid element not found in DOM (panel may not be open yet)')
+      }
+    }, 100)
+  }
+}, { immediate: true })
+
+// Initialize preview wearables when gotchi data changes
+watch(() => gotchiData.value, (data) => {
+  if (data && data.equippedWearables) {
+    // Initialize previewWearables with current equipped wearables
+    previewWearables.value = [...data.equippedWearables]
+  }
+}, { immediate: true })
+
+// Watch for preview wearables changes and generate preview SVGs
+let previewTimeout = null
+watch([previewWearables, isDressingRoomMode], async ([wearables, isActive]) => {
+  if (!isActive || !gotchiData.value) {
+    // Clear preview SVGs when exiting dressing room mode
+    if (!isActive) {
+      previewSvgs.value = {}
+      previewError.value = null // Clear error when exiting
+      invalidWearableSlots.value = [] // Clear invalid slots
+    }
+    return
+  }
+  
+  // Debounce preview generation to avoid too many contract calls
+  if (previewTimeout) {
+    clearTimeout(previewTimeout)
+  }
+  previewTimeout = setTimeout(async () => {
+    await generatePreviewSvgs()
+  }, 300)
+}, { deep: true })
+
+// Generate initial preview when entering dressing room mode
+watch(isDressingRoomMode, async (isActive) => {
+  if (isActive && gotchiData.value && (!previewSvgs.value || Object.keys(previewSvgs.value).length === 0)) {
+    // Generate initial preview immediately
+    await generatePreviewSvgs()
+  }
+})
+
 const currentSvgView = computed(() => {
+  // If in dressing room mode, use preview SVGs
+  if (isDressingRoomMode.value && previewSvgs.value) {
+    const viewName = availableViews.value[currentViewIndex.value] || 'Front'
+    const previewSvg = previewSvgs.value[viewName]
+    if (previewSvg) {
+      return previewSvg
+    }
+  }
+  
+  // Otherwise use normal SVGs
   const viewName = availableViews.value[currentViewIndex.value] || 'Front'
   console.log('currentSvgView computed:', {
     viewName,
@@ -704,65 +1059,9 @@ async function fetchSideViews() {
         }
       }
     } catch (getSidesError) {
-      console.warn('getAavegotchiSideSvgs not available, trying previewSideAavegotchi:', getSidesError.message)
-    }
-    
-    // Use previewSideAavegotchi as primary or fallback method
-    if (gotchiData.value.hauntId !== undefined && gotchiData.value.collateral && gotchiData.value.numericTraits && gotchiData.value.equippedWearables) {
-      try {
-        console.log('Fetching preview side views using previewSideAavegotchi...')
-        const previewResponse = await contract.previewSideAavegotchi(
-          gotchiData.value.hauntId,
-          gotchiData.value.collateral,
-          gotchiData.value.numericTraits,
-          gotchiData.value.equippedWearables
-        )
-        
-        let previewArray = []
-        if (Array.isArray(previewResponse)) {
-          previewArray = previewResponse
-        } else if (previewResponse && previewResponse.ag_) {
-          previewArray = Array.isArray(previewResponse.ag_) ? previewResponse.ag_ : [previewResponse.ag_]
-        }
-        
-        console.log('Preview side views:', previewArray)
-        
-        if (previewArray && previewArray.length > 0) {
-          // previewSideAavegotchi returns [front, left, right, back] - same format as getAavegotchiSideSvgs
-          // Merge with existing side views or use preview if getAavegotchiSideSvgs failed
-          if (previewArray.length >= 4) {
-            // [0] = front, [1] = left, [2] = right, [3] = back
-            if (!newSideViews['Left']) {
-              newSideViews['Left'] = previewArray[1]
-              if (!newViews.includes('Left')) newViews.push('Left')
-            }
-            if (!newSideViews['Right']) {
-              newSideViews['Right'] = previewArray[2]
-              if (!newViews.includes('Right')) newViews.push('Right')
-            }
-            if (!newSideViews['Back']) {
-              newSideViews['Back'] = previewArray[3]
-              if (!newViews.includes('Back')) newViews.push('Back')
-            }
-          } else {
-            // Handle partial arrays (shouldn't happen, but be safe)
-            if (previewArray.length >= 2 && !newSideViews['Left']) {
-              newSideViews['Left'] = previewArray[1]
-              if (!newViews.includes('Left')) newViews.push('Left')
-            }
-            if (previewArray.length >= 3 && !newSideViews['Right']) {
-              newSideViews['Right'] = previewArray[2]
-              if (!newViews.includes('Right')) newViews.push('Right')
-            }
-            if (previewArray.length >= 4 && !newSideViews['Back']) {
-              newSideViews['Back'] = previewArray[3]
-              if (!newViews.includes('Back')) newViews.push('Back')
-            }
-          }
-        }
-      } catch (previewError) {
-        console.warn('Failed to fetch preview side views:', previewError)
-      }
+      console.warn('getAavegotchiSideSvgs not available:', getSidesError.message)
+      // Note: previewSideAavegotchi is only used in dressing room mode for previews
+      // It should not be used as a fallback here as it may fail with invalid wearable IDs
     }
     
     sideViews.value = newSideViews
@@ -1431,6 +1730,10 @@ onUnmounted(() => {
   if (styleElement.value) {
     styleElement.value.remove()
   }
+  // Clean up scroll timeout
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout)
+  }
 })
 
 async function copyToClipboard(text, id) {
@@ -1467,15 +1770,256 @@ async function copyElementSvg(svgCode, id) {
   if (!svgCode) return
   await copyToClipboard(svgCode, id)
 }
+
+// Dressing Room Functions
+function selectWearable(wearableId) {
+  previewWearables.value[selectedWearableSlot.value] = wearableId
+}
+
+// Handle scroll on wearable grid to load more items
+function handleWearableGridScroll(event) {
+  const element = event.target
+  if (!element) return
+  
+  // Throttle scroll events to avoid excessive calls
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout)
+  }
+  
+  scrollTimeout = setTimeout(() => {
+    // Check if we're near the bottom (within 200px of bottom)
+    const scrollThreshold = 200
+    const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < scrollThreshold
+    
+    if (isNearBottom && hasMoreWearables.value && !isLoadingMoreWearables.value && !isLoadingWearables.value) {
+      // Save current scroll position and scroll height before loading
+      savedScrollPosition.value = element.scrollTop
+      previousScrollHeight.value = element.scrollHeight
+      
+      isLoadingMoreWearables.value = true
+      loadMoreWearables()
+      
+      // Reset loading state after queries have had time to start
+      // The scroll position will be restored when filteredWearables updates
+      setTimeout(() => {
+        isLoadingMoreWearables.value = false
+      }, 500)
+    }
+  }, 150) // Throttle to every 150ms
+}
+
+function removeWearable(slot) {
+  previewWearables.value[slot] = 0
+}
+
+function removeInvalidWearables() {
+  // Remove all invalid wearable IDs (set to 0)
+  invalidWearableSlots.value.forEach(slot => {
+    previewWearables.value[slot] = 0
+  })
+  invalidWearableSlots.value = []
+  previewError.value = null
+}
+
+function resetToOriginal() {
+  if (gotchiData.value && gotchiData.value.equippedWearables) {
+    previewWearables.value = [...gotchiData.value.equippedWearables]
+  }
+}
+
+function applyManualWearable() {
+  if (manualWearableId.value !== null && manualWearableId.value >= 0) {
+    previewWearables.value[selectedWearableSlot.value] = manualWearableId.value
+    manualWearableId.value = null
+  }
+}
+
+// Generate preview SVGs using previewSideAavegotchi
+async function generatePreviewSvgs() {
+  if (!gotchiData.value) return
+  
+  isLoadingPreview.value = true
+  previewError.value = null // Clear any previous errors
+  try {
+    const contract = getContract()
+    
+    // Validate and filter wearable IDs
+    // Only use wearable IDs that are > 0 (0 means empty slot, which is valid)
+    // Validate against wearableSvgsMap - if a wearable has SVG data, it should work in preview
+    const validatedWearables = [...previewWearables.value]
+    const originalWearables = gotchiData.value.equippedWearables || []
+    const svgMap = wearableSvgsMap.value || {}
+    
+    // Check each wearable ID and validate it
+    for (let i = 0; i < validatedWearables.length; i++) {
+      const currentId = validatedWearables[i]
+      
+      // If wearable ID is 0, it's an empty slot (valid)
+      if (currentId === 0) {
+        continue
+      }
+      
+      // If it's the same as original, assume it's valid (original equipped wearables should work)
+      if (currentId === originalWearables[i]) {
+        continue
+      }
+      
+      // If the wearable ID doesn't have SVG data in our map, it might not exist
+      // Fall back to original equipped wearable for this slot
+      if (!svgMap[currentId]) {
+        console.warn(`Wearable ID ${currentId} not found in SVG map, falling back to original equipped wearable ${originalWearables[i] || 0}`)
+        validatedWearables[i] = originalWearables[i] || 0
+      } else {
+        // Log which wearable we're trying (for debugging)
+        console.log(`Preview slot ${i}: trying wearable ID ${currentId}`)
+      }
+    }
+    
+    // First, try to validate wearable IDs by checking if getItemSvg works for them
+    // This helps catch invalid IDs before calling previewSideAavegotchi
+    const validatedWearablesWithCheck = [...validatedWearables]
+    for (let i = 0; i < validatedWearablesWithCheck.length; i++) {
+      const wearableId = validatedWearablesWithCheck[i]
+      if (wearableId !== 0 && !svgMap[wearableId]) {
+        // Try to validate by calling getItemSvg if not in map
+        try {
+          await contract.getItemSvg(wearableId)
+          // If successful, add to validation - wearable exists
+        } catch (err) {
+          // If getItemSvg fails, the wearable doesn't exist - use original or 0
+          console.warn(`Wearable ID ${wearableId} validation failed, using original: ${originalWearables[i] || 0}`)
+          validatedWearablesWithCheck[i] = originalWearables[i] || 0
+        }
+      }
+    }
+    
+    // Call previewSideAavegotchi with validated wearables
+    const previewResponse = await contract.previewSideAavegotchi(
+      gotchiData.value.hauntId,
+      gotchiData.value.collateral,
+      gotchiData.value.numericTraits,
+      validatedWearablesWithCheck
+    )
+    
+    // Parse response (similar to fetchSideViews logic)
+    let previewArray = []
+    if (Array.isArray(previewResponse)) {
+      previewArray = previewResponse
+    } else if (previewResponse && previewResponse.ag_) {
+      previewArray = Array.isArray(previewResponse.ag_) ? previewResponse.ag_ : [previewResponse.ag_]
+    } else if (previewResponse && typeof previewResponse.length === 'number') {
+      // Handle Proxy array
+      previewArray = []
+      for (let i = 0; i < previewResponse.length; i++) {
+        if (previewResponse[i] !== undefined) {
+          previewArray.push(previewResponse[i])
+        }
+      }
+    }
+    
+    // Map preview SVGs to view names
+    const newPreviewSvgs = {}
+    if (previewArray.length >= 4) {
+      newPreviewSvgs['Front'] = previewArray[0] || ''
+      newPreviewSvgs['Left'] = previewArray[1] || ''
+      newPreviewSvgs['Right'] = previewArray[2] || ''
+      newPreviewSvgs['Back'] = previewArray[3] || ''
+    } else if (previewArray.length > 0) {
+      // Fallback: use first SVG for front view
+      newPreviewSvgs['Front'] = previewArray[0] || ''
+    }
+    
+    previewSvgs.value = newPreviewSvgs
+    
+    // Apply styles to preview SVGs
+    await nextTick()
+    Object.values(newPreviewSvgs).forEach(svg => {
+      if (svg) {
+        applySvgStyles(svg)
+      }
+    })
+    
+    console.log('Generated preview SVGs:', Object.keys(newPreviewSvgs))
+  } catch (error) {
+    console.error('Error generating preview SVGs:', error)
+    console.error('Preview wearables array:', previewWearables.value)
+    console.error('Original equipped wearables:', gotchiData.value?.equippedWearables)
+    
+    // Show user-friendly error message for invalid wearable IDs
+    if (error.message && error.message.includes('SVG type or id does not exist')) {
+      // Try to identify which wearable ID caused the issue
+      // Check all non-zero wearables that differ from original, or all non-zero if no originals
+      const invalidWearables = []
+      const originalWearables = gotchiData.value?.equippedWearables || []
+      
+      for (let i = 0; i < previewWearables.value.length; i++) {
+        const wearableId = Number(previewWearables.value[i]) || 0
+        const originalId = Number(originalWearables[i]) || 0
+        
+        // Include if:
+        // 1. Non-zero and different from original (user changed it)
+        // 2. Or if original is also non-zero and we're using it (might be invalid too)
+        if (wearableId !== 0) {
+          const slotName = wearableSlots.find(s => s.slot === i)?.name || `Slot ${i}`
+          const isChanged = wearableId !== originalId
+          invalidWearables.push({ 
+            slot: i, 
+            slotName, 
+            id: wearableId, 
+            originalId,
+            isChanged 
+          })
+        }
+      }
+      
+      if (invalidWearables.length > 0) {
+        console.warn('Invalid wearable IDs detected:', invalidWearables)
+        // Store invalid slots for quick removal
+        invalidWearableSlots.value = invalidWearables.map(w => w.slot)
+        
+        // Show all problematic wearable IDs (both changed and original)
+        const allList = invalidWearables.map(w => `${w.slotName} (ID: ${w.id})`).join(', ')
+        const changedWearables = invalidWearables.filter(w => w.isChanged)
+        
+        if (changedWearables.length > 0) {
+          // User changed some wearables - show those prominently
+          const changedList = changedWearables.map(w => `${w.slotName} (ID: ${w.id})`).join(', ')
+          previewError.value = `Invalid wearable IDs detected: ${changedList}. These IDs may not exist in the contract or may not be compatible with previewSideAavegotchi. Please try different wearables or remove them.`
+        } else {
+          // All wearables match original - if they fail, it's likely a contract issue, not user error
+          // Don't show error for original equipped wearables - just silently fail preview
+          console.warn('Preview failed with original equipped wearables. This may be a contract limitation.')
+          previewError.value = null // Don't show error for original wearables
+          previewSvgs.value = {} // Clear preview and show original gotchi
+        }
+      } else {
+        invalidWearableSlots.value = [] // Clear if no invalid wearables found
+        // No non-zero wearables found, but error occurred - might be a contract issue
+        previewError.value = 'Error generating preview. The contract rejected the wearable configuration. This might be a contract issue. Please try resetting to original equipped wearables.'
+      }
+    } else {
+      previewError.value = `Error generating preview: ${error.message || 'Unknown error'}`
+    }
+    // Clear preview SVGs on error so user sees original gotchi
+    previewSvgs.value = {}
+  } finally {
+    isLoadingPreview.value = false
+  }
+}
 </script>
 
 <style scoped>
 .stage-container {
   @apply w-full p-6 max-w-7xl mx-auto;
+  transition: margin-right 0.3s ease;
+}
+
+.stage-container.dressing-room-active {
+  @apply mr-96;
 }
 
 .close-btn {
-  @apply mb-6 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors font-medium;
+  @apply mb-6 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors font-medium text-gray-800 dark:text-gray-200;
 }
 
 .loading-container,
@@ -1484,11 +2028,11 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .loading-spinner {
-  @apply w-12 h-12 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin;
+  @apply w-12 h-12 border-4 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin;
 }
 
 .error-text {
-  @apply text-red-600 font-medium;
+  @apply text-red-600 dark:text-red-400 font-medium;
 }
 
 .stage-content {
@@ -1496,7 +2040,7 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .info-section {
-  @apply bg-white rounded-lg p-6 shadow-md;
+  @apply bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md transition-colors;
 }
 
 .gotchi-title {
@@ -1504,11 +2048,11 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .gotchi-id {
-  @apply text-blue-600;
+  @apply text-blue-600 dark:text-blue-400;
 }
 
 .gotchi-name {
-  @apply text-gray-800;
+  @apply text-gray-800 dark:text-gray-100;
 }
 
 .stats-grid {
@@ -1516,15 +2060,15 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .stat-card {
-  @apply bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg p-4 text-center;
+  @apply bg-gradient-to-br from-purple-100 dark:from-purple-900 to-purple-200 dark:to-purple-800 rounded-lg p-4 text-center;
 }
 
 .stat-label {
-  @apply text-sm text-purple-700 font-medium mb-1;
+  @apply text-sm text-purple-700 dark:text-purple-300 font-medium mb-1;
 }
 
 .stat-value {
-  @apply text-2xl font-bold text-purple-900;
+  @apply text-2xl font-bold text-purple-900 dark:text-purple-100;
 }
 
 .traits-grid {
@@ -1532,19 +2076,19 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .trait-item {
-  @apply bg-gray-100 rounded-lg p-3 text-center;
+  @apply bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-center;
 }
 
 .trait-label {
-  @apply text-xs text-gray-600 block mb-1;
+  @apply text-xs text-gray-600 dark:text-gray-300 block mb-1;
 }
 
 .trait-value {
-  @apply text-lg font-bold text-gray-800;
+  @apply text-lg font-bold text-gray-800 dark:text-gray-100;
 }
 
 .svg-section {
-  @apply bg-white rounded-lg p-6 shadow-md;
+  @apply bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md transition-colors;
 }
 
 .svg-header {
@@ -1552,38 +2096,47 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .section-title {
-  @apply text-2xl font-bold text-gray-800;
+  @apply text-2xl font-bold text-gray-800 dark:text-gray-100;
 }
 
 .view-controls {
   @apply flex items-center gap-3;
 }
 
+.dressing-room-btn {
+  @apply px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors;
+  @apply ml-2 text-sm;
+}
+
+.dressing-room-btn.active {
+  @apply bg-purple-800;
+}
+
 .nav-btn {
-  @apply px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors;
-  @apply disabled:bg-gray-300 disabled:cursor-not-allowed disabled:hover:bg-gray-300;
+  @apply px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors;
+  @apply disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-300 dark:disabled:hover:bg-gray-600;
   @apply font-bold text-lg min-w-[50px];
 }
 
 .view-indicator {
-  @apply px-4 py-2 bg-gray-100 rounded-lg font-semibold text-gray-700 min-w-[80px] text-center;
+  @apply px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg font-semibold text-gray-700 dark:text-gray-200 min-w-[80px] text-center;
 }
 
 .loading-overlay {
-  @apply absolute inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center gap-2 z-10 rounded-lg;
+  @apply absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 flex flex-col items-center justify-center gap-2 z-10 rounded-lg;
 }
 
 .loading-spinner-small {
-  @apply w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin;
+  @apply w-8 h-8 border-2 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin;
 }
 
 .svg-loading-fallback {
-  @apply flex flex-col items-center justify-center gap-4 p-8 bg-gray-50 rounded-lg border-2 border-gray-200;
+  @apply flex flex-col items-center justify-center gap-4 p-8 bg-gray-50 dark:bg-gray-700 rounded-lg border-2 border-gray-200 dark:border-gray-600;
   min-height: 300px;
 }
 
 .debug-info {
-  @apply text-sm text-gray-500 italic;
+  @apply text-sm text-gray-500 dark:text-gray-400 italic;
 }
 
 .svg-view-container {
@@ -1595,11 +2148,12 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .view-title {
-  @apply text-lg font-semibold text-gray-700;
+  @apply text-lg font-semibold text-gray-700 dark:text-gray-200;
 }
 
 .metadata-section {
-  @apply bg-white rounded-lg p-6 shadow-md;
+  @apply rounded-lg p-6 shadow-md transition-colors;
+  background-color: #374151;
 }
 
 .metadata-content {
@@ -1607,19 +2161,27 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .canvas-info {
-  @apply bg-blue-50 rounded-lg p-4;
+  @apply rounded-lg p-4;
+  background-color: #2563EB;
 }
 
 .metadata-subtitle {
-  @apply text-lg font-semibold mb-4 text-gray-800;
+  @apply text-lg font-semibold mb-4;
+  color: #ffffff;
 }
 
 .info-row {
-  @apply flex justify-between items-center py-2 border-b border-gray-200 last:border-0;
+  @apply flex justify-between items-center py-2 last:border-0;
+  border-bottom: 1px solid #60a5fa;
+}
+
+.info-row > span:first-child {
+  color: #60a5fa;
 }
 
 .info-value {
-  @apply font-mono font-semibold text-blue-600;
+  @apply font-mono font-semibold;
+  color: #ffffff;
 }
 
 .parts-info {
@@ -1631,7 +2193,10 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .part-item {
-  @apply bg-gray-50 rounded-lg p-3 border border-gray-200;
+  @apply rounded-lg p-3 border;
+  background-color: #374151;
+  border-color: #4b5563;
+  border-width: 1px;
 }
 
 .part-header {
@@ -1639,11 +2204,11 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .part-tag {
-  @apply bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-mono font-semibold;
+  @apply bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs font-mono font-semibold;
 }
 
 .part-id {
-  @apply text-xs text-gray-600 font-mono;
+  @apply text-xs text-gray-600 dark:text-gray-400 font-mono;
 }
 
 .part-details {
@@ -1651,7 +2216,7 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .detail-row {
-  @apply flex justify-between text-gray-700;
+  @apply flex justify-between text-gray-700 dark:text-gray-300;
 }
 
 .transform-text {
@@ -1659,11 +2224,11 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .parts-truncated {
-  @apply text-center text-gray-500 italic py-2;
+  @apply text-center text-gray-500 dark:text-gray-400 italic py-2;
 }
 
 .svg-code-section {
-  @apply bg-white rounded-lg p-6 shadow-md;
+  @apply bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md transition-colors;
 }
 
 .svg-code-container {
@@ -1705,34 +2270,34 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .svg-code-details {
-  @apply bg-gray-50 rounded-lg border border-gray-200;
+  @apply bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600;
 }
 
 .code-summary {
-  @apply px-4 py-2 cursor-pointer hover:bg-gray-100 font-medium text-sm text-gray-700;
+  @apply px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 font-medium text-sm text-gray-700 dark:text-gray-200;
 }
 
 .all-views-code-section {
-  @apply mt-8 bg-white rounded-lg p-6 shadow-md;
+  @apply mt-8 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md transition-colors;
 }
 
 .section-subtitle {
-  @apply text-xl font-semibold text-gray-800 mb-4;
+  @apply text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4;
 }
 
 .svg-tabs {
-  @apply flex gap-2 mb-4 border-b border-gray-200;
+  @apply flex gap-2 mb-4 border-b border-gray-200 dark:border-gray-700;
   overflow-x: auto;
 }
 
 .tab-btn {
-  @apply px-4 py-2 font-medium text-gray-600 hover:text-gray-800 transition-colors;
-  @apply border-b-2 border-transparent hover:border-gray-300;
+  @apply px-4 py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors;
+  @apply border-b-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600;
   @apply whitespace-nowrap;
 }
 
 .tab-btn.active {
-  @apply text-blue-600 border-blue-600;
+  @apply text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400;
 }
 
 .tab-content {
@@ -1744,11 +2309,12 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .loading-code {
-  @apply flex items-center justify-center py-8 text-gray-500;
+  @apply flex items-center justify-center py-8 text-gray-500 dark:text-gray-400;
 }
 
 .breakdown-section {
-  @apply mt-8 bg-white rounded-lg p-6 shadow-md;
+  @apply mt-8 rounded-lg p-6 shadow-md transition-colors;
+  background-color: #374151;
 }
 
 .breakdown-content {
@@ -1760,7 +2326,7 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .category-title {
-  @apply text-lg font-semibold text-gray-800 mb-3;
+  @apply text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3;
 }
 
 .category-list {
@@ -1768,7 +2334,10 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .category-item {
-  @apply bg-gray-50 rounded-lg border border-gray-200;
+  @apply rounded-lg border p-4;
+  background-color: #374151;
+  border-color: #4b5563;
+  border-width: 1px;
 }
 
 .category-details {
@@ -1776,7 +2345,7 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .category-summary {
-  @apply flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors;
+  @apply flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors;
   @apply list-none;
 }
 
@@ -1785,11 +2354,14 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .category-name {
-  @apply font-medium text-gray-700;
+  @apply font-medium;
+  color: #60a5fa;
 }
 
 .category-count {
-  @apply text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded;
+  @apply text-sm px-2 py-1 rounded;
+  background-color: #111827;
+  color: #ffffff;
 }
 
 .category-elements {
@@ -1797,7 +2369,7 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .element-item {
-  @apply bg-white rounded p-3 border border-gray-200 text-sm;
+  @apply bg-white dark:bg-gray-800 rounded p-3 border border-gray-200 dark:border-gray-700 text-sm transition-colors;
 }
 
 .element-info {
@@ -1805,15 +2377,16 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .element-tag {
-  @apply bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-mono font-semibold;
+  @apply bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs font-mono font-semibold;
 }
 
 .element-class {
-  @apply text-xs text-gray-600 font-mono;
+  @apply text-xs font-mono;
+  color: #2563EB;
 }
 
 .element-details {
-  @apply space-y-2 text-xs text-gray-600 mt-2;
+  @apply space-y-2 text-xs text-gray-600 dark:text-gray-400 mt-2;
 }
 
 .element-detail-row {
@@ -1821,11 +2394,12 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .detail-label {
-  @apply font-semibold text-gray-700 min-w-[100px];
+  @apply font-semibold min-w-[100px];
+  color: #60a5fa;
 }
 
 .detail-value {
-  @apply text-gray-600;
+  @apply text-gray-600 dark:text-gray-300;
 }
 
 .fill-color {
@@ -1833,7 +2407,7 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .color-swatch {
-  @apply inline-block w-4 h-4 rounded border border-gray-300;
+  @apply inline-block w-4 h-4 rounded border border-gray-300 dark:border-gray-600;
   flex-shrink: 0;
 }
 
@@ -1868,7 +2442,7 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .element-thumbnail {
-  @apply border border-gray-300 rounded bg-white p-2;
+  @apply border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 p-2;
   @apply inline-block cursor-pointer;
   width: 64px;
   height: 64px;
@@ -1886,7 +2460,7 @@ async function copyElementSvg(svgCode, id) {
 
 .element-preview-popup {
   @apply absolute z-50 pointer-events-none;
-  @apply bg-white border-2 border-blue-500 rounded-lg shadow-2xl p-4;
+  @apply bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl p-4;
   top: 100%;
   left: 50%;
   margin-top: 8px;
@@ -1916,11 +2490,11 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .element-code-details {
-  @apply mt-2 bg-gray-50 rounded border border-gray-200;
+  @apply mt-2 bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600;
 }
 
 .element-code-summary {
-  @apply px-3 py-2 cursor-pointer hover:bg-gray-100 font-medium text-xs text-gray-700;
+  @apply px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 font-medium text-xs text-gray-700 dark:text-gray-200;
 }
 
 .element-code-block {
@@ -1937,11 +2511,11 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .element-item.is-wearable {
-  @apply border-l-4 border-purple-500;
+  @apply border-l-4 border-purple-500 dark:border-purple-400;
 }
 
 .wearable-badge {
-  @apply bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-semibold ml-2;
+  @apply bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 px-2 py-1 rounded text-xs font-semibold ml-2;
 }
 
 .wearable-classes {
@@ -1949,7 +2523,7 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .wearable-class-tag {
-  @apply bg-purple-50 text-purple-700 px-2 py-1 rounded text-xs font-mono border border-purple-200;
+  @apply bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-300 px-2 py-1 rounded text-xs font-mono border border-purple-200 dark:border-purple-700;
 }
 
 .unidentified-wearables {
@@ -1957,11 +2531,328 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .wearable-class-info {
-  @apply text-xs text-gray-600 font-mono;
+  @apply text-xs text-gray-600 dark:text-gray-400 font-mono;
 }
 
-.wearable-item {
+/* Generic wearable-item - removed to avoid conflicts with grid-specific styles */
+/* .wearable-item {
   @apply bg-gray-50 rounded-lg border border-gray-200 p-4;
+} */
+
+/* Dressing Room Styles */
+.dressing-room-panel {
+  @apply fixed top-0 right-0 h-full w-96 bg-white dark:bg-gray-800 shadow-2xl z-50 transition-colors;
+  @apply flex flex-col;
+  overflow-y: auto;
+}
+
+.panel-header {
+  @apply flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-purple-50 dark:bg-purple-900;
+  @apply sticky top-0 z-10;
+}
+
+.panel-header h3 {
+  @apply text-lg font-semibold text-gray-800 dark:text-gray-100;
+}
+
+.panel-close-btn {
+  @apply w-8 h-8 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded;
+  @apply text-2xl font-light;
+}
+
+.panel-content {
+  @apply flex-1 p-4 space-y-4;
+}
+
+.preview-error-message {
+  @apply bg-red-50 border-l-4 border-red-500 p-3 rounded-lg mb-4;
+}
+
+.preview-error-message .error-content {
+  @apply relative;
+}
+
+.preview-error-message strong {
+  @apply text-red-800 block mb-1;
+}
+
+.preview-error-message p {
+  @apply text-red-700 text-sm mb-0;
+}
+
+.preview-error-message .error-actions {
+  @apply flex items-center gap-2 mt-2;
+}
+
+.preview-error-message .error-action-btn {
+  @apply px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 transition-colors;
+}
+
+.preview-error-message .error-action-remove {
+  @apply bg-orange-600 hover:bg-orange-700;
+}
+
+.preview-error-message .error-close-btn {
+  @apply w-6 h-6 flex items-center justify-center text-red-600 hover:text-red-800 hover:bg-red-100 rounded;
+  @apply text-lg font-light ml-auto;
+}
+
+.slot-tabs {
+  @apply flex flex-wrap gap-2;
+}
+
+.slot-tab {
+  @apply px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600;
+  @apply bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors;
+}
+
+.slot-tab.active {
+  @apply bg-purple-600 text-white border-purple-600;
+}
+
+.selected-wearables-summary {
+  @apply bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600;
+}
+
+.selected-wearables-summary h4 {
+  @apply font-semibold text-gray-800 dark:text-gray-100 mb-3;
+}
+
+.equipped-list {
+  @apply space-y-2 mb-3;
+}
+
+.equipped-item {
+  @apply flex items-center justify-between p-2 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700;
+}
+
+.equipped-item.has-wearable {
+  @apply border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-900;
+}
+
+.slot-name {
+  @apply font-medium text-gray-700 dark:text-gray-200 text-sm;
+}
+
+.wearable-id {
+  @apply text-gray-600 dark:text-gray-300 text-sm font-mono;
+}
+
+.remove-btn {
+  @apply w-6 h-6 flex items-center justify-center text-red-500 hover:text-red-700;
+  @apply hover:bg-red-50 rounded text-lg;
+}
+
+.reset-btn {
+  @apply w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg font-medium;
+  @apply hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors;
+}
+
+.wearable-browser {
+  @apply space-y-4;
+}
+
+.browser-header {
+  @apply flex items-center justify-between;
+}
+
+.browser-header h4 {
+  @apply font-semibold text-gray-800 dark:text-gray-100;
+}
+
+.loading-wearables,
+.error-wearables {
+  @apply p-4 text-center text-gray-500 dark:text-gray-400;
+}
+
+.loading-more-wearables {
+  @apply col-span-2 flex flex-col items-center justify-center gap-2 p-4 text-gray-500 dark:text-gray-400;
+}
+
+.fallback-note {
+  @apply text-xs text-gray-400 dark:text-gray-500 mt-2;
+}
+
+.empty-wearables {
+  @apply p-8 text-center text-gray-500 dark:text-gray-400;
+}
+
+.empty-wearables p {
+  @apply mb-2;
+}
+
+.wearable-search {
+  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg mb-4;
+  @apply bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100;
+  @apply focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400;
+}
+
+.wearable-grid {
+  @apply grid grid-cols-2 gap-3;
+  max-height: 500px !important; /* Increased from 96 (384px) to 500px for better visibility */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  min-height: 200px !important; /* Ensure grid has minimum visible height */
+  padding: 4px !important; /* Add padding for scrollbar */
+  width: 100% !important; /* Force full width */
+  display: grid !important; /* Ensure grid display */
+  visibility: visible !important;
+  opacity: 1 !important;
+  /* Ensure smooth scrolling */
+  scroll-behavior: smooth;
+  /* Add visible scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.wearable-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.wearable-grid::-webkit-scrollbar-track {
+  background: #f7fafc;
+}
+
+.dark .wearable-grid::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.wearable-grid::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.dark .wearable-grid::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+.wearable-grid::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+.dark .wearable-grid::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Ensure items are visible and properly sized */
+.wearable-grid .wearable-item {
+  @apply cursor-pointer p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700;
+  @apply hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors;
+  @apply bg-white dark:bg-gray-800;
+  min-height: 120px !important; /* Ensure items have minimum height */
+  width: 100% !important; /* Force full width */
+  display: flex !important;
+  flex-direction: column !important;
+  opacity: 1 !important; /* Force visibility */
+  visibility: visible !important; /* Force visibility */
+  /* Ensure items take up space */
+  flex-shrink: 0;
+  position: relative !important; /* Ensure proper positioning */
+  z-index: 1 !important; /* Ensure items are above other elements */
+  /* Debug: Make items more visible */
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
+
+.wearable-browser .wearable-item {
+  @apply cursor-pointer p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700;
+  @apply hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors;
+  @apply bg-white dark:bg-gray-800;
+}
+
+.wearable-browser .wearable-item.selected {
+  @apply border-purple-600 dark:border-purple-500 bg-purple-100 dark:bg-purple-900;
+}
+
+.wearable-browser .wearable-item.equipped {
+  @apply border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900;
+}
+
+.wearable-browser .wearable-item.equipped.selected {
+  @apply border-purple-600 dark:border-purple-500 bg-purple-200 dark:bg-purple-800;
+}
+
+.wearable-thumbnail {
+  @apply w-full aspect-square bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center mb-2;
+  min-height: 80px !important; /* Ensure thumbnail has minimum height */
+  flex-shrink: 0; /* Prevent shrinking */
+  overflow: hidden; /* Clip SVG to container */
+  position: relative; /* For positioning */
+}
+
+.thumbnail-img {
+  @apply w-full h-full;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.thumbnail-img :deep(svg) {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important; /* Scale SVG to fit container */
+}
+
+.thumbnail-placeholder {
+  @apply text-gray-700 dark:text-gray-300 text-sm font-bold font-mono;
+  font-size: 1.25rem !important; /* Make placeholder text larger and more visible */
+  display: block !important; /* Ensure text is visible */
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.wearable-info {
+  @apply flex flex-col gap-1;
+  width: 100% !important; /* Ensure info section takes full width */
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.wearable-name {
+  @apply text-xs font-medium text-gray-800 dark:text-gray-200 truncate;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.wearable-id-label {
+  @apply text-xs text-gray-500 dark:text-gray-400 font-mono;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Ensure wearable-list container is visible */
+.wearable-list {
+  @apply w-full;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.manual-wearable-input {
+  @apply mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600;
+}
+
+.manual-wearable-input label {
+  @apply block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2;
+}
+
+.input-group {
+  @apply flex gap-2;
+}
+
+.wearable-id-input {
+  @apply flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg;
+  @apply bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100;
+  @apply focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400;
+}
+
+.apply-btn {
+  @apply px-4 py-2 bg-purple-600 text-white rounded-lg font-medium;
+  @apply hover:bg-purple-700 transition-colors;
 }
 
 .wearable-header {
@@ -1969,11 +2860,14 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .wearable-slot {
-  @apply font-semibold text-gray-800;
+  @apply font-semibold;
+  color: #60a5fa;
 }
 
 .wearable-id {
-  @apply bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-mono;
+  @apply px-2 py-1 rounded text-xs font-mono;
+  background-color: #111827;
+  color: #ffffff;
 }
 
 .wearable-empty {
@@ -1985,7 +2879,8 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .wearable-info {
-  @apply flex items-center gap-3 text-sm text-gray-600 mb-2;
+  @apply flex items-center gap-3 text-sm mb-2;
+  color: #ffffff;
 }
 
 .wearable-elements {
@@ -1993,7 +2888,8 @@ async function copyElementSvg(svgCode, id) {
 }
 
 .wearable-summary {
-  @apply text-xs text-blue-600 cursor-pointer hover:underline;
+  @apply text-xs cursor-pointer hover:underline;
+  color: #60a5fa;
 }
 
 .element-list {
