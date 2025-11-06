@@ -3001,9 +3001,27 @@ async function parseAllViewsBreakdown() {
     wrapper.setAttribute('viewBox', viewBox)
     
     // Include style element if it exists (needed for gotchi-secondary colors)
+    // Modify style to ensure all hand groups are visible (display:block)
     const styleElement = doc.querySelector('style')
     if (styleElement) {
       const styleClone = styleElement.cloneNode(true)
+      // Update style text to ensure all hand groups are visible
+      let styleText = styleClone.textContent || styleClone.innerHTML
+      // Replace display:none with display:block for all hand group classes
+      // Handle cases where display:none might be anywhere in the rule block
+      styleText = styleText.replace(/\.gotchi-handsDownClosed\s*\{([^}]*)\}/g, (match, content) => {
+        return `.gotchi-handsDownClosed{${content.replace(/display:\s*none/g, 'display:block')}}`
+      })
+      styleText = styleText.replace(/\.gotchi-handsDownOpen\s*\{([^}]*)\}/g, (match, content) => {
+        return `.gotchi-handsDownOpen{${content.replace(/display:\s*none/g, 'display:block')}}`
+      })
+      styleText = styleText.replace(/\.gotchi-handsUp\s*\{([^}]*)\}/g, (match, content) => {
+        return `.gotchi-handsUp{${content.replace(/display:\s*none/g, 'display:block')}}`
+      })
+      // Keep sleeves hidden (don't modify sleeves-up)
+      // Update the style element content
+      styleClone.textContent = styleText
+      styleClone.innerHTML = styleText
       wrapper.appendChild(styleClone)
     }
     
@@ -3014,9 +3032,22 @@ async function parseAllViewsBreakdown() {
       const handWrapper = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
       handWrapper.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
       handWrapper.setAttribute('viewBox', viewBox)
-      // Include style element in debug output too
+      // Include style element in debug output too (with same modifications)
       if (styleElement) {
         const styleClone = styleElement.cloneNode(true)
+        // Update style text to ensure all hand groups are visible
+        let styleText = styleClone.textContent || styleClone.innerHTML
+        styleText = styleText.replace(/\.gotchi-handsDownClosed\s*\{([^}]*)\}/g, (match, content) => {
+          return `.gotchi-handsDownClosed{${content.replace(/display:\s*none/g, 'display:block')}}`
+        })
+        styleText = styleText.replace(/\.gotchi-handsDownOpen\s*\{([^}]*)\}/g, (match, content) => {
+          return `.gotchi-handsDownOpen{${content.replace(/display:\s*none/g, 'display:block')}}`
+        })
+        styleText = styleText.replace(/\.gotchi-handsUp\s*\{([^}]*)\}/g, (match, content) => {
+          return `.gotchi-handsUp{${content.replace(/display:\s*none/g, 'display:block')}}`
+        })
+        styleClone.textContent = styleText
+        styleClone.innerHTML = styleText
         handWrapper.appendChild(styleClone)
       }
       handWrapper.appendChild(el.cloneNode(true))
