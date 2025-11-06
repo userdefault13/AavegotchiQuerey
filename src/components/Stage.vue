@@ -3026,9 +3026,9 @@ async function parseAllViewsBreakdown() {
     })
     
     // Reorder hand groups so layers render correctly:
-    // 1. White fill-only groups (bottom layer)
-    // 2. Primary groups (middle layer)
-    // 3. Secondary groups (top layer)
+    // 1. Primary groups (bottom layer)
+    // 2. Secondary groups (middle layer)
+    // 3. White fill-only groups (top layer - render last)
     const sortedHands = [...allHands].sort((a, b) => {
       const aHasWhiteFill = a.querySelector('path[fill="#fff"], path[fill="#ffffff"]')
       const bHasWhiteFill = b.querySelector('path[fill="#fff"], path[fill="#ffffff"]')
@@ -3041,21 +3041,21 @@ async function parseAllViewsBreakdown() {
       const aIsWhiteFillOnly = aHasWhiteFill && !aHasPrimary && !aHasSecondary
       const bIsWhiteFillOnly = bHasWhiteFill && !bHasPrimary && !bHasSecondary
       
-      // White-fill-only groups first (bottom layer)
-      if (aIsWhiteFillOnly && !bIsWhiteFillOnly) return -1
-      if (!aIsWhiteFillOnly && bIsWhiteFillOnly) return 1
-      
-      // Then groups with white fill (but also have primary/secondary)
-      if (aHasWhiteFill && !aIsWhiteFillOnly && !bHasWhiteFill) return -1
-      if (!aHasWhiteFill && bHasWhiteFill && !bIsWhiteFillOnly) return 1
-      
-      // Then primary groups
+      // Primary groups first (bottom layer)
       if (aHasPrimary && !aHasSecondary && !bHasPrimary) return -1
       if (!aHasPrimary && bHasPrimary && !bHasSecondary) return 1
       
-      // Then secondary groups last
-      if (aHasSecondary && !bHasSecondary) return 1
-      if (!aHasSecondary && bHasSecondary) return -1
+      // Then secondary groups
+      if (aHasSecondary && !bHasSecondary) return -1
+      if (!aHasSecondary && bHasSecondary) return 1
+      
+      // White-fill-only groups last (top layer - render last)
+      if (aIsWhiteFillOnly && !bIsWhiteFillOnly) return 1
+      if (!aIsWhiteFillOnly && bIsWhiteFillOnly) return -1
+      
+      // Then groups with white fill (but also have primary/secondary) - render last
+      if (aHasWhiteFill && !aIsWhiteFillOnly && !bHasWhiteFill) return 1
+      if (!aHasWhiteFill && bHasWhiteFill && !bIsWhiteFillOnly) return -1
       
       return 0
     })
@@ -3091,6 +3091,10 @@ async function parseAllViewsBreakdown() {
         const fill = p.getAttribute('fill') || ''
         return fill === '#fff' || fill === '#ffffff'
       })
+      const primaryGroups = topLevelGroups.filter(g => {
+        const classes = (g.getAttribute('class') || '').toLowerCase()
+        return classes.includes('gotchi-primary') && !classes.includes('gotchi-secondary')
+      })
       const primaryPaths = topLevelPaths.filter(p => {
         const classes = (p.getAttribute('class') || '').toLowerCase()
         return classes.includes('gotchi-primary') && !classes.includes('gotchi-secondary')
@@ -3105,11 +3109,12 @@ async function parseAllViewsBreakdown() {
         return classes.includes('gotchi-secondary')
       })
       
-      // Re-add in correct z-order: white fill first (bottom), then primary, then secondary groups, then orphaned secondary paths (top)
-      whiteFillPaths.forEach(p => clonedGroup.appendChild(p))
+      // Re-add in correct z-order: primary groups first (bottom), then primary paths, then secondary groups, then orphaned secondary paths, then white fill last (top - render last)
+      primaryGroups.forEach(g => clonedGroup.appendChild(g)) // Primary groups keep their nested paths
       primaryPaths.forEach(p => clonedGroup.appendChild(p))
       secondaryGroups.forEach(g => clonedGroup.appendChild(g)) // Groups keep their nested paths
       orphanedSecondaryPaths.forEach(p => clonedGroup.appendChild(p))
+      whiteFillPaths.forEach(p => clonedGroup.appendChild(p)) // White fill paths render last (on top)
       
       return clonedGroup
     })
