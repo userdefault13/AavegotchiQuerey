@@ -5261,6 +5261,10 @@ async function generatePreviewSvgs() {
   background-color: #374151;
 }
 
+.metadata-section .section-title {
+  @apply mb-4;
+}
+
 .metadata-content {
   @apply space-y-6;
 }
