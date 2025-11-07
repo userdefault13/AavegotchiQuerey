@@ -4,7 +4,7 @@
 
     <div v-if="isLoading" class="loading-container">
       <div class="loading-spinner"></div>
-      <p>Loading Aavegotchi data...</p>
+      <p class="loading-text">Loading Aavegotchi data...</p>
     </div>
 
     <div v-else-if="error" class="error-container">
@@ -96,7 +96,7 @@
         <div class="svg-view-container">
           <div v-if="isLoadingSideViews && currentViewIndex > 0" class="loading-overlay">
             <div class="loading-spinner-small"></div>
-            <p>Loading view...</p>
+            <p class="loading-text">Loading view...</p>
           </div>
           <SVGViewer 
             v-if="currentSvgView && currentSvgView.length > 0"
@@ -107,11 +107,11 @@
           />
           <div v-else-if="isLoadingPreview && isDressingRoomMode" class="svg-loading-fallback">
             <div class="loading-spinner-small"></div>
-            <p>Generating preview...</p>
+            <p class="loading-text">Generating preview...</p>
           </div>
           <div v-else class="svg-loading-fallback">
             <div class="loading-spinner-small"></div>
-            <p>Loading SVG view...</p>
+            <p class="loading-text">Loading SVG view...</p>
             <p class="debug-info" v-if="!currentSvgView">No SVG view available</p>
             <p class="debug-info" v-else-if="currentSvgView.length === 0">SVG view is empty</p>
           </div>
@@ -156,7 +156,7 @@
                 </pre>
               </div>
               <div v-else class="loading-code">
-                <p>Loading {{ activeTab }} view code...</p>
+                <p class="loading-text">Loading {{ activeTab }} view code...</p>
               </div>
             </div>
           </div>
@@ -500,7 +500,7 @@
             </div>
           </div>
           <div v-else class="loading-code">
-            <p>Loading {{ activeBreakdownTab }} breakdown...</p>
+            <p class="loading-text">Loading {{ activeBreakdownTab }} breakdown...</p>
           </div>
         </div>
       </div>
@@ -580,7 +580,7 @@
             </div>
             
             <div v-if="isLoadingWearables" class="loading-wearables">
-              <p>Loading wearables...</p>
+              <p class="loading-text">Loading wearables...</p>
             </div>
             
             <div v-else-if="wearablesError" class="error-wearables">
@@ -642,7 +642,7 @@
                 <!-- Loading indicator for infinite scroll -->
                 <div v-if="isLoadingMoreWearables && hasMoreWearables" class="loading-more-wearables">
                   <div class="loading-spinner-small"></div>
-                  <p>Loading more wearables...</p>
+                  <p class="loading-text">Loading more wearables...</p>
                 </div>
               </div>
               
@@ -5120,6 +5120,10 @@ async function generatePreviewSvgs() {
   @apply flex flex-col items-center justify-center py-12 gap-4;
 }
 
+.loading-text {
+  @apply text-blue-600 dark:text-blue-400 text-lg font-medium;
+}
+
 .loading-spinner {
   @apply w-12 h-12 border-4 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin;
 }
@@ -5145,7 +5149,7 @@ async function generatePreviewSvgs() {
 }
 
 .gotchi-name {
-  @apply text-gray-800 dark:text-gray-100;
+  @apply text-blue-600 dark:text-blue-400;
 }
 
 .stats-grid {
@@ -5189,7 +5193,7 @@ async function generatePreviewSvgs() {
 }
 
 .section-title {
-  @apply text-2xl font-bold text-gray-800 dark:text-gray-100;
+  @apply text-2xl font-bold text-blue-600 dark:text-blue-400;
 }
 
 .view-controls {
@@ -5219,6 +5223,10 @@ async function generatePreviewSvgs() {
   @apply absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 flex flex-col items-center justify-center gap-2 z-10 rounded-lg;
 }
 
+.loading-overlay .loading-text {
+  @apply text-blue-600 dark:text-blue-400;
+}
+
 .loading-spinner-small {
   @apply w-8 h-8 border-2 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin;
 }
@@ -5226,6 +5234,10 @@ async function generatePreviewSvgs() {
 .svg-loading-fallback {
   @apply flex flex-col items-center justify-center gap-4 p-8 bg-gray-50 dark:bg-gray-700 rounded-lg border-2 border-gray-200 dark:border-gray-600;
   min-height: 300px;
+}
+
+.svg-loading-fallback .loading-text {
+  @apply text-blue-600 dark:text-blue-400;
 }
 
 .debug-info {
@@ -5375,7 +5387,7 @@ async function generatePreviewSvgs() {
 }
 
 .section-subtitle {
-  @apply text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4;
+  @apply text-xl font-semibold text-blue-600 dark:text-blue-400 mb-4;
 }
 
 .svg-tabs {
@@ -5402,7 +5414,11 @@ async function generatePreviewSvgs() {
 }
 
 .loading-code {
-  @apply flex items-center justify-center py-8 text-gray-500 dark:text-gray-400;
+  @apply flex items-center justify-center py-8;
+}
+
+.loading-code .loading-text {
+  @apply text-blue-600 dark:text-blue-400;
 }
 
 .breakdown-section {
@@ -5428,7 +5444,7 @@ async function generatePreviewSvgs() {
 }
 
 .category-title {
-  @apply text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3;
+  @apply text-lg font-semibold text-blue-600 dark:text-blue-400 mb-3;
 }
 
 .category-list {
@@ -5654,7 +5670,7 @@ async function generatePreviewSvgs() {
 }
 
 .panel-header h3 {
-  @apply text-lg font-semibold text-gray-800 dark:text-gray-100;
+  @apply text-lg font-semibold text-blue-600 dark:text-blue-400;
 }
 
 .panel-close-btn {
@@ -5717,7 +5733,7 @@ async function generatePreviewSvgs() {
 }
 
 .selected-wearables-summary h4 {
-  @apply font-semibold text-gray-800 dark:text-gray-100 mb-3;
+  @apply font-semibold text-blue-600 dark:text-blue-400 mb-3;
 }
 
 .equipped-list {
@@ -5759,16 +5775,24 @@ async function generatePreviewSvgs() {
 }
 
 .browser-header h4 {
-  @apply font-semibold text-gray-800 dark:text-gray-100;
+  @apply font-semibold text-blue-600 dark:text-blue-400;
 }
 
 .loading-wearables,
 .error-wearables {
-  @apply p-4 text-center text-gray-500 dark:text-gray-400;
+  @apply p-4 text-center;
+}
+
+.loading-wearables .loading-text {
+  @apply text-blue-600 dark:text-blue-400;
 }
 
 .loading-more-wearables {
-  @apply col-span-2 flex flex-col items-center justify-center gap-2 p-4 text-gray-500 dark:text-gray-400;
+  @apply col-span-2 flex flex-col items-center justify-center gap-2 p-4;
+}
+
+.loading-more-wearables .loading-text {
+  @apply text-blue-600 dark:text-blue-400;
 }
 
 .fallback-note {

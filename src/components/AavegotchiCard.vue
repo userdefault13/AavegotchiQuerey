@@ -130,11 +130,11 @@ onUnmounted(() => {
 }
 
 .gotchi-id {
-  @apply text-lg font-bold text-gray-800 dark:text-gray-100;
+  @apply text-lg font-bold text-blue-600 dark:text-blue-400;
 }
 
 .gotchi-name {
-  @apply text-sm text-gray-600 dark:text-gray-300 truncate;
+  @apply text-sm text-blue-600 dark:text-blue-400 truncate;
 }
 
 .card-image {

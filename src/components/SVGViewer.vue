@@ -9,7 +9,7 @@
     ></div>
     <div v-else class="svg-placeholder">
       <div class="loading-spinner"></div>
-      <p>Loading SVG...</p>
+      <p class="loading-text">Loading SVG...</p>
     </div>
     <button 
       @click="copySVG" 
@@ -151,6 +151,10 @@ async function copySVG() {
 
 .loading-spinner {
   @apply w-8 h-8 border-4 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin;
+}
+
+.loading-text {
+  @apply text-blue-600 dark:text-blue-400 text-lg font-medium;
 }
 
 .copy-btn {

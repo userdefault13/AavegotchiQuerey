@@ -2,7 +2,7 @@
   <div class="gallery-container">
     <div v-if="isLoadingTokens" class="loading-container">
       <div class="loading-spinner"></div>
-      <p>Loading your Aavegotchis...</p>
+      <p class="loading-text">Loading your Aavegotchis...</p>
     </div>
 
     <div v-else-if="tokensError" class="error-container">
@@ -127,6 +127,10 @@ function handleSelect(tokenId) {
   @apply flex flex-col items-center justify-center py-12 gap-4;
 }
 
+.loading-text {
+  @apply text-blue-600 dark:text-blue-400 text-lg font-medium;
+}
+
 .loading-spinner {
   @apply w-12 h-12 border-4 border-gray-300 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin;
 }
@@ -136,7 +140,7 @@ function handleSelect(tokenId) {
 }
 
 .empty-text {
-  @apply text-gray-500 dark:text-gray-400 text-lg;
+  @apply text-blue-600 dark:text-blue-400 text-lg;
 }
 
 .gallery-grid {

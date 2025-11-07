@@ -2,7 +2,7 @@
   <div id="app" class="min-h-screen">
       <header class="bg-white dark:bg-gray-800 shadow-md transition-colors">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Aavegotchi Viewer</h1>
+          <h1 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Aavegotchi Viewer</h1>
           <div class="flex items-center gap-4">
             <!-- Theme Toggle Button -->
             <button
@@ -19,7 +19,7 @@
             </button>
             
             <div v-if="connected" class="flex items-center gap-3">
-              <span class="text-sm text-gray-600 dark:text-gray-300">{{ shortAddress }}</span>
+              <span class="text-sm text-blue-600 dark:text-blue-400">{{ shortAddress }}</span>
               <button 
                 @click="disconnect" 
                 class="px-4 py-2 bg-red-500 dark:bg-red-600 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-colors"
@@ -35,8 +35,8 @@
       <main class="container mx-auto py-6">
         <div v-if="!connected" class="text-center py-12">
           <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg p-8 shadow-md transition-colors">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">Connect Your Wallet</h2>
-            <p class="text-gray-600 dark:text-gray-300 mb-6">Connect your wallet to view your Aavegotchis on Base chain.</p>
+            <h2 class="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-400">Connect Your Wallet</h2>
+            <p class="text-blue-600 dark:text-blue-400 mb-6">Connect your wallet to view your Aavegotchis on Base chain.</p>
             <appkit-button />
           </div>
         </div>
