@@ -510,14 +510,44 @@
                       <span class="wearable-slot">{{ wearable.slotName }}</span>
                       <span v-if="wearable.wearableId !== 0" class="wearable-id">ID: {{ wearable.wearableId }}</span>
                       <span v-else class="wearable-empty">Not equipped</span>
+                      <span v-if="wearable.elements.length > 0" class="category-count">{{ wearable.elements.length }} element{{ wearable.elements.length !== 1 ? 's' : '' }}</span>
                     </div>
                     <div v-if="wearable.elements.length > 0" class="wearable-details">
                       <div class="wearable-info">
                         <span>Class: {{ wearable.className }}</span>
-                        <span>{{ wearable.elements.length }} element{{ wearable.elements.length !== 1 ? 's' : '' }}</span>
+                      </div>
+                      <!-- Show preview thumbnails for all elements at wearable level -->
+                      <div class="wearable-preview-grid">
+                        <div 
+                          v-for="(element, elemIdx) in wearable.elements" 
+                          :key="elemIdx"
+                          class="wearable-element-preview"
+                        >
+                          <div 
+                            v-if="element.svgCode"
+                            class="element-thumbnail-wrapper"
+                            @mouseenter="showPreview = `wearable-${activeBreakdownTab}-${wearable.slot}-${elemIdx}`"
+                            @mouseleave="showPreview = null"
+                          >
+                            <div 
+                              class="element-thumbnail"
+                              v-html="element.svgCode"
+                            ></div>
+                            <div 
+                              v-if="showPreview === `wearable-${activeBreakdownTab}-${wearable.slot}-${elemIdx}`"
+                              class="element-preview-popup"
+                            >
+                              <div 
+                                class="preview-svg" 
+                                v-html="element.svgCode"
+                                :data-preview-id="`wearable-${activeBreakdownTab}-${wearable.slot}-${elemIdx}`"
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                       <details class="wearable-elements">
-                        <summary class="wearable-summary">Show elements</summary>
+                        <summary class="wearable-summary">Show element details</summary>
                         <div class="element-list">
                           <div 
                             v-for="(element, elemIdx) in wearable.elements" 
@@ -1690,6 +1720,56 @@ async function parseAllViewsMetadata() {
   await parseAllViewsBreakdown()
 }
 
+// Extract wearable for a single slot from the actual gotchi SVGs (not previewSideAavegotchi)
+// This extracts from the gotchi's actual equipped wearables
+async function extractWearableForSlot(wearableId, slot) {
+  if (!gotchiData.value || !wearableId || wearableId === 0) {
+    console.warn(`extractWearableForSlot: Invalid parameters - wearableId: ${wearableId}, slot: ${slot}`)
+    return { Front: [], Left: [], Right: [], Back: [] }
+  }
+  
+  try {
+    console.log(`Extracting wearable ${wearableId} from slot ${slot} from actual gotchi SVGs...`)
+    
+    const extractedByView = {
+      Front: [],
+      Left: [],
+      Right: [],
+      Back: []
+    }
+    
+    // Extract from Front view
+    if (svgViews.value) {
+      const extracted = extractWearablesFromPreviewSvg(svgViews.value, 'Front', gotchiData.value.equippedWearables || [])
+      if (extracted[slot] && extracted[slot].length > 0) {
+        extractedByView.Front = extracted[slot]
+      }
+    }
+    
+    // Extract from side views
+    for (const [viewName, svgString] of Object.entries(sideViews.value)) {
+      if (svgString) {
+        const extracted = extractWearablesFromPreviewSvg(svgString, viewName, gotchiData.value.equippedWearables || [])
+        if (extracted[slot] && extracted[slot].length > 0) {
+          extractedByView[viewName] = extracted[slot]
+        }
+      }
+    }
+    
+    console.log(`Extracted wearable ${wearableId} from slot ${slot}:`, {
+      Front: extractedByView.Front.length,
+      Left: extractedByView.Left.length,
+      Right: extractedByView.Right.length,
+      Back: extractedByView.Back.length
+    })
+    
+    return extractedByView
+  } catch (error) {
+    console.error(`Error extracting wearable ${wearableId} from slot ${slot}:`, error)
+    return { Front: [], Left: [], Right: [], Back: [] }
+  }
+}
+
 // Parse parts and wearables breakdown for all views
 // NEW APPROACH: Use clean base Gotchi parts extracted from previewSideAavegotchi with neutral traits
 async function parseAllViewsBreakdown() {
@@ -2202,7 +2282,123 @@ async function parseAllViewsBreakdown() {
         wearables: []
       }
     }
+    // Ensure wearables array exists
+    if (!breakdown[viewName].wearables) {
+      breakdown[viewName].wearables = []
+    }
   }
+  
+  // Extract wearables for each equipped slot
+  console.log('Extracting wearables for equipped slots...')
+  const wearableSlotMap = {
+    0: { name: 'Body', className: 'wearable-body' },
+    1: { name: 'Face', className: 'wearable-face' },
+    2: { name: 'Eyes', className: 'wearable-eyes' },
+    3: { name: 'Head', className: 'wearable-head' },
+    4: { name: 'Left Hand', className: 'wearable-hand wearable-hand-left' },
+    5: { name: 'Right Hand', className: 'wearable-hand wearable-hand-right' },
+    6: { name: 'Pet', className: 'wearable-pet' },
+    7: { name: 'Background', className: 'wearable-bg' }
+  }
+  
+  // Extract wearables for each equipped slot
+  for (let slot = 0; slot < equippedWearables.length; slot++) {
+    const wearableId = equippedWearables[slot]
+    
+    // Skip empty slots (slot 0-7 are the main wearable slots)
+    if (!wearableId || wearableId === 0 || slot > 7) {
+      continue
+    }
+    
+    const slotInfo = wearableSlotMap[slot]
+    if (!slotInfo) {
+      console.warn(`No slot info found for slot ${slot}`)
+      continue
+    }
+    
+    try {
+      console.log(`Extracting wearable ${wearableId} from slot ${slot} (${slotInfo.name})...`)
+      
+      // Extract wearable elements from all 4 views
+      const extractedByView = await extractWearableForSlot(wearableId, slot)
+      
+      // Process each view and create element objects
+      for (const viewName of availableViews.value) {
+        if (!breakdown[viewName]) continue
+        
+        const viewElements = extractedByView[viewName] || []
+        
+        if (viewElements.length > 0) {
+          // Format each extracted element using createElementFromSvg
+          const formattedElements = viewElements.map((extractedItem, idx) => {
+            const svgString = extractedItem.svg || ''
+            if (!svgString) return null
+            
+            // Wrap the SVG string in a proper SVG wrapper if needed
+            let wrappedSvg = svgString
+            if (!svgString.trim().startsWith('<svg')) {
+              // Wrap in SVG element with viewBox
+              wrappedSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">${svgString}</svg>`
+            }
+            
+            // Create element object using createElementFromSvg helper
+            const element = createElementFromSvg(wrappedSvg, `${slotInfo.name} (${viewName})`, viewName)
+            
+            if (element) {
+              // Add wearable-specific metadata
+              element.isWearable = true
+              element.wearableClasses = extractedItem.classes ? extractedItem.classes.split(' ').filter(c => c) : []
+              return element
+            }
+            return null
+          }).filter(el => el !== null)
+          
+          // Create or update wearable object for this slot in this view
+          let wearableObj = breakdown[viewName].wearables.find(w => w.slot === slot)
+          
+          if (!wearableObj) {
+            // Create new wearable object
+            wearableObj = {
+              slot: slot,
+              slotName: slotInfo.name,
+              className: slotInfo.className,
+              wearableId: wearableId,
+              elements: []
+            }
+            breakdown[viewName].wearables.push(wearableObj)
+          }
+          
+          // Set elements for this view
+          wearableObj.elements = formattedElements
+          
+          console.log(`  [${viewName}] Added ${formattedElements.length} element(s) for wearable ${wearableId} (slot ${slot})`)
+        } else {
+          // Ensure wearable object exists even if no elements found
+          let wearableObj = breakdown[viewName].wearables.find(w => w.slot === slot)
+          if (!wearableObj) {
+            wearableObj = {
+              slot: slot,
+              slotName: slotInfo.name,
+              className: slotInfo.className,
+              wearableId: wearableId,
+              elements: []
+            }
+            breakdown[viewName].wearables.push(wearableObj)
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Error extracting wearable ${wearableId} from slot ${slot}:`, error)
+      // Continue with other wearables even if one fails
+    }
+  }
+  
+  console.log('Wearables extraction completed. Summary:', {
+    Front: breakdown['Front']?.wearables?.length || 0,
+    Left: breakdown['Left']?.wearables?.length || 0,
+    Right: breakdown['Right']?.wearables?.length || 0,
+    Back: breakdown['Back']?.wearables?.length || 0
+  })
   
     breakdownByView.value = breakdown
     console.log('Parsed breakdown for all views:', Object.keys(breakdown))
@@ -6858,6 +7054,14 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 .wearable-info {
   @apply flex items-center gap-3 text-sm mb-2;
   color: #ffffff;
+}
+
+.wearable-preview-grid {
+  @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-3;
+}
+
+.wearable-element-preview {
+  @apply flex items-center justify-center;
 }
 
 .wearable-elements {
