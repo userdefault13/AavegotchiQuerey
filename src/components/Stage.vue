@@ -91,11 +91,26 @@
             <!-- Preview Window -->
             <div class="dressing-room-preview">
               <h4 class="preview-title">Preview</h4>
+              
+              <!-- View Controls -->
+              <div class="dressing-room-view-controls">
+                <button
+                  v-for="(view, index) in dressingRoomAvailableViews"
+                  :key="view"
+                  @click="dressingRoomViewIndex = index"
+                  class="view-control-btn"
+                  :class="{ active: dressingRoomViewIndex === index }"
+                  :disabled="isLoadingPreview"
+                >
+                  {{ view }}
+                </button>
+              </div>
+              
               <div class="preview-container">
                 <SVGViewer 
                   v-if="dressingRoomPreviewSvg && dressingRoomPreviewSvg.length > 0"
                   :svg-string="dressingRoomPreviewSvg" 
-                  :view-name="currentViewName"
+                  :view-name="dressingRoomViewName"
                   :gotchi-id="props.gotchiId"
                   :data-attribute="'data-gotchi-dressing-room-preview'"
                 />
@@ -803,6 +818,8 @@ const svgMetadataByView = ref({})
 const activeBreakdownTab = ref('Front')
 const breakdownByView = ref({})
 const showPreview = ref(null)
+// Dressing room view index (separate from main view)
+const dressingRoomViewIndex = ref(0)
 
 // Dressing Room Mode State
 const isDressingRoomMode = ref(false)
@@ -962,24 +979,29 @@ watch([previewWearables, isDressingRoomMode], async ([wearables, isActive]) => {
 
 // Generate initial preview when entering dressing room mode
 watch(isDressingRoomMode, async (isActive) => {
-  if (isActive && gotchiData.value && (!previewSvgs.value || Object.keys(previewSvgs.value).length === 0)) {
-    // Wait for wearables to finish loading first to avoid rate limits
-    if (isLoadingWearables.value) {
-      // Wait for wearables to finish loading
-      const checkLoading = setInterval(() => {
-        if (!isLoadingWearables.value) {
-          clearInterval(checkLoading)
-          // Additional delay after wearables finish to avoid rate limits
-          setTimeout(() => {
-            generatePreviewSvgs()
-          }, 2000) // 2 second delay after wearables finish
-        }
-      }, 500)
-    } else {
-      // Generate initial preview after a delay
-      setTimeout(() => {
-        generatePreviewSvgs()
-      }, 1000)
+  if (isActive) {
+    // Reset dressing room view to Front when opening
+    dressingRoomViewIndex.value = 0
+    
+    if (gotchiData.value && (!previewSvgs.value || Object.keys(previewSvgs.value).length === 0)) {
+      // Wait for wearables to finish loading first to avoid rate limits
+      if (isLoadingWearables.value) {
+        // Wait for wearables to finish loading
+        const checkLoading = setInterval(() => {
+          if (!isLoadingWearables.value) {
+            clearInterval(checkLoading)
+            // Additional delay after wearables finish to avoid rate limits
+            setTimeout(() => {
+              generatePreviewSvgs()
+            }, 2000) // 2 second delay after wearables finish
+          }
+        }, 500)
+      } else {
+        // Generate initial preview after a delay
+        setTimeout(() => {
+          generatePreviewSvgs()
+        }, 1000)
+      }
     }
   }
 })
@@ -5395,14 +5417,6 @@ function extractWearablesFromPreviewSvg(svgString, viewName, equippedWearables) 
       })
     })
     
-    // Debug logging
-    if (Object.keys(extracted).length > 0) {
-      const sleeveCount = Object.values(extracted).flat().filter(w => w.isSleeve).length
-      if (sleeveCount > 0) {
-        console.log(`[extractWearablesFromPreviewSvg] Extracted ${sleeveCount} sleeve(s) for ${viewName}`)
-      }
-    }
-    
     return extracted
   } catch (error) {
     console.warn(`Failed to extract wearables from preview SVG for ${viewName}:`, error)
@@ -5594,6 +5608,52 @@ function buildSvgFromParts(viewName = 'Front') {
       }
     }
     
+    // For Back view, add hand wearables right after Body part so they appear behind the body
+    if (partName === 'Body' && viewName === 'Back') {
+      const handWearableSlots = [4, 5] // Left Hand, Right Hand
+      handWearableSlots.forEach(slot => {
+        if (hasExtractedWearables && extractedWearables[slot]) {
+          extractedWearables[slot].forEach(wearable => {
+            if (!wearable.isSleeve) {
+              partsContent.push(wearable.svg)
+            }
+          })
+        } else {
+          const wearableId = currentWearables[slot]
+          if (wearableId && wearableId !== 0 && svgMap[wearableId]) {
+            try {
+              const parser = new DOMParser()
+              const doc = parser.parseFromString(svgMap[wearableId], 'image/svg+xml')
+              const svgElement = doc.querySelector('svg')
+              if (svgElement) {
+                const nestedSvgs = svgElement.querySelectorAll('svg[x], svg[y]')
+                if (nestedSvgs.length > 0) {
+                  const children = Array.from(svgElement.children)
+                  children.forEach(child => {
+                    if (child.tagName !== 'style') {
+                      partsContent.push(new XMLSerializer().serializeToString(child))
+                    }
+                  })
+                } else {
+                  const children = Array.from(svgElement.children)
+                  let wearableContent = ''
+                  children.forEach(child => {
+                    if (child.tagName !== 'style') {
+                      wearableContent += new XMLSerializer().serializeToString(child)
+                    }
+                  })
+                  const wrappedContent = wrapWearableWithPositioning(wearableContent, slot, viewName)
+                  partsContent.push(wrappedContent)
+                }
+              }
+            } catch (error) {
+              console.warn(`Failed to parse hand wearable ${wearableId} SVG:`, error)
+            }
+          }
+        }
+      })
+    }
+    
     // Add Background wearable (slot 7) right after base Background
     if (partName === 'Background') {
       // Check if we have extracted wearables for this view
@@ -5652,6 +5712,16 @@ function buildSvgFromParts(viewName = 'Front') {
   const wearableSlotsOrder = [0, 1, 2, 3, 4, 5, 6] // Body, Face, Eyes, Head, Left Hand, Right Hand, Pet
   
   wearableSlotsOrder.forEach(slot => {
+    // Skip hand wearables for Left view (display:none)
+    if (viewName === 'Left' && (slot === 4 || slot === 5)) {
+      return
+    }
+    
+    // Skip hand wearables for Back view (already added above right after Body part)
+    if (viewName === 'Back' && (slot === 4 || slot === 5)) {
+      return
+    }
+    
     // Check if we have extracted wearables for this slot and view
     if (hasExtractedWearables && extractedWearables[slot]) {
       // Use extracted wearables (already correctly positioned)
@@ -5670,13 +5740,9 @@ function buildSvgFromParts(viewName = 'Front') {
             const classes = wearable.classes || ''
             const isSleevesDown = classes.includes('sleeves-down') || classes.includes('sleevesdown')
             if (hasBodyWearable && isSleevesDown) {
-              console.log(`[buildSvgFromParts] Adding sleeve (sleeves-down) for ${viewName}:`, wearable.classes)
               partsContent.push(wearable.svg)
             } else if (!hasBodyWearable) {
-              console.log(`[buildSvgFromParts] Adding sleeve (no body wearable) for ${viewName}:`, wearable.classes)
               partsContent.push(wearable.svg)
-            } else {
-              console.log(`[buildSvgFromParts] Skipping sleeve for ${viewName}:`, wearable.classes, { hasBodyWearable, isSleevesDown })
             }
           }
         })
@@ -5791,11 +5857,38 @@ function buildSvgFromParts(viewName = 'Front') {
   return fullSvg
 }
 
+// Computed property for dressing room available views
+const dressingRoomAvailableViews = computed(() => {
+  // Use available views if we have side views loaded, otherwise default to all 4 views
+  if (availableViews.value.length > 1) {
+    return availableViews.value
+  }
+  // Check if we have base parts for each view
+  const views = ['Front']
+  if (baseGotchiPartsByView.value['Left']) views.push('Left')
+  if (baseGotchiPartsByView.value['Right']) views.push('Right')
+  if (baseGotchiPartsByView.value['Back']) views.push('Back')
+  return views
+})
+
 // Computed property for dressing room preview SVG
 const dressingRoomPreviewSvg = computed(() => {
   if (!isDressingRoomMode.value) return ''
-  const viewName = availableViews.value[currentViewIndex.value] || 'Front'
+  // Use dressing room view index with available views
+  const viewName = dressingRoomAvailableViews.value[dressingRoomViewIndex.value] || dressingRoomAvailableViews.value[0] || 'Front'
   return buildSvgFromParts(viewName)
+})
+
+// Computed property for dressing room view name
+const dressingRoomViewName = computed(() => {
+  return dressingRoomAvailableViews.value[dressingRoomViewIndex.value] || dressingRoomAvailableViews.value[0] || 'Front'
+})
+
+// Ensure dressing room view index stays within bounds
+watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
+  if (views && views.length > 0 && (index < 0 || index >= views.length)) {
+    dressingRoomViewIndex.value = 0
+  }
 })
 </script>
 
@@ -6388,6 +6481,22 @@ const dressingRoomPreviewSvg = computed(() => {
 
 .preview-title {
   @apply text-lg font-semibold text-blue-600 dark:text-blue-400 mb-4;
+}
+
+.dressing-room-view-controls {
+  @apply flex gap-2 mb-4 flex-wrap;
+}
+
+.view-control-btn {
+  @apply px-4 py-2 rounded-lg font-medium text-sm transition-colors;
+  @apply bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300;
+  @apply hover:bg-gray-300 dark:hover:bg-gray-600;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.view-control-btn.active {
+  @apply bg-purple-600 dark:bg-purple-500 text-white;
+  @apply hover:bg-purple-700 dark:hover:bg-purple-600;
 }
 
 .preview-container {
