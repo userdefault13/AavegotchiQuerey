@@ -816,9 +816,6 @@ const invalidWearableSlots = ref([]) // Store slots with invalid wearable IDs
 const wearableSearch = ref('')
 const manualWearableId = ref(null)
 const wearableGridRef = ref(null)
-// Extracted wearables from previewSideAavegotchi (when it succeeds)
-// Format: { viewName: { slot: { svg: string, element: Element } } }
-const extractedWearablesByView = ref({})
 
 // Wearable slots mapping
 const wearableSlots = [
@@ -839,11 +836,11 @@ const filteredWearables = computed(() => {
   const allWearables = wearables.value || []
   
   // console.log('[filteredWearables] Computed running:', {
-  //   slot,
-  //   allWearablesCount: allWearables.length,
-  //   isArray: Array.isArray(allWearables),
-  //   searchTerm: wearableSearch.value
-  // })
+    slot,
+    allWearablesCount: allWearables.length,
+    isArray: Array.isArray(allWearables),
+    searchTerm: wearableSearch.value
+  })
   
   if (!Array.isArray(allWearables)) {
     // console.warn('[filteredWearables] wearables.value is not an array, returning empty')
@@ -886,9 +883,9 @@ function getSlotName(slot) {
 // Debug: Watch wearables to ensure they're populated
 watch(wearables, (newWearables) => {
   // console.log('Wearables changed:', newWearables?.length || 0, 'items')
-    // if (newWearables && newWearables.length > 0) {
-    //   console.log('Sample wearable:', newWearables[0])
-    // }
+  if (newWearables && newWearables.length > 0) {
+    // console.log('Sample wearable:', newWearables[0])
+  }
 }, { immediate: true })
 
 // Watch filteredWearables and verify DOM rendering (only when dressing room is open)
@@ -904,11 +901,11 @@ watch([filteredWearables, isDressingRoomMode], async ([newFiltered, isOpen]) => 
         const itemElements = gridElement.querySelectorAll('.wearable-item')
         // console.log('DOM check - Grid found:', !!gridElement)
         // console.log('DOM check - Items in DOM:', itemElements.length, 'Expected:', newFiltered.length)
-        // if (itemElements.length !== newFiltered.length) {
-        //   console.warn('⚠️ Mismatch: Expected', newFiltered.length, 'items but found', itemElements.length, 'in DOM')
-        // } else {
-        //   console.log('✅ All items rendered correctly in DOM')
-        // }
+        if (itemElements.length !== newFiltered.length) {
+          // console.warn('⚠️ Mismatch: Expected', newFiltered.length, 'items but found', itemElements.length, 'in DOM')
+        } else {
+          // console.log('✅ All items rendered correctly in DOM')
+        }
       } else {
         // console.warn('⚠️ Grid element not found in DOM (panel may not be open yet)')
       }
@@ -997,13 +994,13 @@ const currentSvgView = computed(() => {
   // Otherwise use normal SVGs
   const viewName = availableViews.value[currentViewIndex.value] || 'Front'
   // console.log('currentSvgView computed:', {
-  //   viewName,
-  //   currentViewIndex: currentViewIndex.value,
-  //   hasSvgViews: !!svgViews.value,
-  //   svgViewsLength: svgViews.value?.length,
-  //   sideViews: Object.keys(sideViews.value),
-  //   requestedSideView: sideViews.value[viewName] ? 'found' : 'not found'
-  // })
+    viewName,
+    currentViewIndex: currentViewIndex.value,
+    hasSvgViews: !!svgViews.value,
+    svgViewsLength: svgViews.value?.length,
+    sideViews: Object.keys(sideViews.value),
+    requestedSideView: sideViews.value[viewName] ? 'found' : 'not found'
+  })
   
   if (viewName === 'Front') {
     const frontView = svgViews.value
@@ -1126,66 +1123,23 @@ async function fetchSideViews() {
         const view1IsLeft = view1.includes('bodyleft') || view1.includes('gotchi-bodyleft')
         const view2IsLeft = view2.includes('bodyleft') || view2.includes('gotchi-bodyleft')
         
-        let leftIndex = 1
-        let rightIndex = 2
-        
         if (view1IsLeft && !view2IsLeft) {
           // Standard order: [front, left, right, back]
           newSideViews['Left'] = sidesArray[1]
           newSideViews['Right'] = sidesArray[2]
-          leftIndex = 1
-          rightIndex = 2
         } else if (view2IsLeft && !view1IsLeft) {
           // Swapped order: [front, right, left, back]
           newSideViews['Left'] = sidesArray[2]
           newSideViews['Right'] = sidesArray[1]
-          leftIndex = 2
-          rightIndex = 1
         } else {
           // Can't determine, use default but log warning
           console.warn('Could not determine left/right view order, using default')
           newSideViews['Left'] = sidesArray[1]
           newSideViews['Right'] = sidesArray[2]
-          leftIndex = 1
-          rightIndex = 2
         }
         
         newSideViews['Back'] = sidesArray[3]
         newViews.push('Left', 'Right', 'Back')
-        
-        // Extract wearables from previewSideAavegotchi result after determining view order
-        // This gives us correctly positioned wearables directly from the contract
-        const extractedWearables = {}
-        const viewMap = {
-          0: 'Front',
-          [leftIndex]: 'Left',
-          [rightIndex]: 'Right',
-          3: 'Back'
-        }
-        
-        // Also extract from Front view (index 0)
-        if (sidesArray[0]) {
-          const frontWearables = extractWearablesFromPreviewSvg(sidesArray[0], 'Front', gotchiData.value.equippedWearables)
-          if (Object.keys(frontWearables).length > 0) {
-            extractedWearables['Front'] = frontWearables
-          }
-        }
-        
-        sidesArray.forEach((svgString, index) => {
-          const viewName = viewMap[index]
-          if (viewName && svgString && index !== 0) { // Skip index 0, already handled above
-            const wearables = extractWearablesFromPreviewSvg(svgString, viewName, gotchiData.value.equippedWearables)
-            if (Object.keys(wearables).length > 0) {
-              extractedWearables[viewName] = wearables
-            }
-          }
-        })
-        
-        // Store extracted wearables
-        if (Object.keys(extractedWearables).length > 0) {
-          extractedWearablesByView.value = extractedWearables
-          console.log('Extracted wearables from previewSideAavegotchi:', extractedWearables)
-        }
       } else if (sidesArray && sidesArray.length > 0) {
         // Handle partial arrays - try to detect order
         if (sidesArray.length >= 2) {
@@ -1257,62 +1211,6 @@ async function fetchSideViews() {
         }
         
         console.log('Side views from getAavegotchiSideSvgs:', sidesArray)
-        
-        // Extract wearables from getAavegotchiSideSvgs result (fallback)
-        // This also contains wearables, so we should extract them
-        if (sidesArray && sidesArray.length >= 4) {
-          const viewNames = ['Front', 'Left', 'Right', 'Back']
-          const extractedWearables = {}
-          
-          // Try to determine left/right order (same logic as below)
-          const view1 = (sidesArray[1] || '').toLowerCase()
-          const view2 = (sidesArray[2] || '').toLowerCase()
-          const view1IsLeft = view1.includes('bodyleft') || view1.includes('gotchi-bodyleft')
-          const view2IsLeft = view2.includes('bodyleft') || view2.includes('gotchi-bodyleft')
-          
-          let leftIndex = 1
-          let rightIndex = 2
-          
-          if (view1IsLeft && !view2IsLeft) {
-            leftIndex = 1
-            rightIndex = 2
-          } else if (view2IsLeft && !view1IsLeft) {
-            leftIndex = 2
-            rightIndex = 1
-          }
-          
-          const viewMap = {
-            0: 'Front',
-            [leftIndex]: 'Left',
-            [rightIndex]: 'Right',
-            3: 'Back'
-          }
-          
-          // Extract from Front view (index 0)
-          if (sidesArray[0]) {
-            const frontWearables = extractWearablesFromPreviewSvg(sidesArray[0], 'Front', gotchiData.value.equippedWearables)
-            if (Object.keys(frontWearables).length > 0) {
-              extractedWearables['Front'] = frontWearables
-            }
-          }
-          
-          // Extract from side views
-          sidesArray.forEach((svgString, index) => {
-            const viewName = viewMap[index]
-            if (viewName && svgString && index !== 0) {
-              const wearables = extractWearablesFromPreviewSvg(svgString, viewName, gotchiData.value.equippedWearables)
-              if (Object.keys(wearables).length > 0) {
-                extractedWearables[viewName] = wearables
-              }
-            }
-          })
-          
-          // Store extracted wearables
-          if (Object.keys(extractedWearables).length > 0) {
-            extractedWearablesByView.value = extractedWearables
-            console.log('Extracted wearables from getAavegotchiSideSvgs (fallback):', extractedWearables)
-          }
-        }
         
         // Parse side views array - format: [front, left, right, back]
         if (sidesArray && sidesArray.length >= 4) {
@@ -5095,32 +4993,6 @@ async function generatePreviewSvgs() {
       newPreviewSvgs['Front'] = previewArray[0] || ''
     }
     
-    // Extract wearables from previewSideAavegotchi result for dressing room preview
-    // This gives us correctly positioned wearables for the preview
-    if (previewArray.length >= 4) {
-      const extractedWearables = {}
-      const viewNames = ['Front', 'Left', 'Right', 'Back']
-      
-      previewArray.forEach((svgString, index) => {
-        const viewName = viewNames[index]
-        if (viewName && svgString) {
-          const wearables = extractWearablesFromPreviewSvg(svgString, viewName, validatedWearablesWithCheck)
-          if (Object.keys(wearables).length > 0) {
-            extractedWearables[viewName] = wearables
-          }
-        }
-      })
-      
-      // Update extracted wearables for preview (merge with existing)
-      if (Object.keys(extractedWearables).length > 0) {
-        extractedWearablesByView.value = {
-          ...extractedWearablesByView.value,
-          ...extractedWearables
-        }
-        console.log('Extracted wearables from previewSideAavegotchi (preview):', extractedWearables)
-      }
-    }
-    
     previewSvgs.value = newPreviewSvgs
     
     // Apply styles to preview SVGs
@@ -5151,10 +5023,8 @@ async function generatePreviewSvgs() {
     console.error('Preview wearables array:', previewWearables.value)
     console.error('Original equipped wearables:', gotchiData.value?.equippedWearables)
     
-    // Handle rate limiting errors (429) - but NOT "SVG type or id does not exist" errors
-    if (error.message?.includes('SVG type or id does not exist')) {
-      // This is a contract error, not a rate limit - handle it separately below
-    } else if (error.message?.includes('429') || error.message?.includes('compute units per second') || error.code === 429) {
+    // Handle rate limiting errors (429)
+    if (error.message?.includes('429') || error.message?.includes('compute units per second') || error.code === 429) {
       previewError.value = 'Rate limit exceeded: Too many requests to the blockchain. Retrying automatically in a few seconds...'
       previewSvgs.value = {} // Clear preview and show original gotchi
       
@@ -5190,44 +5060,8 @@ async function generatePreviewSvgs() {
     
     // Show user-friendly error message for invalid wearable IDs
     if (error.message && error.message.includes('SVG type or id does not exist')) {
-      // This error means previewSideAavegotchi failed, likely due to hauntId or contract limitation
-      // Fall back to building preview manually using buildSvgFromParts
-      console.warn('previewSideAavegotchi failed with "SVG type or id does not exist". Falling back to manual preview building.')
-      
-      try {
-        // Build preview manually using buildSvgFromParts for each view
-        const manualPreviewSvgs = {}
-        const views = ['Front', 'Left', 'Right', 'Back']
-        
-        for (const viewName of views) {
-          const builtSvg = buildSvgFromParts(viewName)
-          if (builtSvg) {
-            manualPreviewSvgs[viewName] = builtSvg
-          }
-        }
-        
-        if (Object.keys(manualPreviewSvgs).length > 0) {
-          previewSvgs.value = manualPreviewSvgs
-          
-          // Apply styles to preview SVGs
-          await nextTick()
-          Object.values(manualPreviewSvgs).forEach(svg => {
-            if (svg) {
-              applySvgStyles(svg)
-            }
-          })
-          
-          console.log('Built preview manually using buildSvgFromParts:', Object.keys(manualPreviewSvgs))
-          previewError.value = null // Clear any error
-          return // Success - exit early
-        }
-      } catch (buildError) {
-        console.error('Failed to build preview manually:', buildError)
-        // Fall through to show error
-      }
-      
-      // If manual building also failed, show error
       // Try to identify which wearable ID caused the issue
+      // Check all non-zero wearables that differ from original, or all non-zero if no originals
       const invalidWearables = []
       const originalWearables = gotchiData.value?.equippedWearables || []
       
@@ -5286,130 +5120,6 @@ async function generatePreviewSvgs() {
   }
 }
 
-// Extract wearables from previewSideAavegotchi SVG result
-// This extracts wearable elements that are already correctly positioned by the contract
-function extractWearablesFromPreviewSvg(svgString, viewName, equippedWearables) {
-  if (!svgString || typeof svgString !== 'string') return {}
-  
-  try {
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(svgString, 'image/svg+xml')
-    const svgElement = doc.querySelector('svg')
-    if (!svgElement) return {}
-    
-    const extracted = {}
-    const serializer = new XMLSerializer()
-    
-    // Find all elements with gotchi-wearable class
-    const wearableElements = svgElement.querySelectorAll('.gotchi-wearable, [class*="gotchi-wearable"]')
-    
-    // Also find sleeve elements that might be nested inside wearable groups
-    const sleeveElements = svgElement.querySelectorAll('.gotchi-sleeves, [class*="gotchi-sleeves"], [class*="sleeve"]')
-    
-    // Process regular wearables first
-    wearableElements.forEach(element => {
-      const classes = (element.getAttribute('class') || '').toLowerCase()
-      
-      // Skip if this is a sleeve element (we'll process those separately)
-      const isSleeve = classes.includes('gotchi-sleeves') || classes.includes('sleeve')
-      if (isSleeve) return
-      
-      // Map class names to slots
-      let slot = null
-      if (classes.includes('wearable-body')) slot = 0
-      else if (classes.includes('wearable-face')) slot = 1
-      else if (classes.includes('wearable-eyes')) slot = 2
-      else if (classes.includes('wearable-head')) slot = 3
-      else if (classes.includes('wearable-hand-left') || (classes.includes('wearable-hand') && classes.includes('left'))) slot = 4
-      else if (classes.includes('wearable-hand-right') || (classes.includes('wearable-hand') && !classes.includes('left'))) slot = 5
-      else if (classes.includes('wearable-pet')) slot = 6
-      else if (classes.includes('wearable-bg')) slot = 7
-      
-      if (slot !== null) {
-        // Regular wearable (not a sleeve)
-        // Extract the element with its positioning
-        // Check if it's wrapped in an SVG with x/y attributes
-        let parentSvg = element.closest('svg[x], svg[y]')
-        let wearableSvg = ''
-        
-        if (parentSvg && (parentSvg.hasAttribute('x') || parentSvg.hasAttribute('y'))) {
-          // Element is already positioned in a nested SVG
-          // Extract the entire nested SVG structure
-          const x = parentSvg.getAttribute('x') || '0'
-          const y = parentSvg.getAttribute('y') || '0'
-          
-          // Get the group containing the wearable
-          const wearableGroup = element.closest('g.gotchi-wearable') || element
-          wearableSvg = serializer.serializeToString(wearableGroup)
-        } else {
-          // Element doesn't have explicit positioning, serialize as-is
-          wearableSvg = serializer.serializeToString(element)
-        }
-        
-        if (!extracted[slot]) {
-          extracted[slot] = []
-        }
-        
-        extracted[slot].push({
-          svg: wearableSvg,
-          element: element.cloneNode(true),
-          classes: classes
-        })
-      }
-    })
-    
-    // Process sleeve elements separately
-    sleeveElements.forEach(element => {
-      const classes = (element.getAttribute('class') || '').toLowerCase()
-      
-      // Sleeves are always part of body wearable (slot 0)
-      // Extract the element with its positioning
-      let parentSvg = element.closest('svg[x], svg[y]')
-      let sleeveSvg = ''
-      
-      if (parentSvg && (parentSvg.hasAttribute('x') || parentSvg.hasAttribute('y'))) {
-        // Element is already positioned in a nested SVG
-        // Serialize the sleeve element itself
-        sleeveSvg = serializer.serializeToString(element)
-        
-        // Wrap in the same positioning SVG if needed
-        const x = parentSvg.getAttribute('x') || '0'
-        const y = parentSvg.getAttribute('y') || '0'
-        sleeveSvg = `<g class="gotchi-wearable wearable-sleeves"><svg x="${x}" y="${y}">${sleeveSvg}</svg></g>`
-      } else {
-        // Element doesn't have explicit positioning, serialize as-is
-        sleeveSvg = serializer.serializeToString(element)
-        // Still wrap it for consistency
-        sleeveSvg = `<g class="gotchi-wearable wearable-sleeves">${sleeveSvg}</g>`
-      }
-      
-      if (!extracted[0]) {
-        extracted[0] = []
-      }
-      
-      extracted[0].push({
-        svg: sleeveSvg,
-        element: element.cloneNode(true),
-        classes: classes,
-        isSleeve: true
-      })
-    })
-    
-    // Debug logging
-    if (Object.keys(extracted).length > 0) {
-      const sleeveCount = Object.values(extracted).flat().filter(w => w.isSleeve).length
-      if (sleeveCount > 0) {
-        console.log(`[extractWearablesFromPreviewSvg] Extracted ${sleeveCount} sleeve(s) for ${viewName}`)
-      }
-    }
-    
-    return extracted
-  } catch (error) {
-    console.warn(`Failed to extract wearables from preview SVG for ${viewName}:`, error)
-    return {}
-  }
-}
-
 // Build SVG from gotchi parts
 function buildSvgFromParts(viewName = 'Front') {
   const parts = baseGotchiPartsByView.value[viewName]
@@ -5417,10 +5127,6 @@ function buildSvgFromParts(viewName = 'Front') {
     console.warn(`No parts available for view: ${viewName}`)
     return ''
   }
-  
-  // Check if we have extracted wearables from previewSideAavegotchi for this view
-  const extractedWearables = extractedWearablesByView.value[viewName]
-  const hasExtractedWearables = extractedWearables && Object.keys(extractedWearables).length > 0
   
   // Check if gotchi has a body wearable (slot 0)
   const hasBodyWearable = (previewWearables.value[0] && previewWearables.value[0] !== 0) || 
@@ -5482,49 +5188,79 @@ function buildSvgFromParts(viewName = 'Front') {
   
   // Helper function to extract sleeves from a body wearable SVG
   function extractSleevesFromWearable(wearableSvgString, slot, view) {
-    if (!wearableSvgString || slot !== 0) return '' // Only extract sleeves from body wearables (slot 0)
+    if (!wearableSvgString || slot !== 0) {
+      console.log(`[SLEEVE DEBUG] Skipping - slot: ${slot}, hasSvg: ${!!wearableSvgString}`)
+      return '' // Only extract sleeves from body wearables (slot 0)
+    }
+    
+    console.log(`[SLEEVE DEBUG] Starting extraction for slot ${slot}, view: ${view}`)
+    console.log(`[SLEEVE DEBUG] Wearable SVG length: ${wearableSvgString.length}`)
+    console.log(`[SLEEVE DEBUG] Has body wearable: ${hasBodyWearable}`)
     
     try {
       const parser = new DOMParser()
       const doc = parser.parseFromString(wearableSvgString, 'image/svg+xml')
       const svgElement = doc.querySelector('svg')
-      if (!svgElement) return ''
+      if (!svgElement) {
+        console.log(`[SLEEVE DEBUG] No SVG element found`)
+        return ''
+      }
       
       // Find all elements with sleeve classes
       const sleeveElements = []
       const allElements = svgElement.querySelectorAll('*')
+      console.log(`[SLEEVE DEBUG] Total elements in SVG: ${allElements.length}`)
       
       for (const element of allElements) {
         const classes = (element.getAttribute('class') || '').toLowerCase()
         if (classes.includes('gotchi-sleeves') || classes.includes('sleeve')) {
+          console.log(`[SLEEVE DEBUG] Found sleeve element with classes: ${classes}`)
+          
           // Check if this is sleeves-down (we want to show these when hands are down open)
           const isSleevesDown = classes.includes('sleeves-down') || classes.includes('sleevesdown')
           const isSleevesUp = classes.includes('sleeves-up') || classes.includes('sleevesup')
           
+          console.log(`[SLEEVE DEBUG] isSleevesDown: ${isSleevesDown}, isSleevesUp: ${isSleevesUp}`)
+          
           // When body wearable is equipped, we show hands down open, so show sleeves-down
           if (hasBodyWearable) {
             if (isSleevesDown) {
+              console.log(`[SLEEVE DEBUG] Adding sleeves-down element`)
               sleeveElements.push(element.cloneNode(true))
+            } else {
+              console.log(`[SLEEVE DEBUG] Skipping sleeves-up (hands are down open)`)
             }
             // Skip sleeves-up when hands are down open
           } else {
             // If no body wearable, include all sleeves
+            console.log(`[SLEEVE DEBUG] Adding sleeve element (no body wearable)`)
             sleeveElements.push(element.cloneNode(true))
           }
         }
       }
       
-      if (sleeveElements.length === 0) return ''
+      console.log(`[SLEEVE DEBUG] Found ${sleeveElements.length} sleeve elements`)
+      
+      if (sleeveElements.length === 0) {
+        console.log(`[SLEEVE DEBUG] No sleeve elements found, returning empty`)
+        return ''
+      }
       
       // Serialize sleeve elements
       const serializer = new XMLSerializer()
       let sleevesContent = ''
-      sleeveElements.forEach(el => {
-        sleevesContent += serializer.serializeToString(el)
+      sleeveElements.forEach((el, idx) => {
+        const serialized = serializer.serializeToString(el)
+        console.log(`[SLEEVE DEBUG] Serialized sleeve ${idx + 1}, length: ${serialized.length}`)
+        sleevesContent += serialized
       })
+      
+      console.log(`[SLEEVE DEBUG] Total sleeves content length: ${sleevesContent.length}`)
       
       // Wrap sleeves with positioning (use same position as body wearable)
       const position = wearablePositions[0]?.[view]
+      console.log(`[SLEEVE DEBUG] Position for view ${view}:`, position)
+      
       if (position) {
         // Check if sleeves are already wrapped in an SVG with positioning
         // If not, wrap them
@@ -5535,18 +5271,23 @@ function buildSvgFromParts(viewName = 'Front') {
           
           if (hasNestedSvg) {
             // Already has positioning, return as-is with wrapper group
+            console.log(`[SLEEVE DEBUG] Sleeves already have positioning, returning as-is`)
             return `<g class="gotchi-wearable wearable-sleeves">${sleevesContent}</g>`
           }
         } catch (e) {
+          console.log(`[SLEEVE DEBUG] Error checking nested SVG:`, e)
           // If parsing fails, continue with wrapping
         }
         
-        return `<g class="gotchi-wearable wearable-sleeves"><svg x="${position.x}" y="${position.y}">${sleevesContent}</svg></g>`
+        const wrapped = `<g class="gotchi-wearable wearable-sleeves"><svg x="${position.x}" y="${position.y}">${sleevesContent}</svg></g>`
+        console.log(`[SLEEVE DEBUG] Wrapped sleeves with positioning: x=${position.x}, y=${position.y}`)
+        return wrapped
       }
       
+      console.log(`[SLEEVE DEBUG] No position found, returning without positioning`)
       return `<g class="gotchi-wearable wearable-sleeves">${sleevesContent}</g>`
     } catch (error) {
-      console.warn(`Failed to extract sleeves from wearable:`, error)
+      console.warn(`[SLEEVE DEBUG] Failed to extract sleeves from wearable:`, error)
       return ''
     }
   }
@@ -5596,18 +5337,8 @@ function buildSvgFromParts(viewName = 'Front') {
     
     // Add Background wearable (slot 7) right after base Background
     if (partName === 'Background') {
-      // Check if we have extracted wearables for this view
-      if (hasExtractedWearables && extractedWearables[7]) {
-        // Use extracted wearables (already correctly positioned)
-        extractedWearables[7].forEach(wearable => {
-          if (!wearable.isSleeve) {
-            partsContent.push(wearable.svg)
-          }
-        })
-      } else {
-        // Fallback to manual building from svgMap
-        const bgWearableId = currentWearables[7]
-        if (bgWearableId && bgWearableId !== 0 && svgMap[bgWearableId]) {
+      const bgWearableId = currentWearables[7]
+      if (bgWearableId && bgWearableId !== 0 && svgMap[bgWearableId]) {
         try {
           const parser = new DOMParser()
           const doc = parser.parseFromString(svgMap[bgWearableId], 'image/svg+xml')
@@ -5643,7 +5374,6 @@ function buildSvgFromParts(viewName = 'Front') {
         } catch (error) {
           console.warn(`Failed to parse background wearable ${bgWearableId} SVG:`, error)
         }
-        }
       }
     }
   })
@@ -5652,39 +5382,8 @@ function buildSvgFromParts(viewName = 'Front') {
   const wearableSlotsOrder = [0, 1, 2, 3, 4, 5, 6] // Body, Face, Eyes, Head, Left Hand, Right Hand, Pet
   
   wearableSlotsOrder.forEach(slot => {
-    // Check if we have extracted wearables for this slot and view
-    if (hasExtractedWearables && extractedWearables[slot]) {
-      // Use extracted wearables (already correctly positioned)
-      // First add non-sleeve wearables
-      extractedWearables[slot].forEach(wearable => {
-        if (!wearable.isSleeve) {
-          partsContent.push(wearable.svg)
-        }
-      })
-      
-      // Then add sleeves for body wearable (slot 0) - sleeves should come after the body but before hands
-      if (slot === 0) {
-        extractedWearables[slot].forEach(wearable => {
-          if (wearable.isSleeve) {
-            // Filter sleeves based on body wearable state
-            const classes = wearable.classes || ''
-            const isSleevesDown = classes.includes('sleeves-down') || classes.includes('sleevesdown')
-            if (hasBodyWearable && isSleevesDown) {
-              console.log(`[buildSvgFromParts] Adding sleeve (sleeves-down) for ${viewName}:`, wearable.classes)
-              partsContent.push(wearable.svg)
-            } else if (!hasBodyWearable) {
-              console.log(`[buildSvgFromParts] Adding sleeve (no body wearable) for ${viewName}:`, wearable.classes)
-              partsContent.push(wearable.svg)
-            } else {
-              console.log(`[buildSvgFromParts] Skipping sleeve for ${viewName}:`, wearable.classes, { hasBodyWearable, isSleevesDown })
-            }
-          }
-        })
-      }
-    } else {
-      // Fallback to manual building from svgMap
-      const wearableId = currentWearables[slot]
-      if (wearableId && wearableId !== 0 && svgMap[wearableId]) {
+    const wearableId = currentWearables[slot]
+    if (wearableId && wearableId !== 0 && svgMap[wearableId]) {
       try {
         const parser = new DOMParser()
         const doc = parser.parseFromString(svgMap[wearableId], 'image/svg+xml')
@@ -5693,80 +5392,73 @@ function buildSvgFromParts(viewName = 'Front') {
           // Check if wearable SVG already has nested SVG elements with x/y positioning (check deeply)
           const nestedSvgs = svgElement.querySelectorAll('svg[x], svg[y]')
           
+          // Helper function to check if an element is a sleeve
+          const isSleeveElement = (element) => {
+            const classes = (element.getAttribute('class') || '').toLowerCase()
+            return classes.includes('gotchi-sleeves') || classes.includes('sleeve')
+          }
+          
           if (nestedSvgs.length > 0) {
             // Wearable already has nested SVGs with positioning - preserve them
             // But exclude sleeves if this is a body wearable (we'll extract them separately)
             const children = Array.from(svgElement.children)
             children.forEach(child => {
               if (child.tagName !== 'style') {
-                // If this is a body wearable, check if child contains sleeves
-                if (slot === 0) {
-                  const childClasses = (child.getAttribute('class') || '').toLowerCase()
-                  const isSleeveElement = childClasses.includes('gotchi-sleeves') || childClasses.includes('sleeve')
-                  
-                  // Also check if child contains sleeve elements inside
-                  let containsSleeves = false
-                  if (!isSleeveElement) {
-                    const sleeveElements = child.querySelectorAll('.gotchi-sleeves, [class*="sleeve"]')
-                    containsSleeves = sleeveElements.length > 0
-                  }
-                  
-                  // Skip sleeve elements - we'll extract them separately
-                  if (!isSleeveElement && !containsSleeves) {
-                    partsContent.push(new XMLSerializer().serializeToString(child))
-                  }
-                } else {
-                  partsContent.push(new XMLSerializer().serializeToString(child))
+                // If this is a body wearable, exclude sleeve elements (we'll extract them separately)
+                if (slot === 0 && isSleeveElement(child)) {
+                  console.log(`[SLEEVE DEBUG] Excluding sleeve element from main wearable content (nested SVG case)`)
+                  return // Skip this child
                 }
+                partsContent.push(new XMLSerializer().serializeToString(child))
               }
             })
             
+            // If this is a body wearable (slot 0), extract and add sleeves separately
+            if (slot === 0) {
+              console.log(`[SLEEVE DEBUG] Extracting sleeves for body wearable (nested SVG case), wearableId: ${wearableId}`)
+              const sleevesSvg = extractSleevesFromWearable(svgMap[wearableId], slot, viewName)
+              if (sleevesSvg) {
+                console.log(`[SLEEVE DEBUG] Adding extracted sleeves to partsContent (nested SVG case), length: ${sleevesSvg.length}`)
+                partsContent.push(sleevesSvg)
+              } else {
+                console.log(`[SLEEVE DEBUG] No sleeves extracted (nested SVG case)`)
+              }
+            }
           } else {
             // No nested SVGs found - extract content and wrap with positioning
-            // But exclude sleeves if this is a body wearable (we'll extract them separately)
             const children = Array.from(svgElement.children)
             let wearableContent = ''
             
             children.forEach(child => {
               if (child.tagName !== 'style') {
-                // If this is a body wearable, check if child contains sleeves
-                if (slot === 0) {
-                  const childClasses = (child.getAttribute('class') || '').toLowerCase()
-                  const isSleeveElement = childClasses.includes('gotchi-sleeves') || childClasses.includes('sleeve')
-                  
-                  // Also check if child contains sleeve elements inside
-                  let containsSleeves = false
-                  if (!isSleeveElement) {
-                    const sleeveElements = child.querySelectorAll('.gotchi-sleeves, [class*="sleeve"]')
-                    containsSleeves = sleeveElements.length > 0
-                  }
-                  
-                  // Skip sleeve elements - we'll extract them separately
-                  if (!isSleeveElement && !containsSleeves) {
-                    wearableContent += new XMLSerializer().serializeToString(child)
-                  }
-                } else {
-                  wearableContent += new XMLSerializer().serializeToString(child)
+                // If this is a body wearable, exclude sleeve elements (we'll extract them separately)
+                if (slot === 0 && isSleeveElement(child)) {
+                  console.log(`[SLEEVE DEBUG] Excluding sleeve element from main wearable content (no nested SVG case)`)
+                  return // Skip this child
                 }
+                wearableContent += new XMLSerializer().serializeToString(child)
               }
             })
             
             // Wrap with positioning if needed
             const wrappedContent = wrapWearableWithPositioning(wearableContent, slot, viewName)
             partsContent.push(wrappedContent)
-          }
-          
-          // If this is a body wearable (slot 0), extract and add sleeves
-          if (slot === 0) {
-            const sleevesSvg = extractSleevesFromWearable(svgMap[wearableId], slot, viewName)
-            if (sleevesSvg) {
-              partsContent.push(sleevesSvg)
+            
+            // If this is a body wearable (slot 0), extract and add sleeves separately
+            if (slot === 0) {
+              console.log(`[SLEEVE DEBUG] Extracting sleeves for body wearable (no nested SVG case), wearableId: ${wearableId}`)
+              const sleevesSvg = extractSleevesFromWearable(svgMap[wearableId], slot, viewName)
+              if (sleevesSvg) {
+                console.log(`[SLEEVE DEBUG] Adding extracted sleeves to partsContent (no nested SVG case), length: ${sleevesSvg.length}`)
+                partsContent.push(sleevesSvg)
+              } else {
+                console.log(`[SLEEVE DEBUG] No sleeves extracted (no nested SVG case)`)
+              }
             }
           }
         }
       } catch (error) {
         console.warn(`Failed to parse wearable ${wearableId} SVG:`, error)
-      }
       }
     }
   })

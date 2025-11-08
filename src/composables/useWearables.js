@@ -1,91 +1,56 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useQueries } from '@tanstack/vue-query'
 import { getContract } from '../utils/contract.js'
+import { getCachedSvg, cacheSvg, getCachedType, cacheType } from '../utils/wearableCache.js'
 
 export function useWearables() {
   const isLoadingWearables = ref(false)
   const wearablesError = ref(null)
-  const loadedCount = ref(100) // Start with first 100, load more as needed
+  const loadedCount = ref(0) // Track how many wearables we've loaded
+  const batchSize = 25 // Load 25 wearables at a time (reduced for slower loading)
+  const batchDelay = 1500 // Wait 1.5 seconds between batches (increased delay to avoid rate limits)
+  const bodyWearableIds = ref(new Set()) // Track which IDs are Body (slot 0) wearables
   
-  // Generate a list of wearable IDs (0-1000 as a reasonable range)
+  // Generate a list of wearable IDs (1-420 as there are only 420 total items)
   // In production, this should come from contract or API
+  const MAX_WEARABLE_ID = 420
   const wearableIds = computed(() => {
     const ids = []
     // Common wearable IDs range (adjust based on actual contract)
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= MAX_WEARABLE_ID; i++) {
       ids.push(i)
     }
     return ids
   })
   
-  // Get IDs to load based on loadedCount
+  // Get IDs to load - prioritize Body wearables once we know them
   const idsToLoad = computed(() => {
-    return wearableIds.value.slice(0, loadedCount.value)
-  })
-  
-  // Function to load more wearables
-  const loadMoreWearables = () => {
-    const nextCount = Math.min(loadedCount.value + 100, wearableIds.value.length)
-    if (nextCount > loadedCount.value) {
-      loadedCount.value = nextCount
+    const allIds = wearableIds.value
+    const loaded = allIds.slice(0, loadedCount.value)
+    
+    // If we have Body wearable IDs discovered, prioritize them
+    if (bodyWearableIds.value.size > 0 && loadedCount.value < allIds.length) {
+      const bodyIds = Array.from(bodyWearableIds.value).filter(id => id <= loadedCount.value)
+      const otherIds = loaded.filter(id => !bodyWearableIds.value.has(id))
+      // Put Body wearables first
+      return [...bodyIds, ...otherIds]
     }
-  }
-  
-  // Check if more wearables can be loaded
-  const hasMoreWearables = computed(() => {
-    return loadedCount.value < wearableIds.value.length
+    
+    return loaded
   })
   
-  // Fetch individual wearable SVGs using getItemSvg
-  // This gets the standalone wearable SVG with proper dimensions (e.g., item8.svg)
-  const wearableSvgQueries = useQueries({
-    queries: computed(() => {
-      const ids = idsToLoad.value
-      
-      return ids.map(wearableId => {
-        return {
-          queryKey: ['wearable-svg', wearableId],
-          queryFn: async () => {
-            try {
-              const contract = getContract()
-              
-              // Use getItemSvg which is specifically designed for wearable items
-              // This function returns the SVG with proper dimensions included
-              const response = await contract.getItemSvg(wearableId)
-              
-              // Parse response - getItemSvg returns a string directly or object with ag_ property
-              let svgString = null
-              if (typeof response === 'string') {
-                svgString = response
-              } else if (response && typeof response === 'object' && response.ag_) {
-                svgString = response.ag_
-              } else if (response && typeof response === 'object' && response.length === 1) {
-                svgString = response[0]
-              }
-              
-              if (svgString && typeof svgString === 'string' && svgString.trim().length > 0) {
-                console.log(`Fetched SVG for wearable ${wearableId}, length: ${svgString.length}`)
-                return svgString
-              }
-              
-              return null
-            } catch (error) {
-              // If getItemSvg fails, the wearable might not exist
-              // Only log errors that aren't "ItemsFacet: _id not found for item" to reduce noise
-              if (!error.message?.includes('ItemsFacet: _id not found for item') && !error.message?.includes('_id not found for item')) {
-                console.warn(`Failed to fetch SVG for wearable ${wearableId}:`, error.message)
-              }
-              return null
-            }
-          },
-          enabled: true, // No need for gotchi data - we can fetch wearable SVGs directly
-          staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-          retry: 1, // Only retry once to avoid too many failed requests
-        }
-      })
-    })
+  // Progress tracking
+  const loadingProgress = computed(() => {
+    const total = wearableIds.value.length
+    const loaded = loadedCount.value
+    const percentage = total > 0 ? Math.round((loaded / total) * 100) : 0
+    return {
+      loaded,
+      total,
+      percentage
+    }
   })
-
+  
   // Fetch item type information to get slot positions
   const wearableTypeQueries = useQueries({
     queries: computed(() => {
@@ -95,7 +60,18 @@ export function useWearables() {
         return {
           queryKey: ['wearable-type', wearableId],
           queryFn: async () => {
+            // Skip invalid wearable IDs (only 420 items exist)
+            if (wearableId > MAX_WEARABLE_ID || wearableId < 1) {
+              return null
+            }
+            
             try {
+              // Check cache first
+              const cached = await getCachedType(wearableId)
+              if (cached) {
+                return cached
+              }
+              
               const contract = getContract()
               
               // Get item type information including slotPositions
@@ -114,16 +90,27 @@ export function useWearables() {
                 }
               }
               
-              return {
+              const result = {
                 name: itemType?.name || `Wearable #${wearableId}`,
                 slot: slot !== null ? slot : null,
                 category: itemType?.category || 0,
                 slotPositions: itemType?.slotPositions || []
               }
+              
+              // Cache the result (don't await to avoid blocking)
+              cacheType(wearableId, result).catch(() => {
+                // Silently fail - caching failures shouldn't break the app
+              })
+              
+              return result
             } catch (error) {
               // If getItemType fails, the wearable might not exist
-              // Only log errors that aren't "ItemsFacet: Item type doesn't exist" to reduce noise
-              if (!error.message?.includes("ItemsFacet: Item type doesn't exist") && !error.message?.includes("Item type doesn't exist")) {
+              // Only log errors that aren't "ItemsFacet: Item type doesn't exist" or "missing revert data" to reduce noise
+              const isKnownError = error.message?.includes("ItemsFacet: Item type doesn't exist") || 
+                                   error.message?.includes("Item type doesn't exist") ||
+                                   error.message?.includes("missing revert data") ||
+                                   error.code === 'CALL_EXCEPTION'
+              if (!isKnownError) {
                 console.warn(`Failed to fetch item type for wearable ${wearableId}:`, error.message)
               }
               return null
@@ -131,7 +118,106 @@ export function useWearables() {
           },
           enabled: true,
           staleTime: 1000 * 60 * 10, // Cache for 10 minutes (slot data doesn't change often)
-          retry: 1,
+          retry: (failureCount, error) => {
+            // Don't retry on rate limit errors (429) - they'll resolve when rate limit resets
+            if (error?.message?.includes('429') || error?.message?.includes('compute units per second') || error?.code === 429) {
+              return false
+            }
+            // Only retry once for other errors to avoid too many failed requests
+            return failureCount < 1
+          },
+          retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff, max 30s
+        }
+      })
+    })
+  })
+  
+  // Watch for Body (slot 0) wearables and track them
+  watch(wearableTypeQueries, (queries) => {
+    queries.forEach((query, index) => {
+      if (query.data && query.data.slot === 0) {
+        const wearableId = idsToLoad.value[index]
+        if (wearableId) {
+          bodyWearableIds.value.add(wearableId)
+        }
+      }
+    })
+  }, { deep: true })
+  
+  // Fetch individual wearable SVGs using getItemSvg
+  // This gets the standalone wearable SVG with proper dimensions (e.g., item8.svg)
+  const wearableSvgQueries = useQueries({
+    queries: computed(() => {
+      const ids = idsToLoad.value
+      
+      return ids.map(wearableId => {
+        return {
+          queryKey: ['wearable-svg', wearableId],
+          queryFn: async () => {
+            // Skip invalid wearable IDs (only 420 items exist)
+            if (wearableId > MAX_WEARABLE_ID || wearableId < 1) {
+              return null
+            }
+            
+            try {
+              // Check cache first
+              const cached = await getCachedSvg(wearableId)
+              if (cached) {
+                return cached
+              }
+              
+              const contract = getContract()
+              
+              // Use getItemSvg which is specifically designed for wearable items
+              // This function returns the SVG with proper dimensions included
+              const response = await contract.getItemSvg(wearableId)
+              
+              // Parse response - getItemSvg returns a string directly or object with ag_ property
+              let svgString = null
+              if (typeof response === 'string') {
+                svgString = response
+              } else if (response && typeof response === 'object' && response.ag_) {
+                svgString = response.ag_
+              } else if (response && typeof response === 'object' && response.length === 1) {
+                svgString = response[0]
+              }
+              
+              if (svgString && typeof svgString === 'string' && svgString.trim().length > 0) {
+                console.log(`Fetched SVG for wearable ${wearableId}, length: ${svgString.length}`)
+                
+                // Cache the result (don't await to avoid blocking)
+                cacheSvg(wearableId, svgString).catch(() => {
+                  // Silently fail - caching failures shouldn't break the app
+                })
+                
+                return svgString
+              }
+              
+              return null
+            } catch (error) {
+              // If getItemSvg fails, the wearable might not exist
+              // Only log errors that aren't known "not found" or "missing revert data" errors to reduce noise
+              const isKnownError = error.message?.includes('ItemsFacet: _id not found for item') || 
+                                   error.message?.includes('_id not found for item') ||
+                                   error.message?.includes("missing revert data") ||
+                                   error.code === 'CALL_EXCEPTION'
+              if (!isKnownError) {
+                console.warn(`Failed to fetch SVG for wearable ${wearableId}:`, error.message)
+              }
+              return null
+            }
+          },
+          enabled: true, // No need for gotchi data - we can fetch wearable SVGs directly
+          staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+          retry: (failureCount, error) => {
+            // Don't retry on rate limit errors (429) - they'll resolve when rate limit resets
+            if (error?.message?.includes('429') || error?.message?.includes('compute units per second') || error?.code === 429) {
+              return false
+            }
+            // Only retry once for other errors to avoid too many failed requests
+            return failureCount < 1
+          },
+          retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff, max 30s
         }
       })
     })
@@ -214,10 +300,64 @@ export function useWearables() {
     return wearables.value.filter(w => w.slot === slot)
   }
   
+  // Function to load wearables in batches
+  const loadWearablesInBatches = async () => {
+    if (isLoadingWearables.value) return // Already loading
+    
+    isLoadingWearables.value = true
+    wearablesError.value = null
+    
+    try {
+      const total = wearableIds.value.length
+      let currentBatch = 0
+      
+      while (loadedCount.value < total) {
+        // Calculate next batch size
+        const nextCount = Math.min(loadedCount.value + batchSize, total)
+        loadedCount.value = nextCount
+        
+        // Wait longer for queries to process and avoid rate limits
+        await new Promise(resolve => setTimeout(resolve, batchDelay))
+        
+        currentBatch++
+        console.log(`Loading batch ${currentBatch}: ${loadedCount.value}/${total} wearables`)
+      }
+      
+      console.log('Finished loading all wearable batches')
+      // Don't set isLoadingWearables to false here - let the computed property handle it
+      // when queries actually finish
+    } catch (error) {
+      console.error('Error loading wearables in batches:', error)
+      wearablesError.value = error.message || 'Failed to load wearables'
+      isLoadingWearables.value = false
+    }
+  }
+  
+  // Start loading when composable is created
+  loadWearablesInBatches()
+  
+  // Watch for when loading actually completes
+  watch([wearableSvgQueries, wearableTypeQueries, () => loadedCount.value], () => {
+    const batchesLoading = loadedCount.value < wearableIds.value.length
+    const queriesLoading = wearableSvgQueries.value.some(q => q.isLoading || q.isFetching) || 
+           wearableTypeQueries.value.some(q => q.isLoading || q.isFetching)
+    
+    // Update flag when everything is done
+    if (!batchesLoading && !queriesLoading) {
+      isLoadingWearables.value = false
+    }
+  }, { deep: true })
+  
   // Update loading state - check both SVG and type queries
   const isLoading = computed(() => {
-    return wearableSvgQueries.value.some(q => q.isLoading) || 
-           wearableTypeQueries.value.some(q => q.isLoading)
+    // Check if batches are still loading
+    const batchesLoading = loadedCount.value < wearableIds.value.length
+    
+    // Check if queries are still loading or fetching
+    const queriesLoading = wearableSvgQueries.value.some(q => q.isLoading || q.isFetching) || 
+           wearableTypeQueries.value.some(q => q.isLoading || q.isFetching)
+    
+    return batchesLoading || queriesLoading
   })
   
   return {
@@ -226,8 +366,6 @@ export function useWearables() {
     wearables,
     getWearablesBySlot,
     wearableSvgsMap, // Export the SVG map for validation
-    loadMoreWearables, // Function to load more wearables
-    hasMoreWearables // Computed to check if more can be loaded
+    loadingProgress // Export progress tracking
   }
 }
-
