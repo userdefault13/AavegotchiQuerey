@@ -1,7 +1,7 @@
 import { ref, computed, watch } from 'vue'
 import { useQueries } from '@tanstack/vue-query'
 import { getContract } from '../utils/contract.js'
-import { getCachedSvg, cacheSvg, getCachedType, cacheType } from '../utils/wearableCache.js'
+import { getCachedType, cacheType } from '../utils/wearableCache.js'
 
 export function useWearables() {
   const isLoadingWearables = ref(false)
@@ -144,98 +144,6 @@ export function useWearables() {
     })
   }, { deep: true })
   
-  // Fetch individual wearable SVGs using getItemSvg
-  // This gets the standalone wearable SVG with proper dimensions (e.g., item8.svg)
-  const wearableSvgQueries = useQueries({
-    queries: computed(() => {
-      const ids = idsToLoad.value
-      
-      return ids.map(wearableId => {
-        return {
-          queryKey: ['wearable-svg', wearableId],
-          queryFn: async () => {
-            // Skip invalid wearable IDs (only 420 items exist)
-            if (wearableId > MAX_WEARABLE_ID || wearableId < 1) {
-              return null
-            }
-            
-            try {
-              // Check cache first
-              const cached = await getCachedSvg(wearableId)
-              if (cached) {
-                return cached
-              }
-              
-              const contract = getContract()
-              
-              // Use getItemSvg which is specifically designed for wearable items
-              // This function returns the SVG with proper dimensions included
-              const response = await contract.getItemSvg(wearableId)
-              
-              // Parse response - getItemSvg returns a string directly or object with ag_ property
-              let svgString = null
-              if (typeof response === 'string') {
-                svgString = response
-              } else if (response && typeof response === 'object' && response.ag_) {
-                svgString = response.ag_
-              } else if (response && typeof response === 'object' && response.length === 1) {
-                svgString = response[0]
-              }
-              
-              if (svgString && typeof svgString === 'string' && svgString.trim().length > 0) {
-                console.log(`Fetched SVG for wearable ${wearableId}, length: ${svgString.length}`)
-                
-                // Cache the result (don't await to avoid blocking)
-                cacheSvg(wearableId, svgString).catch(() => {
-                  // Silently fail - caching failures shouldn't break the app
-                })
-                
-                return svgString
-              }
-              
-              return null
-            } catch (error) {
-              // If getItemSvg fails, the wearable might not exist
-              // Only log errors that aren't known "not found" or "missing revert data" errors to reduce noise
-              const isKnownError = error.message?.includes('ItemsFacet: _id not found for item') || 
-                                   error.message?.includes('_id not found for item') ||
-                                   error.message?.includes("missing revert data") ||
-                                   error.code === 'CALL_EXCEPTION'
-              if (!isKnownError) {
-                console.warn(`Failed to fetch SVG for wearable ${wearableId}:`, error.message)
-              }
-              return null
-            }
-          },
-          enabled: true, // No need for gotchi data - we can fetch wearable SVGs directly
-          staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-          retry: (failureCount, error) => {
-            // Don't retry on rate limit errors (429) - they'll resolve when rate limit resets
-            if (error?.message?.includes('429') || error?.message?.includes('compute units per second') || error?.code === 429) {
-              return false
-            }
-            // Only retry once for other errors to avoid too many failed requests
-            return failureCount < 1
-          },
-          retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff, max 30s
-        }
-      })
-    })
-  })
-  
-  // Create a map of wearable ID to SVG
-  const wearableSvgsMap = computed(() => {
-    const map = {}
-    const ids = idsToLoad.value
-    wearableSvgQueries.value.forEach((query, index) => {
-      const wearableId = ids[index]
-      if (query.data && wearableId) {
-        map[wearableId] = query.data
-      }
-    })
-    return map
-  })
-
   // Create a map of wearable ID to slot
   const wearableSlotMap = computed(() => {
     const map = {}
@@ -276,7 +184,6 @@ export function useWearables() {
   // Only include wearables that have been loaded
   const wearables = computed(() => {
     return idsToLoad.value.map(id => {
-      const svg = wearableSvgsMap.value[id]
       const slot = wearableSlotMap.value[id] ?? null // Use real slot from contract, or null if not found
       const name = wearableNameMap.value[id] || `Wearable #${id}`
       
@@ -285,7 +192,7 @@ export function useWearables() {
         name,
         slot: slot !== null ? slot : null, // Use real slot from contract
         rarity: null,
-        thumbnail: svg || generateWearableThumbnail(id) // Use fetched SVG or fallback
+        thumbnail: generateWearableThumbnail(id) // Use fallback thumbnail
       }
     })
   })
@@ -337,10 +244,9 @@ export function useWearables() {
   loadWearablesInBatches()
   
   // Watch for when loading actually completes
-  watch([wearableSvgQueries, wearableTypeQueries, () => loadedCount.value], () => {
+  watch([wearableTypeQueries, () => loadedCount.value], () => {
     const batchesLoading = loadedCount.value < wearableIds.value.length
-    const queriesLoading = wearableSvgQueries.value.some(q => q.isLoading || q.isFetching) || 
-           wearableTypeQueries.value.some(q => q.isLoading || q.isFetching)
+    const queriesLoading = wearableTypeQueries.value.some(q => q.isLoading || q.isFetching)
     
     // Update flag when everything is done
     if (!batchesLoading && !queriesLoading) {
@@ -354,8 +260,7 @@ export function useWearables() {
     const batchesLoading = loadedCount.value < wearableIds.value.length
     
     // Check if queries are still loading or fetching
-    const queriesLoading = wearableSvgQueries.value.some(q => q.isLoading || q.isFetching) || 
-           wearableTypeQueries.value.some(q => q.isLoading || q.isFetching)
+    const queriesLoading = wearableTypeQueries.value.some(q => q.isLoading || q.isFetching)
     
     return batchesLoading || queriesLoading
   })
@@ -365,7 +270,6 @@ export function useWearables() {
     wearablesError,
     wearables,
     getWearablesBySlot,
-    wearableSvgsMap, // Export the SVG map for validation
     loadingProgress // Export progress tracking
   }
 }

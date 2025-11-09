@@ -827,8 +827,9 @@ const { gotchiDataMap, svgDataMap } = useAavegotchi()
 const gotchiData = ref(null)
 // useWearables now fetches individual wearable SVGs directly using getSvg
 const wearablesComposable = useWearables()
-const { isLoadingWearables, wearablesError, getWearablesBySlot, wearableSvgsMap, loadingProgress } = wearablesComposable
+const { isLoadingWearables, wearablesError, getWearablesBySlot, loadingProgress } = wearablesComposable
 const wearables = wearablesComposable.wearables // Keep reactivity by not destructuring
+const wearableSvgsMap = wearablesComposable.wearableSvgsMap ?? ref({})
 const svgViews = ref(null)
 const svgMetadata = ref(null)
 const isLoading = ref(true)
@@ -1101,7 +1102,16 @@ async function fetchSideViews() {
     console.log('Fetching gotchi data via getAavegotchi to extract collateral for token:', tokenId)
     const gotchi = await contract.getAavegotchi(tokenId)
     const collateral = gotchi.collateral
-    const hauntId = Number(gotchi.hauntId)
+    const contractHauntId = Number(gotchi.hauntId)
+
+    // Override hauntId with Haunt 1 as required for rendering consistency
+    const hauntId = 1
+    if (contractHauntId !== hauntId) {
+      console.warn(
+        'Overriding contract hauntId with hauntId=1 for rendering consistency:',
+        { contractHauntId, appliedHauntId: hauntId, tokenId }
+      )
+    }
     const numericTraits = gotchi.numericTraits.map(t => Number(t))
     console.log('Fetched gotchi data:', { 
       collateral, 
@@ -1121,7 +1131,7 @@ async function fetchSideViews() {
     // Fallback to getAavegotchiSideSvgs if previewSideAavegotchi fails
     let sidesArray = []
     try {
-      console.log('Attempting to fetch side views using previewSideAavegotchi for token:', tokenId)
+      console.log('Attempting to fetch side views using previewSideAavegotchi for token:', tokenId, 'hauntId:', hauntId, 'collateral:', collateral, 'traits:', traitsForContract, 'wearables:', gotchiData.value.equippedWearables)
       const sidesResponse = await contract.previewSideAavegotchi(
         hauntId,
         collateral,
@@ -5232,7 +5242,8 @@ async function generatePreviewSvgs() {
     // Validate against wearableSvgsMap - if a wearable has SVG data, it should work in preview
     const validatedWearables = [...previewWearables.value]
     const originalWearables = gotchiData.value.equippedWearables || []
-    const svgMap = wearableSvgsMap.value || {}
+    const svgMap = wearableSvgsMap?.value
+    const hasSvgMapEntries = svgMap && Object.keys(svgMap).length > 0
     
     // Check each wearable ID and validate it
     for (let i = 0; i < validatedWearables.length; i++) {
@@ -5250,7 +5261,7 @@ async function generatePreviewSvgs() {
       
       // If the wearable ID doesn't have SVG data in our map, it might not exist
       // Fall back to original equipped wearable for this slot
-      if (!svgMap[currentId]) {
+      if (hasSvgMapEntries && !svgMap[currentId]) {
         console.warn(`Wearable ID ${currentId} not found in SVG map, falling back to original equipped wearable ${originalWearables[i] || 0}`)
         validatedWearables[i] = originalWearables[i] || 0
       } else {
@@ -5264,7 +5275,7 @@ async function generatePreviewSvgs() {
     const validatedWearablesWithCheck = [...validatedWearables]
     for (let i = 0; i < validatedWearablesWithCheck.length; i++) {
       const wearableId = validatedWearablesWithCheck[i]
-      if (wearableId !== 0 && !svgMap[wearableId]) {
+      if (wearableId !== 0 && (!hasSvgMapEntries || !svgMap[wearableId])) {
         // Try to validate by calling getItemSvg if not in map
         try {
           await contract.getItemSvg(wearableId)
@@ -5278,8 +5289,18 @@ async function generatePreviewSvgs() {
     }
     
     // Call previewSideAavegotchi with validated wearables
+    const contractHauntId = gotchiData.value.hauntId
+    const previewHauntId = 1
+    if (contractHauntId !== previewHauntId) {
+      console.warn('Dressing room overriding hauntId with hauntId=1 for preview consistency:', {
+        contractHauntId,
+        appliedHauntId: previewHauntId,
+        tokenId: gotchiData.value.tokenId
+      })
+    }
+
     const previewResponse = await contract.previewSideAavegotchi(
-      gotchiData.value.hauntId,
+      previewHauntId,
       gotchiData.value.collateral,
       gotchiData.value.numericTraits,
       validatedWearablesWithCheck
@@ -5638,7 +5659,7 @@ function buildSvgFromParts(viewName = 'Front') {
   
   // Get current wearables (preview or actual)
   const currentWearables = previewWearables.value || gotchiData.value?.equippedWearables || []
-  const svgMap = wearableSvgsMap.value || {}
+  const svgMap = wearableSvgsMap?.value
   
   // Wearable positioning based on slot and view
   // Format: { slot: { view: { x, y, className } } }
@@ -5814,7 +5835,7 @@ function buildSvgFromParts(viewName = 'Front') {
               partsContent.push(wearable.svg)
             }
           })
-        } else {
+        } else if (svgMap) {
           const wearableId = currentWearables[slot]
           if (wearableId && wearableId !== 0 && svgMap[wearableId]) {
             try {
@@ -5860,7 +5881,7 @@ function buildSvgFromParts(viewName = 'Front') {
             partsContent.push(wearable.svg)
           }
         })
-      } else {
+      } else if (svgMap) {
         // Fallback to manual building from svgMap
         const bgWearableId = currentWearables[7]
         if (bgWearableId && bgWearableId !== 0 && svgMap[bgWearableId]) {
@@ -5943,7 +5964,7 @@ function buildSvgFromParts(viewName = 'Front') {
           }
         })
       }
-    } else {
+    } else if (svgMap) {
       // Fallback to manual building from svgMap
       const wearableId = currentWearables[slot]
       if (wearableId && wearableId !== 0 && svgMap[wearableId]) {
