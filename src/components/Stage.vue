@@ -216,63 +216,57 @@
                     class="wearable-search"
                   />
                   
-                  <!-- Debug Info (always show for debugging) -->
-                  <div class="text-xs text-gray-400 mb-2 p-2 bg-gray-100 rounded border border-gray-300">
-                    <strong>Debug Info:</strong><br>
-                    filteredWearables.length = {{ filteredWearables.length }}<br>
-                    selectedSlot = {{ selectedWearableSlot }}<br>
-                    allWearablesCount = {{ wearables?.length || 0 }}<br>
-                    isDressingRoomMode = {{ isDressingRoomMode }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Wearable Grid Section -->
+            <div v-if="!wearablesError" class="wearable-grid-section">
+              <div v-if="filteredWearables.length === 0" class="empty-wearables">
+                <p>No wearables found for {{ getSlotName(selectedWearableSlot) }} slot.</p>
+                <p class="text-sm text-gray-500">Total wearables: {{ wearables?.value?.length || wearables?.length || 0 }}</p>
+                <p class="text-sm text-gray-500">Selected slot: {{ selectedWearableSlot }}</p>
+                <p class="text-sm text-gray-500">Filtered count: {{ filteredWearables.length }}</p>
+              </div>
+              <div 
+                v-else 
+                ref="wearableGridRef"
+                class="wearable-grid"
+              >
+                <div
+                  v-for="(wearable, index) in filteredWearables"
+                  :key="`wearable-${wearable.id}-${index}`"
+                  @click="selectWearable(wearable.id)"
+                  class="wearable-item"
+                  :class="{ 
+                    'selected': previewWearables[selectedWearableSlot] === wearable.id,
+                    'equipped': gotchiData?.equippedWearables?.[selectedWearableSlot] === wearable.id
+                  }"
+                  :title="wearable.name || `Wearable #${wearable.id}`"
+                >
+                  <div class="wearable-thumbnail">
+                    <span v-if="wearable.thumbnail" class="thumbnail-img" v-html="wearable.thumbnail"></span>
+                    <span v-else class="thumbnail-placeholder">#{{ wearable.id }}</span>
                   </div>
-                  
-                  <!-- Wearable Grid -->
-                  <div v-if="filteredWearables.length === 0" class="empty-wearables">
-                    <p>No wearables found for {{ getSlotName(selectedWearableSlot) }} slot.</p>
-                    <p class="text-sm text-gray-500">Total wearables: {{ wearables?.value?.length || wearables?.length || 0 }}</p>
-                    <p class="text-sm text-gray-500">Selected slot: {{ selectedWearableSlot }}</p>
-                    <p class="text-sm text-gray-500">Filtered count: {{ filteredWearables.length }}</p>
+                  <div class="wearable-info">
+                    <span class="wearable-name">{{ wearable.name || `Wearable #${wearable.id}` }}</span>
+                    <span class="wearable-id-label">ID: {{ wearable.id }}</span>
                   </div>
-                  <div 
-                    v-else 
-                    ref="wearableGridRef"
-                    class="wearable-grid"
-                  >
-                    <div
-                      v-for="(wearable, index) in filteredWearables"
-                      :key="`wearable-${wearable.id}-${index}`"
-                      @click="selectWearable(wearable.id)"
-                      class="wearable-item"
-                      :class="{ 
-                        'selected': previewWearables[selectedWearableSlot] === wearable.id,
-                        'equipped': gotchiData?.equippedWearables?.[selectedWearableSlot] === wearable.id
-                      }"
-                      :title="wearable.name || `Wearable #${wearable.id}`"
-                    >
-                      <div class="wearable-thumbnail">
-                        <span v-if="wearable.thumbnail" class="thumbnail-img" v-html="wearable.thumbnail"></span>
-                        <span v-else class="thumbnail-placeholder">#{{ wearable.id }}</span>
-                      </div>
-                      <div class="wearable-info">
-                        <span class="wearable-name">{{ wearable.name || `Wearable #${wearable.id}` }}</span>
-                        <span class="wearable-id-label">ID: {{ wearable.id }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <!-- Manual ID Input (Fallback) -->
-                  <div class="manual-wearable-input">
-                    <label>Or enter wearable ID:</label>
-                    <div class="input-group">
-                      <input
-                        v-model.number="manualWearableId"
-                        type="number"
-                        placeholder="Wearable ID"
-                        class="wearable-id-input"
-                        min="0"
-                      />
-                      <button @click="applyManualWearable" class="apply-btn">Apply</button>
-                    </div>
-                  </div>
+                </div>
+              </div>
+
+              <!-- Manual ID Input (Fallback) -->
+              <div class="manual-wearable-input">
+                <label>Or enter wearable ID:</label>
+                <div class="input-group">
+                  <input
+                    v-model.number="manualWearableId"
+                    type="number"
+                    placeholder="Wearable ID"
+                    class="wearable-id-input"
+                    min="0"
+                  />
+                  <button @click="applyManualWearable" class="apply-btn">Apply</button>
                 </div>
               </div>
             </div>
@@ -1462,14 +1456,16 @@ async function fetchSideViews() {
         throw new Error('Invalid collateral: ' + collateral)
       }
       
-      // Use neutral traits [50,50,50,50,50,50] to get base Gotchi parts
-      const neutralTraits = [50, 50, 50, 50, 50, 50]
+      // Use the gotchi's actual numeric traits when available to preserve eye shape/color
+      const traitsForCleanPreview = (numericTraits && numericTraits.length === 6)
+        ? numericTraits
+        : [50, 50, 50, 50, 50, 50]
       const emptyWearables = new Array(16).fill(0)
       
       console.log('📞 Calling previewSideAavegotchi for clean base Gotchi with:', {
         hauntId: baseHauntId,
         collateral: collateral,
-        traits: neutralTraits,
+        traits: traitsForCleanPreview,
         wearables: emptyWearables,
         wearablesLength: emptyWearables.length
       })
@@ -1478,7 +1474,7 @@ async function fetchSideViews() {
       const cleanSidesResponse = await contract.previewSideAavegotchi(
         baseHauntId,
         collateral,
-        neutralTraits,
+        traitsForCleanPreview,
         emptyWearables
       )
       const callEndTime = performance.now()
@@ -6875,6 +6871,11 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
   @apply mb-2;
 }
 
+.wearable-grid-section {
+  @apply flex flex-col gap-4 w-full;
+  @apply lg:col-span-2;
+}
+
 .wearable-search {
   @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg mb-4;
   @apply bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100;
@@ -6882,7 +6883,7 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 }
 
 .wearable-grid {
-  @apply grid grid-cols-2 gap-3;
+  @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-3;
   max-height: 500px !important; /* Increased from 96 (384px) to 500px for better visibility */
   overflow-y: auto !important;
   overflow-x: hidden !important;
@@ -6948,21 +6949,21 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
   margin: 0 !important;
 }
 
-.wearable-browser .wearable-item {
+.wearable-grid .wearable-item {
   @apply cursor-pointer p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700;
   @apply hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors;
   @apply bg-white dark:bg-gray-800;
 }
 
-.wearable-browser .wearable-item.selected {
+.wearable-grid .wearable-item.selected {
   @apply border-purple-600 dark:border-purple-500 bg-purple-100 dark:bg-purple-900;
 }
 
-.wearable-browser .wearable-item.equipped {
+.wearable-grid .wearable-item.equipped {
   @apply border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900;
 }
 
-.wearable-browser .wearable-item.equipped.selected {
+.wearable-grid .wearable-item.equipped.selected {
   @apply border-purple-600 dark:border-purple-500 bg-purple-200 dark:bg-purple-800;
 }
 

@@ -1,7 +1,7 @@
 import { ref, computed, watch } from 'vue'
 import { useQueries } from '@tanstack/vue-query'
 import { getContract } from '../utils/contract.js'
-import { getCachedType, cacheType } from '../utils/wearableCache.js'
+import { getCachedType, cacheType, getCachedSvg, cacheSvg } from '../utils/wearableCache.js'
 
 export function useWearables() {
   const isLoadingWearables = ref(false)
@@ -10,6 +10,45 @@ export function useWearables() {
   const batchSize = 25 // Load 25 wearables at a time (reduced for slower loading)
   const batchDelay = 1500 // Wait 1.5 seconds between batches (increased delay to avoid rate limits)
   const bodyWearableIds = ref(new Set()) // Track which IDs are Body (slot 0) wearables
+  const wearableSvgsMap = ref({}) // Store raw wearable SVGs keyed by wearable ID
+  // Helper to wrap SVG in 64x64 canvas for thumbnails
+  function wrapSvgIn64x64Canvas(svgString) {
+    if (!svgString) return ''
+
+    try {
+      const viewBoxMatch = svgString.match(/viewBox="([^"]+)"/i)
+      let viewBox = '0 0 64 64'
+
+      if (viewBoxMatch) {
+        viewBox = viewBoxMatch[1]
+      }
+
+      const viewBoxValues = viewBox.split(/\s+/).map(v => parseFloat(v))
+      const [x, y, width, height] = viewBoxValues.length === 4
+        ? viewBoxValues
+        : [0, 0, 64, 64]
+
+      const centerX = (64 - width) / 2
+      const centerY = (64 - height) / 2
+
+      const innerMatch = svgString.match(/<svg[^>]*>([\s\S]*)<\/svg>/i)
+      const innerContent = innerMatch ? innerMatch[1] : svgString
+
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <g transform="translate(${centerX - x}, ${centerY - y})">
+    ${innerContent}
+  </g>
+</svg>`
+    } catch (error) {
+      console.warn('Failed to wrap wearable SVG in 64x64 canvas:', error)
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <g transform="translate(7, 21)">
+    ${svgString.replace(/<svg[^>]*>|<\/svg>/gi, '')}
+  </g>
+</svg>`
+    }
+  }
+
   
   // Generate a list of wearable IDs (1-420 as there are only 420 total items)
   // In production, this should come from contract or API
@@ -158,6 +197,79 @@ export function useWearables() {
   })
 
   // Create a map of wearable ID to name
+  // Fetch wearable SVGs with caching
+  const wearableSvgQueries = useQueries({
+    queries: computed(() => {
+      const ids = idsToLoad.value
+
+      return ids.map(wearableId => {
+        return {
+          queryKey: ['wearable-svg', wearableId],
+          queryFn: async () => {
+            if (wearableId > MAX_WEARABLE_ID || wearableId < 1) {
+              return null
+            }
+
+            try {
+              const cachedSvg = await getCachedSvg(wearableId)
+              if (cachedSvg) {
+                return cachedSvg
+              }
+
+              const contract = getContract()
+              const svg = await contract.getItemSvg(wearableId)
+
+              if (svg) {
+                cacheSvg(wearableId, svg).catch(() => {})
+                return svg
+              }
+            } catch (error) {
+              const isKnownError = error.message?.includes("ItemsFacet: Item SVG doesn't exist") ||
+                                   error.message?.includes('SVG type or id does not exist') ||
+                                   error.message?.includes('missing revert data') ||
+                                   error.code === 'CALL_EXCEPTION'
+              if (!isKnownError) {
+                console.warn(`Failed to fetch SVG for wearable ${wearableId}:`, error.message || error)
+              }
+            }
+
+            return null
+          },
+          enabled: true,
+          staleTime: 1000 * 60 * 60 * 24, // Cache SVGs for 1 day in memory
+          retry: (failureCount, error) => {
+            if (error?.message?.includes('429') || error?.message?.includes('compute units per second') || error?.code === 429) {
+              return false
+            }
+            return failureCount < 1
+          },
+          retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
+        }
+      })
+    })
+  })
+
+  // Update wearable SVG map when new SVGs are loaded
+  watch([wearableSvgQueries, () => idsToLoad.value], () => {
+    const ids = idsToLoad.value
+    const queries = wearableSvgQueries.value || []
+    if (!Array.isArray(queries) || queries.length === 0) return
+
+    const updatedMap = { ...wearableSvgsMap.value }
+
+    queries.forEach((query, index) => {
+      const wearableId = ids[index]
+      if (!wearableId) return
+
+      const svgValue = query?.data?.value ?? query?.data ?? null
+      if (typeof svgValue === 'string' && svgValue.trim().length > 0) {
+        updatedMap[wearableId] = svgValue
+      }
+    })
+
+    wearableSvgsMap.value = updatedMap
+  }, { deep: true })
+
   const wearableNameMap = computed(() => {
     const map = {}
     const ids = idsToLoad.value
@@ -192,7 +304,9 @@ export function useWearables() {
         name,
         slot: slot !== null ? slot : null, // Use real slot from contract
         rarity: null,
-        thumbnail: generateWearableThumbnail(id) // Use fallback thumbnail
+        thumbnail: wearableSvgsMap.value[id]
+          ? wrapSvgIn64x64Canvas(wearableSvgsMap.value[id])
+          : generateWearableThumbnail(id) // Use fallback thumbnail
       }
     })
   })
@@ -270,6 +384,7 @@ export function useWearables() {
     wearablesError,
     wearables,
     getWearablesBySlot,
-    loadingProgress // Export progress tracking
+    loadingProgress, // Export progress tracking
+    wearableSvgsMap
   }
 }
