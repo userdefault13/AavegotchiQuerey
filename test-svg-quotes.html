@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SVG Quote Test</title>
+</head>
+<body>
+    <h2>1. Raw HTML - Using escaped quotes (WRONG - won't work)</h2>
+    <div id="wrong">
+        <!-- This won't work - browser sees literal \" -->
+    </div>
+
+    <h2>2. Raw HTML - Using regular quotes (CORRECT)</h2>
+    <div id="correct1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="20" fill="red"/>
+        </svg>
+    </div>
+
+    <h2>3. JavaScript - Using escaped quotes (CORRECT)</h2>
+    <div id="correct2"></div>
+
+    <script>
+        // In JavaScript strings, \" works correctly
+        const svgString = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"32\" r=\"20\" fill=\"blue\"/></svg>";
+        document.getElementById('correct2').innerHTML = svgString;
+
+        // This would be WRONG in raw HTML but works in JS:
+        const wrongHtml = "<svg xmlns=\"http://www.w3.org/2000/svg\">...</svg>";
+        document.getElementById('wrong').innerHTML = wrongHtml; // This actually works because it's in JS!
+    </script>
+</body>
+</html>
+
+
+
+

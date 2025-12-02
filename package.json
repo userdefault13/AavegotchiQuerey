@@ -7,13 +7,20 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "export-wearable": "node scripts/exportWearable.js"
+    "export-wearable": "node cli/exportWearable.js",
+    "test-wearables": "node cli/testWearables.js",
+    "get-aavegotchi": "node cli/getAavegotchi.js",
+    "generate-collateral-base": "node cli/generateCollateralBase.js",
+    "generate-all-collateral-bases": "node cli/generateAllCollateralBases.js",
+    "generate-all-collaterals": "node cli/generateAllCollaterals.js",
+    "generate-all-eyes": "node cli/generateAllEyes.js"
   },
   "dependencies": {
     "@reown/appkit": "^1.8.12",
     "@reown/appkit-adapter-wagmi": "^1.8.12",
     "@tanstack/vue-query": "^5.90.6",
     "@wagmi/vue": "^0.3.2",
+    "@xmldom/xmldom": "^0.8.11",
     "ethers": "^6.15.0",
     "viem": "^2.38.6",
     "vue": "^3.5.22",
