@@ -13,7 +13,17 @@
     "generate-collateral-base": "node cli/generateCollateralBase.js",
     "generate-all-collateral-bases": "node cli/generateAllCollateralBases.js",
     "generate-all-collaterals": "node cli/generateAllCollaterals.js",
-    "generate-all-eyes": "node cli/generateAllEyes.js"
+    "generate-all-eyes": "node cli/generateAllEyes.js",
+    "generate-all-wearables": "node cli/generateAllWearables.js",
+    "fetch-all-collateral-svgs": "node cli/fetchAllCollateralSvgs.js",
+    "extract-side-view-hands": "node cli/extractSideViewHands.js",
+    "update-collateral-bases-with-hands": "node cli/updateCollateralBasesWithHands.js",
+    "cleanup-empty-hands": "node cli/cleanupEmptyHands.js",
+    "convert-hands-to-aseprite": "node cli/convertHandsToAseprite.js",
+    "extract-all-body-with-cheeks": "node cli/extractAllBodyWithCheeks.js",
+    "combine-body-svgs": "node cli/combineBodySvgsToJson.js",
+    "update-collateral-base-bodies": "node cli/updateCollateralBaseBodies.js",
+    "convert-body-svgs-to-aseprite": "node cli/convertBodySvgsToAseprite.js"
   },
   "dependencies": {
     "@reown/appkit": "^1.8.12",
