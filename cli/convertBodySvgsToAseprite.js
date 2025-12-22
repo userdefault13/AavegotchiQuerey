@@ -172,3 +172,4 @@ async function convertBodySvgsToAseprite() {
 }
 
 convertBodySvgsToAseprite().catch(console.error)
+

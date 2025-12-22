@@ -96,3 +96,4 @@ async function updateCollateralBaseBodies() {
 }
 
 updateCollateralBaseBodies().catch(console.error)
+

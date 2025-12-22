@@ -190,3 +190,4 @@ const collateralName = process.argv[2] || null
 
 importBodySvgsFromJson(collateralName).catch(console.error)
 
+
