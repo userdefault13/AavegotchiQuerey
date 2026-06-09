@@ -245,7 +245,12 @@
                   :title="wearable.name || `Wearable #${wearable.id}`"
                 >
                   <div class="wearable-thumbnail">
-                    <span v-if="wearable.thumbnail" class="thumbnail-img" v-html="wearable.thumbnail"></span>
+                    <span
+                      v-if="wearable.thumbnail"
+                      class="thumbnail-img"
+                      :class="{ 'thumbnail-mirrored': selectedWearableSlot === RIGHT_HAND_SLOT }"
+                      v-html="wearable.thumbnail"
+                    ></span>
                     <span v-else class="thumbnail-placeholder">#{{ wearable.id }}</span>
                   </div>
                   <div class="wearable-info">
@@ -874,9 +879,14 @@ const wearableSlots = [
   { slot: 7, name: 'Background' }
 ]
 
+const LEFT_HAND_SLOT = 4
+const RIGHT_HAND_SLOT = 5
+
 // Get filtered wearables for current slot
 const filteredWearables = computed(() => {
   const slot = selectedWearableSlot.value
+  // Right hand has no separate item list — use left hand wearables (mirrored when equipped)
+  const effectiveSlot = slot === RIGHT_HAND_SLOT ? LEFT_HAND_SLOT : slot
   // Access wearables.value directly - this ensures Vue tracks the dependency
   const allWearables = wearables.value || []
   
@@ -898,8 +908,8 @@ const filteredWearables = computed(() => {
     // If slot is null or undefined, exclude it (no valid slot data)
     if (w.slot === null || w.slot === undefined) return false
     if (typeof w.slot !== 'number') return false
-    if (slot === undefined || slot === null) return true
-    return w.slot === slot
+    if (effectiveSlot === undefined || effectiveSlot === null) return true
+    return w.slot === effectiveSlot
   })
   
   // console.log('[filteredWearables] After slot filter:', slotWearables.length, 'items for slot', slot)
@@ -5672,6 +5682,12 @@ function buildSvgFromParts(viewName = 'Front') {
       Right: { x: 37, y: 31, className: 'wearable-hand wearable-hand-left' },
       Back: { x: 3, y: 32, className: 'wearable-hand wearable-hand-left' }
     },
+    5: { // Right Hand — left hand SVG mirrored around the vertical center (x=32)
+      Front: { x: 3, y: 32, className: 'wearable-hand wearable-hand-right', mirror: true },
+      Left: { x: 3, y: 32, className: 'wearable-hand wearable-hand-right' },
+      Right: { x: 37, y: 31, className: 'wearable-hand wearable-hand-right' },
+      Back: { x: 3, y: 32, className: 'wearable-hand wearable-hand-right', mirror: true }
+    },
     7: { // Background
       Front: { x: 0, y: 0, className: 'wearable-bg' },
       Left: { x: 0, y: 0, className: 'wearable-bg' },
@@ -5688,23 +5704,30 @@ function buildSvgFromParts(viewName = 'Front') {
       return content
     }
     
-    // Check if content already has nested SVG with x/y
+    // Check if content already has nested SVG with x/y (skip re-wrap unless right hand needs mirror)
     const tempParser = new DOMParser()
     try {
       const tempDoc = tempParser.parseFromString(`<div>${content}</div>`, 'text/html')
       const hasNestedSvg = tempDoc.querySelector('svg[x], svg[y]')
       
-      if (hasNestedSvg) {
+      if (hasNestedSvg && slot !== RIGHT_HAND_SLOT) {
         // Already has positioning, return as-is
         return content
       }
     } catch (e) {
       // If parsing fails, continue with wrapping
     }
+
+    let innerContent = content
+    if (position.mirror) {
+      // Mirror around gotchi center (x=32): scale(-1,1) translate(2*x - 64, 0)
+      const translateX = 2 * position.x - 64
+      innerContent = `<g transform="scale(-1, 1) translate(${translateX}, 0)">${content}</g>`
+    }
     
     // Content is the serialized children (groups, paths, etc.)
     // Wrap in group with appropriate class and nested SVG with positioning
-    return `<g class="gotchi-wearable ${position.className}"><svg x="${position.x}" y="${position.y}">${content}</svg></g>`
+    return `<g class="gotchi-wearable ${position.className}"><svg x="${position.x}" y="${position.y}">${innerContent}</svg></g>`
   }
   
   // Helper function to extract sleeves from a body wearable SVG
@@ -5840,7 +5863,7 @@ function buildSvgFromParts(viewName = 'Front') {
               const svgElement = doc.querySelector('svg')
               if (svgElement) {
                 const nestedSvgs = svgElement.querySelectorAll('svg[x], svg[y]')
-                if (nestedSvgs.length > 0) {
+                if (nestedSvgs.length > 0 && slot !== RIGHT_HAND_SLOT) {
                   const children = Array.from(svgElement.children)
                   children.forEach(child => {
                     if (child.tagName !== 'style') {
@@ -5972,7 +5995,7 @@ function buildSvgFromParts(viewName = 'Front') {
           // Check if wearable SVG already has nested SVG elements with x/y positioning (check deeply)
           const nestedSvgs = svgElement.querySelectorAll('svg[x], svg[y]')
           
-          if (nestedSvgs.length > 0) {
+          if (nestedSvgs.length > 0 && slot !== RIGHT_HAND_SLOT) {
             // Wearable already has nested SVGs with positioning - preserve them
             // But exclude sleeves if this is a body wearable (we'll extract them separately)
             const children = Array.from(svgElement.children)
@@ -6989,6 +7012,10 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
   max-width: 100% !important;
   max-height: 100% !important;
   object-fit: contain !important; /* Scale SVG to fit container */
+}
+
+.thumbnail-mirrored :deep(svg) {
+  transform: scaleX(-1);
 }
 
 .thumbnail-placeholder {

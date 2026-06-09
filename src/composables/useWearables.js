@@ -311,14 +311,21 @@ export function useWearables() {
     })
   })
   
+  // Right hand uses left hand wearables mirrored vertically (no separate item list on-chain)
+  const LEFT_HAND_SLOT = 4
+  const RIGHT_HAND_SLOT = 5
+
+  const getEffectiveSlot = (slot) => (slot === RIGHT_HAND_SLOT ? LEFT_HAND_SLOT : slot)
+
   // Filter wearables by slot (if we have slot data)
   const getWearablesBySlot = (slot) => {
     if (slot === undefined || slot === null) {
       // If no slot specified, return all wearables
       return wearables.value
     }
+    const effectiveSlot = getEffectiveSlot(slot)
     // Otherwise, only return wearables that match the slot (filter out null slots)
-    return wearables.value.filter(w => w.slot === slot)
+    return wearables.value.filter(w => w.slot === effectiveSlot)
   }
   
   // Function to load wearables in batches
@@ -384,6 +391,7 @@ export function useWearables() {
     wearablesError,
     wearables,
     getWearablesBySlot,
+    getEffectiveSlot,
     loadingProgress, // Export progress tracking
     wearableSvgsMap
   }
