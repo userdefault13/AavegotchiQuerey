@@ -39,9 +39,10 @@ A Vue 3 web application for viewing and interacting with Aavegotchis on the Base
 
 3. Create a `.env` file in the root directory:
    ```env
-   VITE_ALCHEMY_API_KEY=YOUR_KEY
    VITE_REOWN_PROJECT_ID=YOUR_KEY
    VITE_CONTRACT_ADDRESS=YOUR_KEY
+   # Optional: override the default Reown RPC
+   # VITE_BASE_RPC_URL=https://mainnet.base.org
    ```
 
 ### Development
@@ -70,9 +71,9 @@ npm run preview
 1. Push your code to a Git repository
 2. Import the project to Vercel
 3. Add environment variables in Vercel dashboard:
-   - `VITE_ALCHEMY_API_KEY`
    - `VITE_REOWN_PROJECT_ID`
    - `VITE_CONTRACT_ADDRESS`
+   - `VITE_BASE_RPC_URL` (optional)
 4. Deploy!
 
 The `vercel.json` file is already configured for optimal deployment.
@@ -81,7 +82,7 @@ The `vercel.json` file is already configured for optimal deployment.
 
 - **Aavegotchi Diamond Contract**: `0xA99c4B08201F2913Db8D28e71d020c4298F29dBF`
 - **Network**: Base (Chain ID: 8453)
-- **RPC Provider**: Alchemy
+- **RPC Provider**: Reown/WalletConnect (override with `VITE_BASE_RPC_URL`)
 
 ## Project Structure
 

@@ -1,12 +1,12 @@
 import { ethers } from 'ethers'
-import { AAVEGOTCHI_DIAMOND, AAVEGOTCHI_ABI, ALCHEMY_RPC_URL } from '../config/constants.js'
+import { AAVEGOTCHI_DIAMOND, AAVEGOTCHI_ABI, BASE_RPC_URL } from '../config/constants.js'
 
 let provider = null
 let contract = null
 
 export function getProvider() {
   if (!provider) {
-    provider = new ethers.JsonRpcProvider(ALCHEMY_RPC_URL)
+    provider = new ethers.JsonRpcProvider(BASE_RPC_URL)
   }
   return provider
 }

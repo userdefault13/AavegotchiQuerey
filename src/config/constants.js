@@ -1,9 +1,11 @@
 export const AAVEGOTCHI_DIAMOND = import.meta.env.VITE_CONTRACT_ADDRESS || '0xA99c4B08201F2913Db8D28e71d020c4298F29dBF'
-export const ALCHEMY_API_KEY = import.meta.env.VITE_ALCHEMY_API_KEY || 'cePVnDpeOovd0mRN3jGWWuzrtkgIfcJr'
 export const REOWN_PROJECT_ID = import.meta.env.VITE_REOWN_PROJECT_ID || 'c7a4e051946682fb3f824cf398390343'
 
 export const BASE_CHAIN_ID = 8453
-export const ALCHEMY_RPC_URL = `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
+
+// Reown/WalletConnect RPC (browser-safe, CORS-enabled). Override with VITE_BASE_RPC_URL if needed.
+export const BASE_RPC_URL = import.meta.env.VITE_BASE_RPC_URL
+  || `https://rpc.walletconnect.org/v1/?chainId=eip155:${BASE_CHAIN_ID}&projectId=${REOWN_PROJECT_ID}`
 
 // Aavegotchi contract ABI - minimal set for our needs
 export const AAVEGOTCHI_ABI = [
