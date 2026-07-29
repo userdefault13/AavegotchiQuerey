@@ -6413,7 +6413,7 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 }
 
 .section-subtitle {
-  @apply text-xl font-semibold text-blue-600 dark:text-blue-400 mb-4;
+  @apply text-xl font-semibold text-blue-700 dark:text-blue-400 mb-4;
 }
 
 .svg-tabs {
@@ -6422,13 +6422,13 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 }
 
 .tab-btn {
-  @apply px-4 py-2 font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors;
-  @apply border-b-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600;
+  @apply px-4 py-2 font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors;
+  @apply border-b-2 border-transparent hover:border-gray-400 dark:hover:border-gray-500;
   @apply whitespace-nowrap;
 }
 
 .tab-btn.active {
-  @apply text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400;
+  @apply text-blue-700 dark:text-blue-400 border-blue-700 dark:border-blue-400;
 }
 
 .tab-content {
@@ -6449,7 +6449,7 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 
 .breakdown-section {
   @apply mt-8 rounded-lg p-6 shadow-md transition-colors;
-  background-color: #374151;
+  @apply bg-white dark:bg-gray-800;
 }
 
 .breakdown-content {
@@ -6470,7 +6470,7 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 }
 
 .category-title {
-  @apply text-lg font-semibold text-blue-600 dark:text-blue-400 mb-3;
+  @apply text-lg font-semibold text-blue-700 dark:text-blue-400 mb-3;
 }
 
 .category-list {
@@ -6479,9 +6479,8 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 
 .category-item {
   @apply rounded-lg border p-4;
-  background-color: #374151;
-  border-color: #4b5563;
-  border-width: 1px;
+  @apply bg-gray-50 dark:bg-gray-700/60;
+  @apply border-gray-300 dark:border-gray-600;
 }
 
 .category-details {
@@ -6489,8 +6488,8 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 }
 
 .category-summary {
-  @apply flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors;
-  @apply list-none;
+  @apply flex items-center justify-between px-4 py-3 cursor-pointer transition-colors list-none;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-600;
 }
 
 .category-summary::-webkit-details-marker {
@@ -6498,14 +6497,12 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 }
 
 .category-name {
-  @apply font-medium;
-  color: #60a5fa;
+  @apply font-medium text-gray-800 dark:text-blue-300;
 }
 
 .category-count {
   @apply text-sm px-2 py-1 rounded;
-  background-color: #111827;
-  color: #ffffff;
+  @apply bg-gray-800 text-white dark:bg-gray-950 dark:text-gray-100;
 }
 
 .category-elements {
@@ -6538,8 +6535,7 @@ watch([dressingRoomAvailableViews, dressingRoomViewIndex], ([views, index]) => {
 }
 
 .detail-label {
-  @apply font-semibold min-w-[100px];
-  color: #60a5fa;
+  @apply font-semibold min-w-[100px] text-gray-700 dark:text-blue-300;
 }
 
 .detail-value {

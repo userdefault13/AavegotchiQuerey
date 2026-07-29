@@ -1,8 +1,32 @@
 <template>
   <div id="app" class="min-h-screen">
       <header class="bg-white dark:bg-gray-800 shadow-md transition-colors">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Aavegotchi Viewer</h1>
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center gap-4 flex-wrap">
+          <div class="flex items-center gap-6">
+            <h1 class="text-2xl font-bold text-blue-600 dark:text-blue-400">Aavegotchi Viewer</h1>
+            <nav class="flex gap-1">
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                :class="activeTab === 'gallery'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                @click="activeTab = 'gallery'; selectedGotchiId = null"
+              >
+                Gallery
+              </button>
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                :class="activeTab === 'composer'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                @click="activeTab = 'composer'; selectedGotchiId = null"
+              >
+                Composer
+              </button>
+            </nav>
+          </div>
           <div class="flex items-center gap-4">
             <!-- Theme Toggle Button -->
             <button
@@ -33,26 +57,32 @@
       </header>
 
       <main class="container mx-auto py-6">
-        <div v-if="!connected" class="text-center py-12">
-          <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg p-8 shadow-md transition-colors">
-            <h2 class="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-400">Connect Your Wallet</h2>
-            <p class="text-blue-600 dark:text-blue-400 mb-6">Connect your wallet to view your Aavegotchis on Base chain.</p>
-            <appkit-button />
-          </div>
-        </div>
+        <!-- Composer: no wallet required -->
+        <Composer v-if="activeTab === 'composer'" />
 
-        <div v-else class="app-content">
-          <Gallery 
-            v-if="!selectedGotchiId"
-            :selected-gotchi-id="selectedGotchiId"
-            @select="handleSelectGotchi"
-          />
-          <Stage 
-            v-else
-            :gotchi-id="selectedGotchiId"
-            @close="selectedGotchiId = null"
-          />
-        </div>
+        <!-- Gallery: wallet required -->
+        <template v-else>
+          <div v-if="!connected" class="text-center py-12">
+            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg p-8 shadow-md transition-colors">
+              <h2 class="text-2xl font-bold mb-4 text-blue-600 dark:text-blue-400">Connect Your Wallet</h2>
+              <p class="text-blue-600 dark:text-blue-400 mb-6">Connect your wallet to view your Aavegotchis on Base chain.</p>
+              <appkit-button />
+            </div>
+          </div>
+
+          <div v-else class="app-content">
+            <Gallery 
+              v-if="!selectedGotchiId"
+              :selected-gotchi-id="selectedGotchiId"
+              @select="handleSelectGotchi"
+            />
+            <Stage 
+              v-else
+              :gotchi-id="selectedGotchiId"
+              @close="selectedGotchiId = null"
+            />
+          </div>
+        </template>
       </main>
     </div>
 </template>
@@ -63,33 +93,27 @@ import { useWallet } from './composables/useWallet.js'
 import { useTheme } from './composables/useTheme.js'
 import Gallery from './components/Gallery.vue'
 import Stage from './components/Stage.vue'
+import Composer from './components/Composer.vue'
 
 const { isConnected, shortAddress, address, disconnect } = useWallet()
 const { isDark, toggleTheme } = useTheme()
 const selectedGotchiId = ref(null)
+const activeTab = ref('composer')
 
-// Ensure isConnected is reactive - Vue templates auto-unwrap refs
 const connected = computed(() => {
-  // isConnected should already be a computed from useWallet
   const value = isConnected.value
-  console.log('App computed connected state:', value, 'address:', address.value)
   return !!value
 })
 
-// Debug connection state
 watch(isConnected, (connected) => {
-  console.log('isConnected watch triggered:', connected, 'value:', typeof connected === 'object' && 'value' in connected ? connected.value : connected)
+  console.log('isConnected watch triggered:', connected)
   if (address?.value) {
     console.log('Address:', address.value)
   }
 }, { immediate: true })
 
-// Watch address only if it's a valid ref
 watch(() => address?.value, (addr) => {
   console.log('Address changed:', addr)
-  if (addr) {
-    console.log('Address is now:', addr, 'isConnected:', typeof isConnected === 'object' && 'value' in isConnected ? isConnected.value : isConnected)
-  }
 }, { immediate: true })
 
 function handleSelectGotchi(tokenId) {
