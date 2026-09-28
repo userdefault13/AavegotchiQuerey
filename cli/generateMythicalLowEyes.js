@@ -9,8 +9,7 @@ const __dirname = path.dirname(__filename)
 
 // Constants
 const AAVEGOTCHI_DIAMOND = process.env.VITE_CONTRACT_ADDRESS || '0xA99c4B08201F2913Db8D28e71d020c4298F29dBF'
-const ALCHEMY_API_KEY = process.env.VITE_ALCHEMY_API_KEY || 'cePVnDpeOovd0mRN3jGWWuzrtkgIfcJr'
-const ALCHEMY_RPC_URL = `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
+const BASE_RPC_URL = process.env.BASE_RPC_URL || 'https://aarcadeghst.com/api/base-rpc'
 
 // Aavegotchi contract ABI
 const AAVEGOTCHI_ABI = [
@@ -229,7 +228,7 @@ async function main() {
   
   console.log(`Found amAAVE (Haunt ${amaave.haunt})\n`)
   
-  const provider = new ethers.JsonRpcProvider(ALCHEMY_RPC_URL)
+  const provider = new ethers.JsonRpcProvider(BASE_RPC_URL)
   const contract = new ethers.Contract(AAVEGOTCHI_DIAMOND, AAVEGOTCHI_ABI, provider)
   
   const outputDir = path.join(__dirname, 'exports/Eyes/amaave/MythicalLow')

@@ -2,8 +2,7 @@ import { ethers } from 'ethers'
 
 // Constants
 const AAVEGOTCHI_DIAMOND = process.env.VITE_CONTRACT_ADDRESS || '0xA99c4B08201F2913Db8D28e71d020c4298F29dBF'
-const ALCHEMY_API_KEY = process.env.VITE_ALCHEMY_API_KEY || 'cePVnDpeOovd0mRN3jGWWuzrtkgIfcJr'
-const ALCHEMY_RPC_URL = `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
+const BASE_RPC_URL = process.env.BASE_RPC_URL || 'https://aarcadeghst.com/api/base-rpc'
 
 const HAUNT_ID = 1
 const COLLATERAL = '0x28424507fefb6f7f8E9D3860F56504E4e5f5f390'
@@ -561,7 +560,7 @@ async function main() {
   
   try {
     // Connect to provider
-    const provider = new ethers.JsonRpcProvider(ALCHEMY_RPC_URL)
+    const provider = new ethers.JsonRpcProvider(BASE_RPC_URL)
     console.log('✓ Connected to provider')
     
     // Create contract instance

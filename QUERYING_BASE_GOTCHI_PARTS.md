@@ -13,14 +13,14 @@ The process involves:
 ## Prerequisites
 
 - Node.js 20.19.0+ or 22.12.0+
-- Access to Base network (via Alchemy RPC or similar)
+- Access to Base network (keyless via the Aarcade proxy `https://aarcadeghst.com/api/base-rpc`, or any Base RPC)
 - `ethers.js` library
 
 ## Contract Information
 
 - **Contract Address**: `0xA99c4B08201F2913Db8D28e71d020c4298F29dBF`
 - **Network**: Base (Chain ID: 8453)
-- **RPC Provider**: Alchemy (or your preferred provider)
+- **RPC Provider**: Aarcade Base RPC proxy (or your preferred provider)
 
 ## Step 1: Contract Setup
 
@@ -30,7 +30,7 @@ First, set up your contract connection:
 import { ethers } from 'ethers'
 
 const AAVEGOTCHI_DIAMOND = '0xA99c4B08201F2913Db8D28e71d020c4298F29dBF'
-const ALCHEMY_RPC_URL = `https://base-mainnet.g.alchemy.com/v2/YOUR_API_KEY`
+const BASE_RPC_URL = process.env.BASE_RPC_URL || 'https://aarcadeghst.com/api/base-rpc'
 
 // Minimal ABI for previewSideAavegotchi
 const AAVEGOTCHI_ABI = [
@@ -51,7 +51,7 @@ const AAVEGOTCHI_ABI = [
 ]
 
 // Create provider and contract
-const provider = new ethers.JsonRpcProvider(ALCHEMY_RPC_URL)
+const provider = new ethers.JsonRpcProvider(BASE_RPC_URL)
 const contract = new ethers.Contract(AAVEGOTCHI_DIAMOND, AAVEGOTCHI_ABI, provider)
 ```
 
@@ -319,7 +319,7 @@ import { ethers } from 'ethers'
 
 async function getBaseGotchiParts(collateral) {
   // Setup contract (see Step 1)
-  const provider = new ethers.JsonRpcProvider(ALCHEMY_RPC_URL)
+  const provider = new ethers.JsonRpcProvider(BASE_RPC_URL)
   const contract = new ethers.Contract(AAVEGOTCHI_DIAMOND, AAVEGOTCHI_ABI, provider)
   
   // Fetch base parts (see Step 2)
