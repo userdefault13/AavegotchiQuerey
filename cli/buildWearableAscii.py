@@ -14,10 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "data" / "aavegotchi_db_wearables.json"
-OUTS = [
-    ROOT / "data" / "aavegotchi_db_wearables_ascii.json",
-    ROOT / "public" / "data" / "aavegotchi_db_wearables_ascii.json",
-]
+SIZES = ("full", "resize", "min")
 
 VIEWS = ["front", "left", "right", "back"]
 SLOTS = [
@@ -166,6 +163,100 @@ def render(inner):
     return read_png(png)
 
 
+# Darker shades win when both halves of a cell are filled with different ink.
+SHADE_RANK = {" ": 0, "░": 1, "▒": 2, "▓": 3, "█": 4}
+
+
+def pack_cell(top, bottom):
+    """Two SVG pixels stacked in one character. Empty half stays blank."""
+    top = top if top and top != " " else " "
+    bottom = bottom if bottom and bottom != " " else " "
+    if top == " " and bottom == " ":
+        return " "
+    if top == " ":
+        return "▄"
+    if bottom == " ":
+        return "▀"
+    if top == bottom:
+        return top
+    return top if SHADE_RANK.get(top, 0) >= SHADE_RANK.get(bottom, 0) else bottom
+
+
+def pack_rows(rows):
+    """Resize: one character row per two SVG rows. ▀ top, ▄ bottom."""
+    if not rows:
+        return []
+    width = max(len(row) for row in rows)
+    padded = [row.ljust(width) for row in rows]
+    if len(padded) % 2:
+        padded.append(" " * width)
+    packed = []
+    for i in range(0, len(padded), 2):
+        packed.append(
+            "".join(pack_cell(padded[i][x], padded[i + 1][x]) for x in range(width))
+        )
+    return packed
+
+
+def pack_min_cell(tl, tr, bl, br):
+    """Min: one character per 2×2 SVG pixels. A half is drawn only when both of its pixels are ink."""
+    cells = [tl, tr, bl, br]
+
+    def ink(ch):
+        return bool(ch and ch != " ")
+
+    def darker(group):
+        best = " "
+        for ch in group:
+            if SHADE_RANK.get(ch, 0) > SHADE_RANK.get(best, 0):
+                best = ch
+        return best
+
+    top = ink(tl) and ink(tr)
+    bottom = ink(bl) and ink(br)
+    left = ink(tl) and ink(bl)
+    right = ink(tr) and ink(br)
+    if top and bottom:
+        shades = {ch for ch in cells if ink(ch)}
+        return cells[0] if len(shades) == 1 else darker(cells)
+    if top:
+        return "▀"
+    if bottom:
+        return "▄"
+    if left:
+        return "▌"
+    if right:
+        return "▐"
+    return " "
+
+
+def pack_min_rows(rows):
+    """Min: half as wide and half as tall. Lone pixels become blank spots."""
+    if not rows:
+        return []
+    width = max(len(row) for row in rows)
+    padded = [row.ljust(width) for row in rows]
+    if len(padded) % 2:
+        padded.append(" " * width)
+    if width % 2:
+        padded = [row + " " for row in padded]
+        width += 1
+    packed = []
+    for y in range(0, len(padded), 2):
+        packed.append(
+            "".join(
+                pack_min_cell(
+                    padded[y][x],
+                    padded[y][x + 1],
+                    padded[y + 1][x],
+                    padded[y + 1][x + 1],
+                )
+                for x in range(0, width, 2)
+            )
+        )
+    return packed
+
+
 def rasterize(fragment):
     attrs, inner = split_svg(fragment)
     place_x = num_attr(attrs, "x")
@@ -233,6 +324,74 @@ def convert_wearable(wearable):
     return entry
 
 
+def scale_view(view, size):
+    rows = view.get("rows") or []
+    x = int(view.get("x") or 0)
+    y = int(view.get("y") or 0)
+    if size == "resize":
+        rows = pack_rows(rows)
+        y //= 2
+    elif size == "min":
+        rows = pack_min_rows(rows)
+        x //= 2
+        y //= 2
+    return {"name": view.get("name"), "x": x, "y": y, "rows": rows}
+
+
+def scale_library(full_lib, size):
+    meta = {
+        "source": full_lib["meta"].get("source", "data/aavegotchi_db_wearables.json"),
+        "size": size,
+        "views": VIEWS,
+        "slots": SLOTS,
+        "shades": ["█", "▓", "▒", "░"],
+        "blank": " ",
+        "count": len(full_lib["wearables"]),
+    }
+    if size == "full":
+        meta["pixel"] = "1 glyph = 1 SVG pixel"
+    elif size == "resize":
+        meta["halves"] = ["▀", "▄"]
+        meta["pixel"] = "1 character row = 2 SVG pixels. ▀ top, ▄ bottom."
+    else:
+        meta["halves"] = ["▀", "▄", "▌", "▐"]
+        meta["pixel"] = "1 character = 2×2 SVG pixels. Half blocks need both pixels; a lone pixel is blank."
+    wearables = []
+    for item in full_lib["wearables"]:
+        entry = {
+            "id": item["id"],
+            "name": item.get("name") or "",
+            "rarity": item.get("rarity") or "",
+            "minLevel": item.get("minLevel") or 1,
+            "slots": item.get("slots") or [],
+            "slotNames": item.get("slotNames") or [],
+            "views": [scale_view(view, size) for view in item.get("views") or []],
+            "sleeves": None,
+        }
+        if item.get("sleeves"):
+            entry["sleeves"] = [scale_view(view, size) for view in item["sleeves"]]
+        wearables.append(entry)
+    return {"meta": meta, "wearables": wearables}
+
+
+def write_sizes(full_lib):
+    for size in SIZES:
+        text = json.dumps(scale_library(full_lib, size), ensure_ascii=False, indent=2) + "\n"
+        name = f"aavegotchi_db_wearables_ascii_{size}.json"
+        for folder in (ROOT / "data", ROOT / "public" / "data"):
+            folder.mkdir(parents=True, exist_ok=True)
+            path = folder / name
+            path.write_text(text)
+            print(f"wrote {path} ({path.stat().st_size} bytes)")
+    # The ASCII tab reads the unsuffixed file, which stays the resize set.
+    resize_name = "aavegotchi_db_wearables_ascii.json"
+    resize_text = (ROOT / "public" / "data" / "aavegotchi_db_wearables_ascii_resize.json").read_text()
+    for folder in (ROOT / "data", ROOT / "public" / "data"):
+        path = folder / resize_name
+        path.write_text(resize_text)
+        print(f"wrote {path} ({path.stat().st_size} bytes)")
+
+
 def main():
     data = json.loads(SRC.read_text())
     wearables = []
@@ -251,20 +410,13 @@ def main():
             "source": "data/aavegotchi_db_wearables.json",
             "views": VIEWS,
             "slots": SLOTS,
-            "shades": ["█", "▓", "▒", "░"],
-            "blank": " ",
-            "pixel": "1 glyph = 1 SVG pixel",
             "count": len(wearables),
         },
         "wearables": wearables,
     }
     if failed:
         lib["meta"]["failed"] = failed
-    text = json.dumps(lib, ensure_ascii=False, indent=2) + "\n"
-    for path in OUTS:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text)
-        print(f"wrote {path} ({path.stat().st_size} bytes)")
+    write_sizes(lib)
 
 
 if __name__ == "__main__":

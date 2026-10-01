@@ -3,8 +3,8 @@
     <div class="mb-6">
       <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">ASCII Collection</h2>
       <p class="text-sm text-gray-600 dark:text-blue-300 mt-1">
-        Monochrome wearable sprites. One glyph is one SVG pixel:
-        <span class="font-mono">█ ▓ ▒ ░</span>
+        Monochrome wearable sprites. Each row is two SVG pixels:
+        <span class="font-mono">▀ ▄</span> are half blocks, <span class="font-mono">█ ▓ ▒ ░</span> are full.
       </p>
     </div>
 
