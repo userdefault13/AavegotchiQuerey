@@ -25,6 +25,16 @@
               >
                 Composer
               </button>
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                :class="activeTab === 'ascii'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                @click="activeTab = 'ascii'; selectedGotchiId = null"
+              >
+                ASCII
+              </button>
             </nav>
           </div>
           <div class="flex items-center gap-4">
@@ -57,8 +67,9 @@
       </header>
 
       <main class="container mx-auto py-6">
-        <!-- Composer: no wallet required -->
+        <!-- Composer and ASCII: no wallet required -->
         <Composer v-if="activeTab === 'composer'" />
+        <AsciiCollection v-else-if="activeTab === 'ascii'" />
 
         <!-- Gallery: wallet required -->
         <template v-else>
@@ -94,6 +105,7 @@ import { useTheme } from './composables/useTheme.js'
 import Gallery from './components/Gallery.vue'
 import Stage from './components/Stage.vue'
 import Composer from './components/Composer.vue'
+import AsciiCollection from './components/AsciiCollection.vue'
 
 const { isConnected, shortAddress, address, disconnect } = useWallet()
 const { isDark, toggleTheme } = useTheme()
