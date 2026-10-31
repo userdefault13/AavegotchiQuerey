@@ -15,6 +15,9 @@ dist-ssr
 # Exported data
 exports/
 
+# Baked from Voxel-Library, which has no licence: keep out of this public repo
+public/voxels/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

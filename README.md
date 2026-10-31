@@ -11,6 +11,19 @@ A Vue 3 web application for viewing and interacting with Aavegotchis on the Base
   - Traits: NRG, AGG, SPK, BRN, EYS, EYC
   - 4 SVG views (front, back, left, right) with copy buttons
   - SVG metadata (canvas size, part dimensions, offsets)
+- 🧥 **Dressing Room**: Try voxel wearables on a 3D gotchi and browse raw `.vox` files (needs local assets, see below)
+
+## Voxel assets
+
+The Dressing Room reads baked models from `public/voxels/`, which is git-ignored because the source
+project ([Noman3869/Voxel-Library](https://github.com/Noman3869/Voxel-Library)) has no licence. To build them:
+
+```bash
+git clone --depth 1 https://github.com/Noman3869/Voxel-Library.git /path/to/Voxel-Library
+npm run import-voxels -- /path/to/Voxel-Library
+```
+
+The importer only reads the checkout. It does not need Unity and does not run the project's code.
 
 ## Tech Stack
 

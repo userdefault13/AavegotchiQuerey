@@ -23,7 +23,8 @@
     "extract-all-body-with-cheeks": "node cli/extractAllBodyWithCheeks.js",
     "combine-body-svgs": "node cli/combineBodySvgsToJson.js",
     "update-collateral-base-bodies": "node cli/updateCollateralBaseBodies.js",
-    "convert-body-svgs-to-aseprite": "node cli/convertBodySvgsToAseprite.js"
+    "convert-body-svgs-to-aseprite": "node cli/convertBodySvgsToAseprite.js",
+    "import-voxels": "node cli/importVoxelLibrary.js"
   },
   "dependencies": {
     "@reown/appkit": "^1.8.12",
@@ -32,6 +33,7 @@
     "@wagmi/vue": "^0.3.2",
     "@xmldom/xmldom": "^0.8.11",
     "ethers": "^6.15.0",
+    "three": "^0.187.0",
     "viem": "^2.38.6",
     "vue": "^3.5.22",
     "wagmi": "^2.19.2"

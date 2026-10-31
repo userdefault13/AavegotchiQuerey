@@ -35,6 +35,16 @@
               >
                 ASCII
               </button>
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                :class="activeTab === 'dressing'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                @click="activeTab = 'dressing'; selectedGotchiId = null"
+              >
+                Dressing Room
+              </button>
             </nav>
           </div>
           <div class="flex items-center gap-4">
@@ -70,6 +80,7 @@
         <!-- Composer and ASCII: no wallet required -->
         <Composer v-if="activeTab === 'composer'" />
         <AsciiCollection v-else-if="activeTab === 'ascii'" />
+        <DressingRoom v-else-if="activeTab === 'dressing'" />
 
         <!-- Gallery: wallet required -->
         <template v-else>
@@ -99,13 +110,16 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, defineAsyncComponent } from 'vue'
 import { useWallet } from './composables/useWallet.js'
 import { useTheme } from './composables/useTheme.js'
 import Gallery from './components/Gallery.vue'
 import Stage from './components/Stage.vue'
 import Composer from './components/Composer.vue'
 import AsciiCollection from './components/AsciiCollection.vue'
+
+// three.js is heavy, so only load it when this tab is opened.
+const DressingRoom = defineAsyncComponent(() => import('./components/DressingRoom.vue'))
 
 const { isConnected, shortAddress, address, disconnect } = useWallet()
 const { isDark, toggleTheme } = useTheme()
