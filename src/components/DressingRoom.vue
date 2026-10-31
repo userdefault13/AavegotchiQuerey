@@ -171,7 +171,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { parseVox } from '../utils/voxParser.js'
 
-const BASE_URL = '/voxels/'
+// Production loads the models from separate hosting so they stay out of this public repo.
+const BASE_URL = import.meta.env.VITE_VOXEL_BASE_URL ?? '/voxels/'
 
 // slotIndex follows the on-chain slotPositions order. Holder names follow DrssingRoomPlayer.
 const SLOTS = [
@@ -633,6 +634,49 @@ async function loadEye() {
   applyColors()
 }
 
+// Palette corrections that match each model to its on-chain art; see cli/matchVoxelColors.js.
+// Per file and mesh, in traversal order: cells are `x,y` in the palette image, or `plain`.
+let artPalettes = {}
+const artTextures = new Map()
+
+function artTexture(file, index, map, cells) {
+  const key = `${file}/${index}`
+  if (!artTextures.has(key)) {
+    const canvas = document.createElement('canvas')
+    canvas.width = map.image.width
+    canvas.height = map.image.height
+    const context = canvas.getContext('2d')
+    context.drawImage(map.image, 0, 0)
+    for (const [cell, color] of Object.entries(cells)) {
+      const [x, y] = cell.split(',').map(Number)
+      context.fillStyle = color
+      context.fillRect(x, y, 1, 1)
+    }
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.colorSpace = map.colorSpace
+    texture.flipY = map.flipY
+    texture.magFilter = texture.minFilter = THREE.NearestFilter
+    artTextures.set(key, texture)
+  }
+  return artTextures.get(key)
+}
+
+function applyArtPalette(id, file, model) {
+  const entries = artPalettes[id]?.[file]
+  if (!entries) return
+  let index = 0
+  eachMaterial(model, (material) => {
+    const entry = entries[index]
+    if (entry) {
+      if (material.map && Object.keys(entry.cells).length) material.map = artTexture(file, index, material.map, entry.cells)
+      if (entry.cells.plain) material.color.set(entry.cells.plain)
+      if (entry.unlit) material.emissive.set(0x000000)
+      material.needsUpdate = true
+    }
+    index++
+  })
+}
+
 /** Files and holders for one wearable, per DrssingRoomPlayer.LoadModelProcess. */
 function partsFor(slot, id) {
   const files = manifest.value.wearables[id] ?? {}
@@ -662,7 +706,7 @@ async function equip(id, slotId = currentSlot.value) {
     const parts = id == null ? [] : partsFor(slot, id)
     const models = await Promise.all(parts.map(async (part) => {
       const model = await loadGlb(part.file)
-      return { model, holder: part.holder }
+      return { model, holder: part.holder, file: part.file }
     }))
     if (loadedSlots[slot.id].token !== token) return
     previous.forEach((model) => model.parent?.remove(model))
@@ -672,7 +716,10 @@ async function equip(id, slotId = currentSlot.value) {
         eachMaterial(model, (material) => material.color.set(sleeveColor))
       })
     }
-    models.forEach(({ model, holder }) => holders[holder].add(model))
+    models.forEach(({ model, holder, file }) => {
+      applyArtPalette(id, file, model)
+      holders[holder].add(model)
+    })
     loadedSlots[slot.id].models = models.map((m) => m.model)
     if (slot.id === 'body') measureSleeves()
     if (slot.id === 'eyes' && eyeModel) eyeModel.visible = !hidesOwnEyes()
@@ -781,6 +828,7 @@ onMounted(async () => {
       fetch('/data/aavegotchi_db_collaterals_haunt1.json'),
       fetch('/data/aavegotchi_db_collaterals_haunt2.json')
     ])
+    artPalettes = await fetch('/data/voxel_art_palettes.json').then((response) => response.json())
     const isJson = manifestResponse.headers.get('content-type')?.includes('json')
     if (!manifestResponse.ok || !isJson) {
       throw new Error('Voxel assets are missing. Run: npm run import-voxels -- <path-to-Voxel-Library-checkout>')
