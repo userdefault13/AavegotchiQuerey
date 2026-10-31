@@ -25,8 +25,8 @@ npm run import-voxels -- /path/to/Voxel-Library
 
 The importer only reads the checkout. It does not need Unity and does not run the project's code.
 
-On production the models load from a separate Vercel Blob store set by `VITE_VOXEL_BASE_URL`, so they can be
-removed without touching this repo. `cli/uploadVoxels.sh` uploads them. They are hosted as an interim community
+On production the models load from the AarcadeGh$t home CDN, set by `VITE_VOXEL_BASE_URL`, so they can be removed
+without touching this repo. `cli/syncVoxelsToCdn.sh` copies them there. They are hosted as an interim community
 steward: they are credited to the source project, are not licensed by this repo, and will be handed over or taken
 down if the rightful owner asks.
 
