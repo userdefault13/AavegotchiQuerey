@@ -45,6 +45,16 @@
               >
                 Dressing Room
               </button>
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                :class="activeTab === 'iso'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                @click="activeTab = 'iso'; selectedGotchiId = null"
+              >
+                Isometric
+              </button>
             </nav>
           </div>
           <div class="flex items-center gap-4">
@@ -77,10 +87,11 @@
       </header>
 
       <main class="container mx-auto py-6">
-        <!-- Composer and ASCII: no wallet required -->
+        <!-- Composer, ASCII, Dressing Room and Isometric: no wallet required -->
         <Composer v-if="activeTab === 'composer'" />
         <AsciiCollection v-else-if="activeTab === 'ascii'" />
         <DressingRoom v-else-if="activeTab === 'dressing'" />
+        <IsoView v-else-if="activeTab === 'iso'" />
 
         <!-- Gallery: wallet required -->
         <template v-else>
@@ -117,6 +128,7 @@ import Gallery from './components/Gallery.vue'
 import Stage from './components/Stage.vue'
 import Composer from './components/Composer.vue'
 import AsciiCollection from './components/AsciiCollection.vue'
+import IsoView from './components/IsoView.vue'
 
 // three.js is heavy, so only load it when this tab is opened.
 const DressingRoom = defineAsyncComponent(() => import('./components/DressingRoom.vue'))

@@ -1,0 +1,284 @@
+{
+  "collaterals": [
+    {
+      "collateralType": "0x0000000000000000000000000000000000000001",
+      "modifiers": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 0,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M23 23h1v1h-1zM24 24h2v1h-2zM34 24h3v1h-3zM25 25h5v1h-5zM35 25h2v1h-2zM28 26h7v1h-7zM30 27h2v1h-2z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M55 23h3v1h-3zM44 24h1v1h-1zM56 24h2v1h-2zM45 25h2v1h-2zM51 25h5v1h-5zM46 26h7v1h-7zM49 27h2v1h-2z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 18,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "amazon"
+    },
+    {
+      "collateralType": "0x0000000000000000000000000000000000000002",
+      "modifiers": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 1,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M29 20h2v1h-2zM29 21h2v1h-2zM26 22h4v1h-4zM26 23h7v1h-7zM25 24h8v1h-8zM25 25h7v1h-7zM25 26h7v1h-7zM25 27h8v1h-8zM26 28h8v1h-8zM26 29h8v1h-8zM27 30h6v1h-6zM30 31h2v1h-2z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M51 19h1v1h-1zM51 20h1v1h-1zM50 21h1v1h-1zM50 22h4v1h-4zM47 23h7v1h-7zM47 24h6v1h-6zM46 25h7v1h-7zM46 26h8v1h-8zM46 27h9v1h-9zM46 28h9v1h-9zM47 29h7v1h-7zM47 30h6v1h-6zM48 31h3v1h-3z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 19,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "apple"
+    },
+    {
+      "collateralType": "0x0000000000000000000000000000000000000003",
+      "modifiers": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 2,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M24 19h6v1h-6zM24 20h1v1h-1zM29 20h1v1h-1zM25 21h1v1h-1zM30 21h2v1h-2zM29 22h1v1h-1zM32 22h1v1h-1zM29 23h1v1h-1zM33 23h1v1h-1zM29 24h1v1h-1zM34 24h1v1h-1zM27 25h4v1h-4zM34 25h1v1h-1zM26 26h1v1h-1zM29 26h3v1h-3zM35 26h1v1h-1zM27 27h1v1h-1zM29 27h1v1h-1zM35 27h1v1h-1zM28 28h2v1h-2zM35 28h1v1h-1zM29 29h1v1h-1zM34 29h1v1h-1zM29 30h3v1h-3zM33 30h1v1h-1zM31 31h1v1h-1z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M45 20h8v1h-8zM45 21h1v1h-1zM50 21h1v1h-1zM53 21h1v1h-1zM46 22h1v1h-1zM54 22h1v1h-1zM50 23h1v1h-1zM55 23h1v1h-1zM50 24h2v1h-2zM55 24h1v1h-1zM50 25h3v1h-3zM56 25h1v1h-1zM48 26h3v1h-3zM56 26h1v1h-1zM47 27h1v1h-1zM50 27h1v1h-1zM56 27h1v1h-1zM48 28h1v1h-1zM50 28h1v1h-1zM55 28h1v1h-1zM49 29h4v1h-4zM54 29h1v1h-1zM50 30h1v1h-1zM52 30h1v1h-1zM50 31h1v1h-1z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 20,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "disney"
+    },
+    {
+      "collateralType": "0x0000000000000000000000000000000000000004",
+      "modifiers": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 3,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M24 20h4v1h-4zM23 21h12v1h-12zM23 22h2v1h-2zM26 22h10v1h-10zM23 23h2v1h-2zM26 23h6v1h-6zM33 23h3v1h-3zM23 24h2v1h-2zM29 24h3v1h-3zM23 25h2v1h-2zM26 25h8v1h-8zM23 26h2v1h-2zM26 26h4v1h-4zM31 26h4v1h-4zM23 27h2v1h-2zM27 27h3v1h-3zM32 27h4v1h-4zM23 28h2v1h-2zM26 28h6v1h-6zM33 28h3v1h-3zM23 29h6v1h-6zM30 29h2v1h-2zM33 29h3v1h-3zM24 30h3v1h-3zM30 30h6v1h-6zM31 31h3v1h-3z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M51 20h5v1h-5zM45 21h4v1h-4zM51 21h6v1h-6zM44 22h9v1h-9zM54 22h3v1h-3zM44 23h2v1h-2zM47 23h6v1h-6zM44 24h2v1h-2zM47 24h8v1h-8zM44 25h2v1h-2zM50 25h1v1h-1zM52 25h4v1h-4zM44 26h2v1h-2zM47 26h4v1h-4zM53 26h4v1h-4zM44 27h2v1h-2zM47 27h6v1h-6zM54 27h3v1h-3zM44 28h2v1h-2zM48 28h5v1h-5zM54 28h3v1h-3zM44 29h2v1h-2zM47 29h10v1h-10zM44 30h6v1h-6zM52 30h3v1h-3zM45 31h3v1h-3z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 21,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "gamestop"
+    },
+    {
+      "collateralType": "0x0000000000000000000000000000000000000005",
+      "modifiers": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 4,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M26 21h4v1h-4zM26 22h7v1h-7zM26 23h7v1h-7zM26 24h7v1h-7zM26 25h7v1h-7zM26 26h7v1h-7zM26 27h7v1h-7zM26 28h7v1h-7zM30 29h3v1h-3z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M51 21h3v1h-3zM47 22h7v1h-7zM47 23h7v1h-7zM47 24h7v1h-7zM47 25h7v1h-7zM47 26h7v1h-7zM47 27h7v1h-7zM47 28h7v1h-7zM47 29h4v1h-4z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 22,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "microsoft"
+    },
+    {
+      "collateralType": "0x0000000000000000000000000000000000000006",
+      "modifiers": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 5,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M24 23h1v1h-1zM36 23h1v1h-1zM24 24h1v1h-1zM29 24h1v1h-1zM32 24h3v1h-3zM23 25h9v1h-9zM23 26h6v1h-6zM24 27h3v1h-3z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M57 22h1v1h-1zM53 23h3v1h-3zM45 24h1v1h-1zM51 24h2v1h-2zM45 25h1v1h-1zM50 25h1v1h-1zM44 26h7v1h-7zM44 27h6v1h-6zM45 28h3v1h-3z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 18,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "nike"
+    },
+    {
+      "collateralType": "0x0000000000000000000000000000000000000007",
+      "modifiers": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 6,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M29 20h1v1h-1zM29 21h8v1h-8zM26 22h11v1h-11zM24 23h2v1h-2zM27 23h3v1h-3zM31 23h6v1h-6zM24 24h1v1h-1zM26 24h1v1h-1zM29 24h2v1h-2zM32 24h5v1h-5zM24 25h4v1h-4zM29 25h3v1h-3zM33 25h4v1h-4zM25 26h6v1h-6zM32 26h5v1h-5zM26 27h6v1h-6zM35 27h2v1h-2zM28 28h3v1h-3zM32 28h5v1h-5zM29 29h8v1h-8zM30 30h7v1h-7z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M51 20h7v1h-7zM50 21h8v1h-8zM50 22h1v1h-1zM52 22h6v1h-6zM47 23h5v1h-5zM53 23h5v1h-5zM45 24h2v1h-2zM48 24h5v1h-5zM54 24h4v1h-4zM45 25h1v1h-1zM47 25h1v1h-1zM50 25h2v1h-2zM53 25h5v1h-5zM45 26h4v1h-4zM50 26h3v1h-3zM56 26h2v1h-2zM46 27h6v1h-6zM53 27h5v1h-5zM47 28h11v1h-11zM49 29h9v1h-9zM50 30h1v1h-1z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 19,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "nvidia"
+    },
+    {
+      "collateralType": "0x0000000000000000000000000000000000000008",
+      "modifiers": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 7,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M35 22h2v1h-2zM29 23h1v1h-1zM31 23h2v1h-2zM23 24h2v1h-2zM28 24h4v1h-4zM24 25h1v1h-1zM26 25h2v1h-2zM25 26h2v1h-2zM24 27h2v1h-2zM27 27h2v1h-2zM23 28h2v1h-2zM28 28h2v1h-2z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M56 21h2v1h-2zM52 22h2v1h-2zM51 23h2v1h-2zM50 24h1v1h-1zM44 25h2v1h-2zM49 25h2v1h-2zM45 26h1v1h-1zM47 26h2v1h-2zM46 27h2v1h-2zM45 28h2v1h-2zM48 28h2v1h-2zM44 29h2v1h-2zM49 29h2v1h-2z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 20,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "spacex"
+    },
+    {
+      "collateralType": "0x0000000000000000000000000000000000000009",
+      "modifiers": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 8,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M25 20h5v1h-5zM22 21h4v1h-4zM30 21h4v1h-4zM21 22h1v1h-1zM26 22h3v1h-3zM33 22h4v1h-4zM22 23h11v1h-11zM37 23h1v1h-1zM22 24h3v1h-3zM28 24h9v1h-9zM28 25h3v1h-3zM34 25h3v1h-3zM28 26h3v1h-3zM29 27h2v1h-2zM29 28h1v1h-1zM29 29h1v1h-1zM29 30h1v1h-1z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M51 20h4v1h-4zM46 21h5v1h-5zM54 21h4v1h-4zM43 22h4v1h-4zM51 22h3v1h-3zM58 22h1v1h-1zM42 23h1v1h-1zM47 23h3v1h-3zM51 23h7v1h-7zM43 24h9v1h-9zM55 24h3v1h-3zM43 25h3v1h-3zM49 25h3v1h-3zM49 26h3v1h-3zM49 27h2v1h-2zM50 28h1v1h-1zM50 29h1v1h-1zM50 30h1v1h-1zM50 31h1v1h-1z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 21,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "tesla"
+    },
+    {
+      "collateralType": "0x000000000000000000000000000000000000000a",
+      "modifiers": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "primaryColor": "0xccff00",
+      "secondaryColor": "0xe8ff66",
+      "cheekColor": "0xf696c6",
+      "svgId": 9,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M29 18h1v1h-1zM29 19h1v1h-1zM28 20h2v1h-2zM27 21h4v1h-4zM26 22h6v1h-6zM26 23h6v1h-6zM25 24h7v1h-7zM25 25h7v1h-7zM25 26h7v1h-7zM25 27h4v1h-4zM32 27h1v1h-1zM26 28h3v1h-3zM32 28h1v1h-1zM26 29h3v1h-3zM32 29h1v1h-1zM28 30h1v1h-1zM31 30h2v1h-2zM29 31h4v1h-4zM29 32h4v1h-4zM30 33h2v1h-2z\" fill=\"#000000\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M50 19h1v1h-1zM50 20h2v1h-2zM49 21h4v1h-4zM48 22h5v1h-5zM47 23h6v1h-6zM47 24h6v1h-6zM46 25h7v1h-7zM46 26h5v1h-5zM53 26h1v1h-1zM46 27h5v1h-5zM53 27h1v1h-1zM46 28h4v1h-4zM53 28h1v1h-1zM47 29h3v1h-3zM52 29h2v1h-2zM47 30h3v1h-3zM51 30h3v1h-3zM49 31h1v1h-1zM51 31h3v1h-3zM50 32h3v1h-3zM50 33h1v1h-1z\" fill=\"#000000\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 22,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/></g>"
+      ],
+      "haunt": 3,
+      "name": "usoilfund"
+    }
+  ]
+}

@@ -1,0 +1,280 @@
+{
+  "eyeShapes": [
+    {
+      "haunt": 2,
+      "id": 0,
+      "rangeMin": 0,
+      "rangeMax": 1,
+      "name": "Mythical Low 1",
+      "gameplayEffect": "More Lickquidator Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M23 31h2v1h-2zM22 32h2v1h-2zM25 32h1v1h-1zM21 33h6v1h-6zM21 34h1v1h-1zM23 34h1v1h-1zM25 34h3v1h-3zM21 35h1v1h-1zM23 35h1v1h-1zM25 35h1v1h-1zM27 35h1v1h-1zM33 35h2v1h-2zM21 36h5v1h-5zM27 36h1v1h-1zM32 36h2v1h-2zM35 36h1v1h-1zM22 37h2v1h-2zM25 37h3v1h-3zM31 37h6v1h-6zM23 38h4v1h-4zM31 38h1v1h-1zM33 38h1v1h-1zM35 38h3v1h-3zM25 39h1v1h-1zM31 39h1v1h-1zM33 39h1v1h-1zM35 39h1v1h-1zM37 39h1v1h-1zM31 40h5v1h-5zM37 40h1v1h-1zM32 41h2v1h-2zM35 41h3v1h-3zM33 42h4v1h-4zM35 43h1v1h-1z\"/><path d=\"M24 32h1v1h-1zM22 34h1v1h-1zM24 34h1v1h-1zM22 35h1v1h-1zM24 35h1v1h-1zM26 35h1v1h-1zM26 36h1v1h-1zM34 36h1v1h-1zM24 37h1v1h-1zM32 38h1v1h-1zM34 38h1v1h-1zM32 39h1v1h-1zM34 39h1v1h-1zM36 39h1v1h-1zM36 40h1v1h-1zM34 41h1v1h-1z\" fill=\"#fff\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 31h1v1h-1zM54 32h4v1h-4zM53 33h2v1h-2zM56 33h3v1h-3zM52 34h5v1h-5zM58 34h1v1h-1zM46 35h1v1h-1zM52 35h1v1h-1zM54 35h1v1h-1zM56 35h1v1h-1zM58 35h1v1h-1zM44 36h4v1h-4zM52 36h1v1h-1zM54 36h1v1h-1zM56 36h3v1h-3zM43 37h2v1h-2zM46 37h3v1h-3zM52 37h6v1h-6zM42 38h5v1h-5zM48 38h1v1h-1zM53 38h2v1h-2zM56 38h1v1h-1zM42 39h1v1h-1zM44 39h1v1h-1zM46 39h1v1h-1zM48 39h1v1h-1zM54 39h2v1h-2zM42 40h1v1h-1zM44 40h1v1h-1zM46 40h3v1h-3zM42 41h6v1h-6zM43 42h2v1h-2zM46 42h1v1h-1zM44 43h2v1h-2z\"/><path d=\"M55 33h1v1h-1zM57 34h1v1h-1zM53 35h1v1h-1zM55 35h1v1h-1zM57 35h1v1h-1zM53 36h1v1h-1zM55 36h1v1h-1zM45 37h1v1h-1zM47 38h1v1h-1zM55 38h1v1h-1zM43 39h1v1h-1zM45 39h1v1h-1zM47 39h1v1h-1zM43 40h1v1h-1zM45 40h1v1h-1zM45 42h1v1h-1z\" fill=\"#fff\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 1,
+      "rangeMin": 2,
+      "rangeMax": 4,
+      "name": "Rare Low 1",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 31h1v1h-1zM23 32h2v1h-2zM22 33h1v1h-1zM24 33h1v1h-1zM23 34h3v1h-3zM24 35h1v1h-1zM26 35h1v1h-1zM34 35h1v1h-1zM24 36h2v1h-2zM34 36h1v1h-1zM33 37h3v1h-3zM32 38h1v1h-1zM34 38h1v1h-1zM36 38h1v1h-1zM33 39h3v1h-3zM34 40h1v1h-1z\"/><path d=\"M23 30h2v1h-2zM22 31h1v1h-1zM21 32h1v1h-1zM25 32h1v1h-1zM26 33h1v1h-1zM21 34h1v1h-1zM27 34h1v1h-1zM34 34h1v1h-1zM22 35h1v1h-1zM33 35h1v1h-1zM35 35h1v1h-1zM23 36h1v1h-1zM27 36h1v1h-1zM32 36h1v1h-1zM36 36h1v1h-1zM24 37h1v1h-1zM26 37h1v1h-1zM31 37h1v1h-1zM37 37h1v1h-1zM25 38h1v1h-1zM31 39h1v1h-1zM37 39h1v1h-1zM32 40h1v1h-1zM36 40h1v1h-1zM33 41h3v1h-3z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 32h2v1h-2zM55 33h1v1h-1zM57 33h1v1h-1zM54 34h3v1h-3zM53 35h1v1h-1zM55 35h1v1h-1zM45 36h1v1h-1zM54 36h2v1h-2zM44 37h3v1h-3zM55 37h1v1h-1zM43 38h1v1h-1zM45 38h1v1h-1zM47 38h1v1h-1zM44 39h3v1h-3zM45 40h1v1h-1zM45 41h1v1h-1z\"/><path d=\"M56 30h1v1h-1zM55 31h1v1h-1zM57 31h1v1h-1zM54 32h1v1h-1zM58 32h1v1h-1zM53 33h1v1h-1zM52 34h1v1h-1zM58 34h1v1h-1zM44 35h3v1h-3zM57 35h1v1h-1zM43 36h1v1h-1zM47 36h1v1h-1zM52 36h1v1h-1zM56 36h1v1h-1zM42 37h1v1h-1zM48 37h1v1h-1zM53 37h1v1h-1zM54 38h2v1h-2zM42 39h1v1h-1zM48 39h1v1h-1zM43 40h1v1h-1zM47 40h1v1h-1zM44 41h1v1h-1zM46 41h1v1h-1zM45 42h1v1h-1z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 2,
+      "rangeMin": 5,
+      "rangeMax": 6,
+      "name": "Rare Low 2",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 32h1v1h-1zM23 33h2v1h-2zM23 34h3v1h-3zM24 35h2v1h-2zM34 36h1v1h-1zM33 37h2v1h-2zM33 38h3v1h-3zM34 39h2v1h-2z\"/><path d=\"M22 31h1v1h-1zM26 32h1v1h-1zM32 35h1v1h-1zM22 36h1v1h-1zM36 36h1v1h-1zM26 37h1v1h-1zM32 40h1v1h-1zM36 41h1v1h-1z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 33h2v1h-2zM54 34h3v1h-3zM54 35h2v1h-2zM55 36h1v1h-1zM45 37h2v1h-2zM44 38h3v1h-3zM44 39h2v1h-2zM45 40h1v1h-1z\"/><path d=\"M57 31h1v1h-1zM53 32h1v1h-1zM47 35h1v1h-1zM43 36h1v1h-1zM57 36h1v1h-1zM53 37h1v1h-1zM47 40h1v1h-1zM43 41h1v1h-1z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 3,
+      "rangeMin": 7,
+      "rangeMax": 9,
+      "name": "Rare Low 3",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M23 32h2v1h-2zM22 33h2v1h-2zM25 33h1v1h-1zM22 34h2v1h-2zM25 34h2v1h-2zM23 35h4v1h-4zM25 36h1v1h-1zM33 36h2v1h-2zM32 37h2v1h-2zM35 37h1v1h-1zM32 38h2v1h-2zM35 38h2v1h-2zM33 39h4v1h-4zM35 40h1v1h-1z\"/><path d=\"M23 30h1v1h-1zM25 31h1v1h-1zM33 34h1v1h-1zM35 35h1v1h-1zM23 37h1v1h-1zM25 38h1v1h-1zM33 41h1v1h-1zM35 42h1v1h-1z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 32h1v1h-1zM54 33h4v1h-4zM53 34h2v1h-2zM56 34h2v1h-2zM53 35h2v1h-2zM56 35h1v1h-1zM46 36h1v1h-1zM54 36h2v1h-2zM44 37h4v1h-4zM43 38h2v1h-2zM46 38h2v1h-2zM43 39h2v1h-2zM46 39h1v1h-1zM44 40h2v1h-2z\"/><path d=\"M56 30h1v1h-1zM54 31h1v1h-1zM46 34h1v1h-1zM44 35h1v1h-1zM56 37h1v1h-1zM54 38h1v1h-1zM46 41h1v1h-1zM44 42h1v1h-1z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 4,
+      "rangeMin": 10,
+      "rangeMax": 14,
+      "name": "Uncommon Low 1",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 34h1v1h-1zM24 35h1v1h-1zM34 38h1v1h-1zM34 39h1v1h-1z\"/><path d=\"M21 32h4v1h-4zM21 33h7v1h-7zM25 34h3v1h-3zM31 36h4v1h-4zM31 37h7v1h-7zM35 38h3v1h-3z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 35h1v1h-1zM55 36h1v1h-1zM45 39h1v1h-1zM45 40h1v1h-1z\"/><path d=\"M56 32h3v1h-3zM52 33h7v1h-7zM52 34h4v1h-4zM46 36h3v1h-3zM42 37h7v1h-7zM42 38h4v1h-4z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 5,
+      "rangeMin": 15,
+      "rangeMax": 19,
+      "name": "Uncommon Low 2",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M23 33h2v1h-2zM24 34h2v1h-2zM33 37h2v1h-2zM34 38h2v1h-2z\"/><path d=\"M21 32h4v1h-4zM25 33h3v1h-3zM31 36h4v1h-4zM35 37h3v1h-3z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 33h1v1h-1zM54 34h2v1h-2zM55 35h1v1h-1zM46 37h1v1h-1zM44 38h2v1h-2zM45 39h1v1h-1z\"/><path d=\"M56 32h3v1h-3zM52 33h4v1h-4zM46 36h3v1h-3zM42 37h4v1h-4z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 6,
+      "rangeMin": 20,
+      "rangeMax": 24,
+      "name": "Uncommon Low 3",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM24 34h1v1h-1zM34 37h1v1h-1zM34 38h1v1h-1z\"/><path d=\"M23 32h2v1h-2zM25 33h1v1h-1zM33 36h2v1h-2zM35 37h1v1h-1z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM55 35h1v1h-1zM45 38h1v1h-1zM45 39h1v1h-1z\"/><path d=\"M56 32h1v1h-1zM54 33h2v1h-2zM46 36h1v1h-1zM44 37h2v1h-2z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 7,
+      "rangeMin": 25,
+      "rangeMax": 41,
+      "name": "Common 1",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M23 31h2v1h-2zM23 32h3v1h-3zM21 33h5v1h-5zM21 34h7v1h-7zM21 35h7v1h-7zM33 35h2v1h-2zM21 36h7v1h-7zM33 36h3v1h-3zM23 37h5v1h-5zM31 37h5v1h-5zM23 38h3v1h-3zM31 38h7v1h-7zM25 39h1v1h-1zM31 39h7v1h-7zM31 40h7v1h-7zM33 41h5v1h-5zM33 42h3v1h-3zM35 43h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 31h1v1h-1zM54 32h3v1h-3zM54 33h5v1h-5zM52 34h7v1h-7zM46 35h1v1h-1zM52 35h7v1h-7zM44 36h3v1h-3zM52 36h7v1h-7zM44 37h5v1h-5zM52 37h5v1h-5zM42 38h7v1h-7zM54 38h3v1h-3zM42 39h7v1h-7zM54 39h2v1h-2zM42 40h7v1h-7zM42 41h5v1h-5zM44 42h3v1h-3zM44 43h2v1h-2z\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 8,
+      "rangeMin": 42,
+      "rangeMax": 57,
+      "name": "Common 2",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M22 31h3v1h-3zM22 32h5v1h-5zM22 33h5v1h-5zM22 34h5v1h-5zM22 35h5v1h-5zM32 35h3v1h-3zM22 36h5v1h-5zM32 36h5v1h-5zM25 37h2v1h-2zM32 37h5v1h-5zM32 38h5v1h-5zM32 39h5v1h-5zM32 40h5v1h-5zM35 41h2v1h-2z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 31h2v1h-2zM53 32h5v1h-5zM53 33h5v1h-5zM53 34h5v1h-5zM46 35h2v1h-2zM53 35h5v1h-5zM43 36h5v1h-5zM53 36h5v1h-5zM43 37h5v1h-5zM53 37h3v1h-3zM43 38h5v1h-5zM43 39h5v1h-5zM43 40h5v1h-5zM43 41h3v1h-3z\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 9,
+      "rangeMin": 58,
+      "rangeMax": 74,
+      "name": "Common 3",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M23 30h2v1h-2zM22 31h4v1h-4zM21 32h6v1h-6zM21 33h7v1h-7zM21 34h7v1h-7zM33 34h2v1h-2zM21 35h7v1h-7zM32 35h4v1h-4zM22 36h6v1h-6zM31 36h6v1h-6zM23 37h4v1h-4zM31 37h7v1h-7zM25 38h1v1h-1zM31 38h7v1h-7zM31 39h7v1h-7zM32 40h6v1h-6zM33 41h4v1h-4zM35 42h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 30h1v1h-1zM54 31h4v1h-4zM53 32h6v1h-6zM52 33h7v1h-7zM46 34h1v1h-1zM52 34h7v1h-7zM44 35h4v1h-4zM52 35h7v1h-7zM43 36h6v1h-6zM52 36h6v1h-6zM42 37h7v1h-7zM53 37h4v1h-4zM42 38h7v1h-7zM54 38h2v1h-2zM42 39h7v1h-7zM42 40h6v1h-6zM43 41h4v1h-4zM44 42h2v1h-2z\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 10,
+      "rangeMin": 75,
+      "rangeMax": 79,
+      "name": "Uncommon High 1",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 32h1v1h-1zM24 33h1v1h-1zM34 36h1v1h-1zM34 37h1v1h-1z\"/><path d=\"M21 32h3v1h-3zM21 33h3v1h-3zM25 33h3v1h-3zM25 34h3v1h-3zM31 36h3v1h-3zM31 37h3v1h-3zM35 37h3v1h-3zM35 38h3v1h-3z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 33h1v1h-1zM55 34h1v1h-1zM45 37h1v1h-1zM45 38h1v1h-1z\"/><path d=\"M56 32h3v1h-3zM52 33h3v1h-3zM56 33h3v1h-3zM52 34h3v1h-3zM46 36h3v1h-3zM42 37h3v1h-3zM46 37h3v1h-3zM42 38h3v1h-3z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 11,
+      "rangeMin": 80,
+      "rangeMax": 84,
+      "name": "Uncommon High 2",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM34 37h1v1h-1z\"/><path d=\"M21 32h4v1h-4zM25 33h3v1h-3zM21 34h4v1h-4zM25 35h3v1h-3zM31 36h4v1h-4zM35 37h3v1h-3zM31 38h4v1h-4zM35 39h3v1h-3z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM45 38h1v1h-1z\"/><path d=\"M56 32h3v1h-3zM52 33h4v1h-4zM56 34h3v1h-3zM52 35h4v1h-4zM46 36h3v1h-3zM42 37h4v1h-4zM46 38h3v1h-3zM42 39h4v1h-4z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 12,
+      "rangeMin": 85,
+      "rangeMax": 89,
+      "name": "Uncommon High 3",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 33h1v1h-1zM34 37h1v1h-1z\"/><path d=\"M21 32h4v1h-4zM21 33h1v1h-1zM25 33h3v1h-3zM21 34h4v1h-4zM27 34h1v1h-1zM25 35h3v1h-3zM31 36h4v1h-4zM31 37h1v1h-1zM35 37h3v1h-3zM31 38h4v1h-4zM37 38h1v1h-1zM35 39h3v1h-3z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 34h1v1h-1zM45 38h1v1h-1z\"/><path d=\"M56 32h3v1h-3zM52 33h4v1h-4zM58 33h1v1h-1zM52 34h1v1h-1zM56 34h3v1h-3zM52 35h4v1h-4zM46 36h3v1h-3zM42 37h4v1h-4zM48 37h1v1h-1zM42 38h1v1h-1zM46 38h3v1h-3zM42 39h4v1h-4z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 13,
+      "rangeMin": 90,
+      "rangeMax": 92,
+      "name": "Rare High 1",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 31h1v1h-1zM24 32h2v1h-2zM24 33h3v1h-3zM24 34h3v1h-3zM25 35h1v1h-1zM33 35h2v1h-2zM32 36h3v1h-3zM32 37h3v1h-3zM33 38h2v1h-2z\"/><path d=\"M19 30h6v1h-6zM20 31h2v1h-2zM25 31h1v1h-1zM21 32h1v1h-1zM26 32h2v1h-2zM22 33h1v1h-1zM28 33h1v1h-1zM22 34h1v1h-1zM28 34h1v1h-1zM33 34h2v1h-2zM23 35h1v1h-1zM29 35h1v1h-1zM31 35h2v1h-2zM35 35h5v1h-5zM24 36h1v1h-1zM27 36h2v1h-2zM30 36h1v1h-1zM37 36h2v1h-2zM25 37h2v1h-2zM30 37h1v1h-1zM37 37h1v1h-1zM29 38h1v1h-1zM36 38h1v1h-1zM30 39h2v1h-2zM36 39h1v1h-1zM32 40h4v1h-4z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M54 32h2v1h-2zM53 33h3v1h-3zM53 34h3v1h-3zM46 35h1v1h-1zM54 35h2v1h-2zM45 36h3v1h-3zM45 37h3v1h-3zM45 38h2v1h-2zM45 39h1v1h-1z\"/><path d=\"M56 30h5v1h-5zM54 31h2v1h-2zM58 31h2v1h-2zM52 32h2v1h-2zM58 32h1v1h-1zM51 33h1v1h-1zM57 33h1v1h-1zM46 34h1v1h-1zM51 34h1v1h-1zM57 34h1v1h-1zM40 35h6v1h-6zM47 35h2v1h-2zM50 35h1v1h-1zM56 35h1v1h-1zM41 36h2v1h-2zM49 36h1v1h-1zM51 36h2v1h-2zM42 37h1v1h-1zM49 37h1v1h-1zM53 37h3v1h-3zM43 38h1v1h-1zM50 38h1v1h-1zM43 39h1v1h-1zM48 39h2v1h-2zM44 40h1v1h-1zM46 40h2v1h-2zM45 41h1v1h-1z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 14,
+      "rangeMin": 93,
+      "rangeMax": 94,
+      "name": "Rare High 2",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 31h1v1h-1zM24 32h2v1h-2zM24 33h1v1h-1zM26 33h1v1h-1zM24 34h1v1h-1zM26 34h1v1h-1zM24 35h3v1h-3zM33 35h2v1h-2zM25 36h1v1h-1zM32 36h3v1h-3zM32 37h3v1h-3zM32 38h3v1h-3zM33 39h2v1h-2z\"/><path d=\"M24 30h1v1h-1zM23 31h1v1h-1zM25 31h2v1h-2zM22 32h1v1h-1zM27 32h1v1h-1zM22 33h1v1h-1zM28 33h1v1h-1zM22 34h1v1h-1zM28 34h1v1h-1zM32 34h3v1h-3zM22 35h1v1h-1zM28 35h1v1h-1zM31 35h1v1h-1zM23 36h1v1h-1zM28 36h1v1h-1zM30 36h1v1h-1zM35 36h1v1h-1zM24 37h1v1h-1zM27 37h1v1h-1zM30 37h1v1h-1zM36 37h1v1h-1zM25 38h2v1h-2zM30 38h1v1h-1zM36 38h1v1h-1zM30 39h1v1h-1zM36 39h1v1h-1zM31 40h1v1h-1zM36 40h1v1h-1zM32 41h4v1h-4z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M54 32h2v1h-2zM53 33h3v1h-3zM53 34h3v1h-3zM46 35h1v1h-1zM53 35h3v1h-3zM45 36h1v1h-1zM47 36h1v1h-1zM54 36h2v1h-2zM45 37h1v1h-1zM47 37h1v1h-1zM45 38h3v1h-3zM45 39h2v1h-2zM45 40h1v1h-1z\"/><path d=\"M53 31h4v1h-4zM52 32h1v1h-1zM57 32h1v1h-1zM51 33h1v1h-1zM57 33h1v1h-1zM46 34h2v1h-2zM51 34h1v1h-1zM57 34h1v1h-1zM45 35h1v1h-1zM48 35h1v1h-1zM51 35h1v1h-1zM57 35h1v1h-1zM44 36h1v1h-1zM49 36h1v1h-1zM51 36h1v1h-1zM56 36h1v1h-1zM43 37h1v1h-1zM49 37h1v1h-1zM52 37h1v1h-1zM43 38h1v1h-1zM49 38h1v1h-1zM53 38h3v1h-3zM43 39h1v1h-1zM49 39h1v1h-1zM43 40h1v1h-1zM48 40h1v1h-1zM44 41h1v1h-1zM46 41h2v1h-2zM45 42h1v1h-1z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 15,
+      "rangeMin": 95,
+      "rangeMax": 97,
+      "name": "Rare High 3",
+      "gameplayEffect": "More Base Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M23 32h2v1h-2zM23 33h3v1h-3zM24 34h2v1h-2zM33 36h2v1h-2zM33 37h3v1h-3zM34 38h2v1h-2z\"/><path d=\"M21 31h4v1h-4zM20 32h1v1h-1zM25 32h3v1h-3zM19 33h1v1h-1zM28 33h1v1h-1zM20 34h1v1h-1zM29 34h1v1h-1zM21 35h4v1h-4zM28 35h1v1h-1zM31 35h4v1h-4zM25 36h3v1h-3zM30 36h1v1h-1zM35 36h3v1h-3zM29 37h1v1h-1zM38 37h1v1h-1zM30 38h1v1h-1zM39 38h1v1h-1zM31 39h4v1h-4zM38 39h1v1h-1zM35 40h3v1h-3z\" class=\"gotchi-primary\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 32h1v1h-1zM54 33h3v1h-3zM54 34h2v1h-2zM55 35h1v1h-1zM46 36h1v1h-1zM44 37h3v1h-3zM44 38h2v1h-2zM45 39h1v1h-1z\"/><path d=\"M56 31h3v1h-3zM52 32h4v1h-4zM59 32h1v1h-1zM51 33h1v1h-1zM60 33h1v1h-1zM50 34h1v1h-1zM59 34h1v1h-1zM46 35h3v1h-3zM51 35h1v1h-1zM56 35h3v1h-3zM42 36h4v1h-4zM49 36h1v1h-1zM52 36h4v1h-4zM41 37h1v1h-1zM50 37h1v1h-1zM40 38h1v1h-1zM49 38h1v1h-1zM41 39h1v1h-1zM46 39h3v1h-3zM42 40h4v1h-4z\" class=\"gotchi-primary\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 16,
+      "rangeMin": 98,
+      "rangeMax": 99,
+      "name": "AAVE Collateral",
+      "gameplayEffect": "More Lickquidator Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 30h1v1h-1zM24 31h1v1h-1zM24 32h2v1h-2zM23 33h1v1h-1zM25 33h1v1h-1zM21 34h4v1h-4zM26 34h1v1h-1zM34 34h1v1h-1zM22 35h1v1h-1zM26 35h1v1h-1zM33 35h2v1h-2zM22 36h1v1h-1zM27 36h1v1h-1zM33 36h2v1h-2zM21 37h1v1h-1zM27 37h1v1h-1zM32 37h1v1h-1zM21 38h1v1h-1zM28 38h1v1h-1zM30 38h4v1h-4zM35 38h1v1h-1zM28 39h1v1h-1zM31 39h1v1h-1zM35 39h1v1h-1zM31 40h1v1h-1zM36 40h1v1h-1zM30 41h1v1h-1zM36 41h1v1h-1zM30 42h1v1h-1zM37 42h1v1h-1zM37 43h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 31h1v1h-1zM54 32h2v1h-2zM54 33h3v1h-3zM53 34h1v1h-1zM56 34h1v1h-1zM45 35h2v1h-2zM51 35h4v1h-4zM57 35h1v1h-1zM45 36h2v1h-2zM52 36h1v1h-1zM57 36h1v1h-1zM45 37h1v1h-1zM47 37h1v1h-1zM52 37h1v1h-1zM58 37h1v1h-1zM44 38h1v1h-1zM47 38h1v1h-1zM51 38h1v1h-1zM58 38h1v1h-1zM42 39h4v1h-4zM48 39h1v1h-1zM51 39h1v1h-1zM43 40h1v1h-1zM48 40h1v1h-1zM43 41h1v1h-1zM49 41h1v1h-1zM42 42h1v1h-1zM49 42h1v1h-1zM42 43h1v1h-1z\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 17,
+      "rangeMin": 98,
+      "rangeMax": 99,
+      "name": "DAI Collateral",
+      "gameplayEffect": "More Lickquidator Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M22 30h3v1h-3zM22 31h1v1h-1zM25 31h2v1h-2zM21 32h4v1h-4zM27 32h1v1h-1zM22 33h1v1h-1zM25 33h4v1h-4zM21 34h4v1h-4zM27 34h1v1h-1zM31 34h4v1h-4zM22 35h1v1h-1zM25 35h4v1h-4zM31 35h1v1h-1zM35 35h1v1h-1zM22 36h3v1h-3zM27 36h1v1h-1zM30 36h5v1h-5zM36 36h1v1h-1zM25 37h2v1h-2zM31 37h1v1h-1zM35 37h3v1h-3zM30 38h5v1h-5zM36 38h1v1h-1zM31 39h1v1h-1zM35 39h3v1h-3zM31 40h4v1h-4zM36 40h1v1h-1zM35 41h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 30h1v1h-1zM52 31h4v1h-4zM57 31h1v1h-1zM52 32h1v1h-1zM56 32h3v1h-3zM51 33h5v1h-5zM57 33h1v1h-1zM46 34h2v1h-2zM52 34h1v1h-1zM56 34h3v1h-3zM43 35h3v1h-3zM48 35h1v1h-1zM51 35h5v1h-5zM57 35h1v1h-1zM43 36h1v1h-1zM46 36h4v1h-4zM52 36h1v1h-1zM56 36h1v1h-1zM42 37h4v1h-4zM48 37h1v1h-1zM52 37h4v1h-4zM43 38h1v1h-1zM46 38h4v1h-4zM42 39h4v1h-4zM48 39h1v1h-1zM43 40h1v1h-1zM46 40h2v1h-2zM43 41h3v1h-3z\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 18,
+      "rangeMin": 98,
+      "rangeMax": 99,
+      "name": "WETH Collateral",
+      "gameplayEffect": "More Lickquidator Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M23 31h3v1h-3zM22 32h5v1h-5zM21 33h2v1h-2zM25 33h3v1h-3zM21 34h2v1h-2zM26 34h2v1h-2zM21 35h2v1h-2zM26 35h2v1h-2zM34 35h1v1h-1zM36 35h1v1h-1zM22 36h3v1h-3zM26 36h2v1h-2zM33 36h5v1h-5zM23 37h5v1h-5zM32 37h2v1h-2zM35 37h4v1h-4zM25 38h2v1h-2zM32 38h2v1h-2zM37 38h2v1h-2zM25 39h1v1h-1zM32 39h2v1h-2zM37 39h2v1h-2zM33 40h2v1h-2zM37 40h2v1h-2zM34 41h5v1h-5zM35 42h3v1h-3zM36 43h1v1h-1z\"/><path d=\"M22 30h3v1h-3zM21 31h2v1h-2zM20 32h2v1h-2zM20 33h1v1h-1zM20 34h1v1h-1zM33 34h2v1h-2zM20 35h1v1h-1zM32 35h2v1h-2zM35 35h1v1h-1zM20 36h2v1h-2zM31 36h2v1h-2zM21 37h2v1h-2zM31 37h1v1h-1zM22 38h3v1h-3zM31 38h1v1h-1zM31 39h1v1h-1zM31 40h2v1h-2zM32 41h2v1h-2zM33 42h2v1h-2zM35 43h1v1h-1z\" fill=\"#e51b6d\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M57 30h1v1h-1zM56 31h3v1h-3zM55 32h5v1h-5zM54 33h2v1h-2zM58 33h2v1h-2zM46 34h1v1h-1zM53 34h2v1h-2zM58 34h2v1h-2zM46 35h2v1h-2zM53 35h2v1h-2zM58 35h2v1h-2zM44 36h5v1h-5zM53 36h2v1h-2zM56 36h4v1h-4zM43 37h3v1h-3zM47 37h2v1h-2zM54 37h5v1h-5zM42 38h2v1h-2zM47 38h2v1h-2zM55 38h1v1h-1zM57 38h1v1h-1zM42 39h2v1h-2zM47 39h2v1h-2zM42 40h2v1h-2zM46 40h3v1h-3zM43 41h5v1h-5zM44 42h3v1h-3z\"/><path d=\"M56 30h1v1h-1zM54 31h2v1h-2zM53 32h2v1h-2zM52 33h2v1h-2zM52 34h1v1h-1zM43 35h3v1h-3zM52 35h1v1h-1zM42 36h2v1h-2zM52 36h1v1h-1zM41 37h2v1h-2zM52 37h2v1h-2zM41 38h1v1h-1zM53 38h2v1h-2zM56 38h1v1h-1zM41 39h1v1h-1zM54 39h2v1h-2zM41 40h1v1h-1zM41 41h2v1h-2zM42 42h2v1h-2zM43 43h3v1h-3z\" fill=\"#e51b6d\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 19,
+      "rangeMin": 98,
+      "rangeMax": 99,
+      "name": "USDT Collateral",
+      "gameplayEffect": "More Lickquidator Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M22 30h3v1h-3zM22 31h5v1h-5zM24 32h3v1h-3zM21 33h4v1h-4zM20 34h1v1h-1zM24 34h4v1h-4zM32 34h3v1h-3zM21 35h3v1h-3zM28 35h1v1h-1zM32 35h5v1h-5zM24 36h4v1h-4zM34 36h3v1h-3zM24 37h1v1h-1zM31 37h4v1h-4zM24 38h1v1h-1zM30 38h1v1h-1zM34 38h4v1h-4zM31 39h3v1h-3zM38 39h1v1h-1zM34 40h4v1h-4zM34 41h1v1h-1zM34 42h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 30h2v1h-2zM53 31h5v1h-5zM53 32h3v1h-3zM55 33h4v1h-4zM46 34h2v1h-2zM52 34h4v1h-4zM59 34h1v1h-1zM43 35h5v1h-5zM51 35h1v1h-1zM55 35h4v1h-4zM43 36h3v1h-3zM52 36h3v1h-3zM45 37h4v1h-4zM55 37h1v1h-1zM42 38h4v1h-4zM49 38h1v1h-1zM55 38h1v1h-1zM41 39h1v1h-1zM45 39h4v1h-4zM55 39h1v1h-1zM42 40h3v1h-3zM45 41h1v1h-1zM45 42h1v1h-1zM45 43h1v1h-1z\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 20,
+      "rangeMin": 98,
+      "rangeMax": 99,
+      "name": "USDC Collateral",
+      "gameplayEffect": "More Lickquidator Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 31h1v1h-1zM22 32h3v1h-3zM23 33h1v1h-1zM23 34h3v1h-3zM23 35h1v1h-1zM34 35h1v1h-1zM22 36h4v1h-4zM33 36h2v1h-2zM24 37h1v1h-1zM34 37h2v1h-2zM34 38h1v1h-1zM36 38h1v1h-1zM34 39h2v1h-2zM33 40h2v1h-2zM36 40h1v1h-1zM34 41h2v1h-2z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 32h2v1h-2zM54 33h2v1h-2zM57 33h1v1h-1zM55 34h2v1h-2zM55 35h1v1h-1zM57 35h1v1h-1zM45 36h1v1h-1zM55 36h2v1h-2zM43 37h4v1h-4zM54 37h2v1h-2zM44 38h1v1h-1zM55 38h1v1h-1zM44 39h3v1h-3zM44 40h1v1h-1zM43 41h3v1h-3zM45 42h1v1h-1z\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 21,
+      "rangeMin": 98,
+      "rangeMax": 99,
+      "name": "WBTC Collateral",
+      "gameplayEffect": "More Lickquidator Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M22 30h1v1h-1zM21 31h1v1h-1zM24 31h1v1h-1zM26 31h1v1h-1zM20 32h1v1h-1zM23 32h2v1h-2zM27 32h1v1h-1zM20 33h1v1h-1zM23 33h1v1h-1zM25 33h1v1h-1zM28 33h1v1h-1zM20 34h1v1h-1zM23 34h2v1h-2zM28 34h1v1h-1zM32 34h1v1h-1zM20 35h1v1h-1zM25 35h1v1h-1zM28 35h1v1h-1zM31 35h1v1h-1zM34 35h1v1h-1zM36 35h1v1h-1zM20 36h1v1h-1zM23 36h3v1h-3zM28 36h1v1h-1zM30 36h1v1h-1zM33 36h2v1h-2zM37 36h1v1h-1zM21 37h1v1h-1zM24 37h2v1h-2zM28 37h1v1h-1zM30 37h1v1h-1zM33 37h1v1h-1zM35 37h1v1h-1zM38 37h1v1h-1zM22 38h1v1h-1zM27 38h1v1h-1zM30 38h1v1h-1zM33 38h2v1h-2zM38 38h1v1h-1zM26 39h1v1h-1zM30 39h1v1h-1zM35 39h1v1h-1zM38 39h1v1h-1zM30 40h1v1h-1zM33 40h3v1h-3zM38 40h1v1h-1zM31 41h1v1h-1zM34 41h2v1h-2zM38 41h1v1h-1zM32 42h1v1h-1zM37 42h1v1h-1zM36 43h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M57 30h1v1h-1zM53 31h1v1h-1zM58 31h1v1h-1zM52 32h1v1h-1zM55 32h2v1h-2zM59 32h1v1h-1zM51 33h1v1h-1zM54 33h2v1h-2zM59 33h1v1h-1zM47 34h1v1h-1zM51 34h1v1h-1zM54 34h1v1h-1zM56 34h1v1h-1zM59 34h1v1h-1zM43 35h1v1h-1zM48 35h1v1h-1zM51 35h1v1h-1zM54 35h3v1h-3zM59 35h1v1h-1zM42 36h1v1h-1zM45 36h2v1h-2zM49 36h1v1h-1zM51 36h1v1h-1zM56 36h1v1h-1zM59 36h1v1h-1zM41 37h1v1h-1zM44 37h2v1h-2zM49 37h1v1h-1zM51 37h1v1h-1zM54 37h2v1h-2zM58 37h1v1h-1zM41 38h1v1h-1zM44 38h1v1h-1zM46 38h1v1h-1zM49 38h1v1h-1zM52 38h1v1h-1zM55 38h1v1h-1zM57 38h1v1h-1zM41 39h1v1h-1zM44 39h3v1h-3zM49 39h1v1h-1zM53 39h1v1h-1zM41 40h1v1h-1zM46 40h1v1h-1zM49 40h1v1h-1zM41 41h1v1h-1zM44 41h2v1h-2zM48 41h1v1h-1zM42 42h1v1h-1zM45 42h1v1h-1zM47 42h1v1h-1zM43 43h1v1h-1z\"/></g>"
+      ]
+    },
+    {
+      "haunt": 2,
+      "id": 22,
+      "rangeMin": 98,
+      "rangeMax": 99,
+      "name": "WMATIC Collateral",
+      "gameplayEffect": "More Lickquidator Damage",
+      "svgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 32h3v1h-3zM22 33h3v1h-3zM27 33h1v1h-1zM21 34h1v1h-1zM24 34h1v1h-1zM28 34h1v1h-1zM20 35h1v1h-1zM28 35h1v1h-1zM20 36h1v1h-1zM24 36h4v1h-4zM34 36h3v1h-3zM21 37h3v1h-3zM25 37h2v1h-2zM32 37h3v1h-3zM37 37h1v1h-1zM22 38h2v1h-2zM31 38h1v1h-1zM34 38h1v1h-1zM38 38h1v1h-1zM30 39h1v1h-1zM38 39h1v1h-1zM30 40h1v1h-1zM34 40h4v1h-4zM31 41h3v1h-3zM35 41h2v1h-2zM32 42h2v1h-2z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 31h2v1h-2zM58 32h1v1h-1zM55 33h1v1h-1zM59 33h1v1h-1zM53 34h3v1h-3zM59 34h1v1h-1zM46 35h2v1h-2zM52 35h1v1h-1zM55 35h4v1h-4zM48 36h1v1h-1zM51 36h1v1h-1zM56 36h2v1h-2zM45 37h1v1h-1zM49 37h1v1h-1zM51 37h1v1h-1zM55 37h1v1h-1zM43 38h3v1h-3zM49 38h1v1h-1zM52 38h3v1h-3zM42 39h1v1h-1zM45 39h4v1h-4zM53 39h2v1h-2zM41 40h1v1h-1zM46 40h2v1h-2zM41 41h1v1h-1zM45 41h1v1h-1zM42 42h3v1h-3zM43 43h2v1h-2z\"/></g>"
+      ]
+    }
+  ]
+}

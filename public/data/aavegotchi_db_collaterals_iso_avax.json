@@ -1,0 +1,32 @@
+{
+  "collaterals": [
+    {
+      "collateralType": "0x0000000000000000000000000000000000000001",
+      "modifiers": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xe22b35",
+      "secondaryColor": "0xffe2e2",
+      "cheekColor": "0xf696c6",
+      "svgId": 0,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M29 21h1v1h-1zM29 22h1v1h-1zM29 23h1v1h-1zM28 24h3v1h-3zM28 25h3v1h-3zM27 26h3v1h-3zM26 27h3v1h-3zM31 27h1v1h-1zM30 28h3v1h-3z\" fill=\"#e22b35\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M50 22h1v1h-1zM50 23h2v1h-2zM50 24h2v1h-2zM49 25h2v1h-2zM49 26h2v1h-2zM52 26h1v1h-1zM48 27h6v1h-6zM47 28h3v1h-3z\" fill=\"#e22b35\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 18,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 28h1v1h-1zM24 29h1v1h-1zM24 30h1v1h-1zM23 31h3v1h-3zM23 32h3v1h-3zM34 32h1v1h-1zM22 33h3v1h-3zM34 33h1v1h-1zM21 34h3v1h-3zM26 34h1v1h-1zM34 34h1v1h-1zM25 35h3v1h-3zM33 35h3v1h-3zM33 36h3v1h-3zM32 37h3v1h-3zM31 38h3v1h-3zM36 38h1v1h-1zM35 39h3v1h-3z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 29h1v1h-1zM55 30h2v1h-2zM55 31h2v1h-2zM54 32h2v1h-2zM45 33h1v1h-1zM54 33h2v1h-2zM57 33h1v1h-1zM45 34h2v1h-2zM53 34h6v1h-6zM45 35h2v1h-2zM52 35h3v1h-3zM44 36h2v1h-2zM44 37h2v1h-2zM47 37h1v1h-1zM43 38h6v1h-6zM42 39h3v1h-3z\"/></g>"
+      ],
+      "haunt": 1,
+      "name": "avax"
+    }
+  ]
+}

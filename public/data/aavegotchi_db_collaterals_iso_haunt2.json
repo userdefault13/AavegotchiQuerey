@@ -1,0 +1,200 @@
+{
+  "collaterals": [
+    {
+      "collateralType": "0x27F8D03b3a2196956ED754baDc28D73be8830A6e",
+      "modifiers": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xff7d00",
+      "secondaryColor": "0xf9d792",
+      "cheekColor": "0xf4af24",
+      "svgId": 0,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M26 21h4v1h-4zM26 22h1v1h-1zM30 22h1v1h-1zM26 23h1v1h-1zM31 23h1v1h-1zM25 24h5v1h-5zM32 24h1v1h-1zM26 25h1v1h-1zM30 25h4v1h-4zM25 26h5v1h-5zM32 26h1v1h-1zM26 27h1v1h-1zM30 27h4v1h-4zM26 28h1v1h-1zM32 28h1v1h-1zM26 29h4v1h-4zM31 29h1v1h-1zM30 30h1v1h-1z\" fill=\"#ff7d00\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M51 21h1v1h-1zM47 22h4v1h-4zM52 22h1v1h-1zM47 23h1v1h-1zM53 23h1v1h-1zM47 24h1v1h-1zM51 24h4v1h-4zM46 25h5v1h-5zM53 25h1v1h-1zM47 26h1v1h-1zM51 26h4v1h-4zM46 27h5v1h-5zM53 27h1v1h-1zM47 28h1v1h-1zM52 28h1v1h-1zM47 29h1v1h-1zM51 29h1v1h-1zM47 30h4v1h-4z\" fill=\"#ff7d00\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 17,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M22 30h3v1h-3zM22 31h1v1h-1zM25 31h2v1h-2zM21 32h4v1h-4zM27 32h1v1h-1zM22 33h1v1h-1zM25 33h4v1h-4zM21 34h4v1h-4zM27 34h1v1h-1zM31 34h4v1h-4zM22 35h1v1h-1zM25 35h4v1h-4zM31 35h1v1h-1zM35 35h1v1h-1zM22 36h3v1h-3zM27 36h1v1h-1zM30 36h5v1h-5zM36 36h1v1h-1zM25 37h2v1h-2zM31 37h1v1h-1zM35 37h3v1h-3zM30 38h5v1h-5zM36 38h1v1h-1zM31 39h1v1h-1zM35 39h3v1h-3zM31 40h4v1h-4zM36 40h1v1h-1zM35 41h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 30h1v1h-1zM52 31h4v1h-4zM57 31h1v1h-1zM52 32h1v1h-1zM56 32h3v1h-3zM51 33h5v1h-5zM57 33h1v1h-1zM46 34h2v1h-2zM52 34h1v1h-1zM56 34h3v1h-3zM43 35h3v1h-3zM48 35h1v1h-1zM51 35h5v1h-5zM57 35h1v1h-1zM43 36h1v1h-1zM46 36h4v1h-4zM52 36h1v1h-1zM56 36h1v1h-1zM42 37h4v1h-4zM48 37h1v1h-1zM52 37h4v1h-4zM43 38h1v1h-1zM46 38h4v1h-4zM42 39h4v1h-4zM48 39h1v1h-1zM43 40h1v1h-1zM46 40h2v1h-2zM43 41h3v1h-3z\"/></g>"
+      ],
+      "haunt": 2,
+      "name": "amDAI"
+    },
+    {
+      "collateralType": "0x28424507fefb6f7f8E9D3860F56504E4e5f5f390",
+      "modifiers": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0x000000",
+      "secondaryColor": "0xfbdfeb",
+      "cheekColor": "0xf696c6",
+      "svgId": 9,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M28 20h2v1h-2zM27 21h1v1h-1zM30 21h2v1h-2zM26 22h1v1h-1zM29 22h1v1h-1zM31 22h2v1h-2zM25 23h1v1h-1zM28 23h1v1h-1zM30 23h4v1h-4zM25 24h1v1h-1zM27 24h1v1h-1zM32 24h3v1h-3zM25 25h1v1h-1zM27 25h1v1h-1zM33 25h2v1h-2zM25 26h1v1h-1zM27 26h1v1h-1zM33 26h2v1h-2zM25 27h1v1h-1zM28 27h1v1h-1zM33 27h2v1h-2zM26 28h1v1h-1zM29 28h1v1h-1zM32 28h3v1h-3zM27 29h1v1h-1zM30 29h4v1h-4zM28 30h2v1h-2zM31 30h2v1h-2zM30 31h2v1h-2z\" fill=\"#000000\"/><path d=\"M28 21h2v1h-2zM27 22h2v1h-2zM30 22h1v1h-1zM26 23h2v1h-2zM26 24h1v1h-1zM26 25h1v1h-1zM26 26h1v1h-1zM26 27h2v1h-2zM27 28h2v1h-2zM28 29h2v1h-2zM30 30h1v1h-1z\" fill=\"#e51b6d\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M51 20h2v1h-2zM49 21h2v1h-2zM52 21h2v1h-2zM48 22h1v1h-1zM51 22h4v1h-4zM47 23h1v1h-1zM50 23h1v1h-1zM53 23h3v1h-3zM46 24h1v1h-1zM49 24h1v1h-1zM54 24h2v1h-2zM46 25h1v1h-1zM48 25h1v1h-1zM54 25h2v1h-2zM46 26h1v1h-1zM48 26h1v1h-1zM54 26h2v1h-2zM46 27h1v1h-1zM48 27h1v1h-1zM53 27h3v1h-3zM46 28h1v1h-1zM49 28h1v1h-1zM51 28h4v1h-4zM47 29h1v1h-1zM50 29h1v1h-1zM52 29h2v1h-2zM48 30h1v1h-1zM51 30h2v1h-2zM49 31h2v1h-2z\" fill=\"#000000\"/><path d=\"M51 21h1v1h-1zM49 22h2v1h-2zM48 23h2v1h-2zM47 24h2v1h-2zM47 25h1v1h-1zM47 26h1v1h-1zM47 27h1v1h-1zM47 28h2v1h-2zM48 29h2v1h-2zM51 29h1v1h-1zM49 30h2v1h-2z\" fill=\"#e51b6d\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 18,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M23 31h3v1h-3zM22 32h5v1h-5zM21 33h2v1h-2zM25 33h3v1h-3zM21 34h2v1h-2zM26 34h2v1h-2zM21 35h2v1h-2zM26 35h2v1h-2zM34 35h1v1h-1zM36 35h1v1h-1zM22 36h3v1h-3zM26 36h2v1h-2zM33 36h5v1h-5zM23 37h5v1h-5zM32 37h2v1h-2zM35 37h4v1h-4zM25 38h2v1h-2zM32 38h2v1h-2zM37 38h2v1h-2zM25 39h1v1h-1zM32 39h2v1h-2zM37 39h2v1h-2zM33 40h2v1h-2zM37 40h2v1h-2zM34 41h5v1h-5zM35 42h3v1h-3zM36 43h1v1h-1z\"/><path d=\"M22 30h3v1h-3zM21 31h2v1h-2zM20 32h2v1h-2zM20 33h1v1h-1zM20 34h1v1h-1zM33 34h2v1h-2zM20 35h1v1h-1zM32 35h2v1h-2zM35 35h1v1h-1zM20 36h2v1h-2zM31 36h2v1h-2zM21 37h2v1h-2zM31 37h1v1h-1zM22 38h3v1h-3zM31 38h1v1h-1zM31 39h1v1h-1zM31 40h2v1h-2zM32 41h2v1h-2zM33 42h2v1h-2zM35 43h1v1h-1z\" fill=\"#e51b6d\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M57 30h1v1h-1zM56 31h3v1h-3zM55 32h5v1h-5zM54 33h2v1h-2zM58 33h2v1h-2zM46 34h1v1h-1zM53 34h2v1h-2zM58 34h2v1h-2zM46 35h2v1h-2zM53 35h2v1h-2zM58 35h2v1h-2zM44 36h5v1h-5zM53 36h2v1h-2zM56 36h4v1h-4zM43 37h3v1h-3zM47 37h2v1h-2zM54 37h5v1h-5zM42 38h2v1h-2zM47 38h2v1h-2zM55 38h1v1h-1zM57 38h1v1h-1zM42 39h2v1h-2zM47 39h2v1h-2zM42 40h2v1h-2zM46 40h3v1h-3zM43 41h5v1h-5zM44 42h3v1h-3z\"/><path d=\"M56 30h1v1h-1zM54 31h2v1h-2zM53 32h2v1h-2zM52 33h2v1h-2zM52 34h1v1h-1zM43 35h3v1h-3zM52 35h1v1h-1zM42 36h2v1h-2zM52 36h1v1h-1zM41 37h2v1h-2zM52 37h2v1h-2zM41 38h1v1h-1zM53 38h2v1h-2zM56 38h1v1h-1zM41 39h1v1h-1zM54 39h2v1h-2zM41 40h1v1h-1zM41 41h2v1h-2zM42 42h2v1h-2zM43 43h3v1h-3z\" fill=\"#e51b6d\"/></g>"
+      ],
+      "haunt": 2,
+      "name": "amWETH"
+    },
+    {
+      "collateralType": "0x1d2a0E5EC8E5bBDCA5CB219e649B565d8e5c3360",
+      "modifiers": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xb6509e",
+      "secondaryColor": "0xcfeef4",
+      "cheekColor": "0xf696c6",
+      "svgId": 2,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M29 21h1v1h-1zM29 22h1v1h-1zM29 23h2v1h-2zM28 24h1v1h-1zM30 24h1v1h-1zM26 25h4v1h-4zM31 25h1v1h-1zM27 26h1v1h-1zM31 26h1v1h-1zM27 27h1v1h-1zM32 27h1v1h-1zM26 28h1v1h-1zM32 28h1v1h-1zM26 29h1v1h-1zM33 29h1v1h-1zM33 30h1v1h-1z\" fill=\"#a73796\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M50 22h2v1h-2zM50 23h2v1h-2zM50 24h1v1h-1zM52 24h1v1h-1zM49 25h1v1h-1zM52 25h1v1h-1zM47 26h4v1h-4zM53 26h1v1h-1zM48 27h1v1h-1zM53 27h1v1h-1zM48 28h1v1h-1zM54 28h1v1h-1zM47 29h1v1h-1zM54 29h1v1h-1zM47 30h1v1h-1z\" fill=\"#a73796\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 16,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 30h1v1h-1zM24 31h1v1h-1zM24 32h2v1h-2zM23 33h1v1h-1zM25 33h1v1h-1zM21 34h4v1h-4zM26 34h1v1h-1zM34 34h1v1h-1zM22 35h1v1h-1zM26 35h1v1h-1zM33 35h2v1h-2zM22 36h1v1h-1zM27 36h1v1h-1zM33 36h2v1h-2zM21 37h1v1h-1zM27 37h1v1h-1zM32 37h1v1h-1zM21 38h1v1h-1zM28 38h1v1h-1zM30 38h4v1h-4zM35 38h1v1h-1zM28 39h1v1h-1zM31 39h1v1h-1zM35 39h1v1h-1zM31 40h1v1h-1zM36 40h1v1h-1zM30 41h1v1h-1zM36 41h1v1h-1zM30 42h1v1h-1zM37 42h1v1h-1zM37 43h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 31h1v1h-1zM54 32h2v1h-2zM54 33h3v1h-3zM53 34h1v1h-1zM56 34h1v1h-1zM45 35h2v1h-2zM51 35h4v1h-4zM57 35h1v1h-1zM45 36h2v1h-2zM52 36h1v1h-1zM57 36h1v1h-1zM45 37h1v1h-1zM47 37h1v1h-1zM52 37h1v1h-1zM58 37h1v1h-1zM44 38h1v1h-1zM47 38h1v1h-1zM51 38h1v1h-1zM58 38h1v1h-1zM42 39h4v1h-4zM48 39h1v1h-1zM51 39h1v1h-1zM43 40h1v1h-1zM48 40h1v1h-1zM43 41h1v1h-1zM49 41h1v1h-1zM42 42h1v1h-1zM49 42h1v1h-1zM42 43h1v1h-1z\"/></g>"
+      ],
+      "haunt": 2,
+      "name": "amAAVE"
+    },
+    {
+      "collateralType": "0x60D55F02A771d515e077c9C2403a1ef324885CeC",
+      "modifiers": [
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0x26a17b",
+      "secondaryColor": "0xaedcce",
+      "cheekColor": "0xf696c6",
+      "svgId": 4,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M27 22h3v1h-3zM27 23h5v1h-5zM29 24h3v1h-3zM26 25h4v1h-4zM25 26h1v1h-1zM29 26h4v1h-4zM26 27h3v1h-3zM33 27h1v1h-1zM29 28h4v1h-4zM29 29h1v1h-1zM29 30h1v1h-1z\" fill=\"#26a17b\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M51 22h2v1h-2zM48 23h5v1h-5zM48 24h3v1h-3zM50 25h4v1h-4zM47 26h4v1h-4zM54 26h1v1h-1zM46 27h1v1h-1zM50 27h4v1h-4zM47 28h3v1h-3zM50 29h1v1h-1zM50 30h1v1h-1zM50 31h1v1h-1z\" fill=\"#26a17b\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 19,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M22 30h3v1h-3zM22 31h5v1h-5zM24 32h3v1h-3zM21 33h4v1h-4zM20 34h1v1h-1zM24 34h4v1h-4zM32 34h3v1h-3zM21 35h3v1h-3zM28 35h1v1h-1zM32 35h5v1h-5zM24 36h4v1h-4zM34 36h3v1h-3zM24 37h1v1h-1zM31 37h4v1h-4zM24 38h1v1h-1zM30 38h1v1h-1zM34 38h4v1h-4zM31 39h3v1h-3zM38 39h1v1h-1zM34 40h4v1h-4zM34 41h1v1h-1zM34 42h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 30h2v1h-2zM53 31h5v1h-5zM53 32h3v1h-3zM55 33h4v1h-4zM46 34h2v1h-2zM52 34h4v1h-4zM59 34h1v1h-1zM43 35h5v1h-5zM51 35h1v1h-1zM55 35h4v1h-4zM43 36h3v1h-3zM52 36h3v1h-3zM45 37h4v1h-4zM55 37h1v1h-1zM42 38h4v1h-4zM49 38h1v1h-1zM55 38h1v1h-1zM41 39h1v1h-1zM45 39h4v1h-4zM55 39h1v1h-1zM42 40h3v1h-3zM45 41h1v1h-1zM45 42h1v1h-1zM45 43h1v1h-1z\"/></g>"
+      ],
+      "haunt": 2,
+      "name": "amUSDT"
+    },
+    {
+      "collateralType": "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",
+      "modifiers": [
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0x2664ba",
+      "secondaryColor": "0xd4e0f1",
+      "cheekColor": "0xf696c6",
+      "svgId": 5,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M27 21h1v1h-1zM26 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM25 23h1v1h-1zM28 23h2v1h-2zM32 23h1v1h-1zM25 24h1v1h-1zM28 24h1v1h-1zM30 24h1v1h-1zM33 24h1v1h-1zM25 25h1v1h-1zM28 25h2v1h-2zM33 25h1v1h-1zM25 26h1v1h-1zM30 26h1v1h-1zM33 26h1v1h-1zM25 27h1v1h-1zM28 27h3v1h-3zM33 27h1v1h-1zM26 28h1v1h-1zM29 28h2v1h-2zM33 28h1v1h-1zM27 29h1v1h-1zM32 29h1v1h-1zM31 30h1v1h-1z\" fill=\"#2664ba\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M52 21h1v1h-1zM48 22h1v1h-1zM53 22h1v1h-1zM47 23h1v1h-1zM50 23h2v1h-2zM54 23h1v1h-1zM46 24h1v1h-1zM49 24h2v1h-2zM54 24h1v1h-1zM46 25h1v1h-1zM49 25h1v1h-1zM51 25h1v1h-1zM54 25h1v1h-1zM46 26h1v1h-1zM49 26h3v1h-3zM54 26h1v1h-1zM46 27h1v1h-1zM51 27h1v1h-1zM54 27h1v1h-1zM46 28h1v1h-1zM49 28h2v1h-2zM53 28h1v1h-1zM47 29h1v1h-1zM50 29h1v1h-1zM52 29h1v1h-1zM48 30h1v1h-1z\" fill=\"#2664ba\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 20,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M22 30h1v1h-1zM21 31h1v1h-1zM24 31h1v1h-1zM26 31h1v1h-1zM20 32h1v1h-1zM23 32h2v1h-2zM27 32h1v1h-1zM20 33h1v1h-1zM23 33h1v1h-1zM25 33h1v1h-1zM28 33h1v1h-1zM20 34h1v1h-1zM23 34h2v1h-2zM28 34h1v1h-1zM32 34h1v1h-1zM20 35h1v1h-1zM25 35h1v1h-1zM28 35h1v1h-1zM31 35h1v1h-1zM34 35h1v1h-1zM36 35h1v1h-1zM20 36h1v1h-1zM23 36h3v1h-3zM28 36h1v1h-1zM30 36h1v1h-1zM33 36h2v1h-2zM37 36h1v1h-1zM21 37h1v1h-1zM24 37h2v1h-2zM28 37h1v1h-1zM30 37h1v1h-1zM33 37h1v1h-1zM35 37h1v1h-1zM38 37h1v1h-1zM22 38h1v1h-1zM27 38h1v1h-1zM30 38h1v1h-1zM33 38h2v1h-2zM38 38h1v1h-1zM26 39h1v1h-1zM30 39h1v1h-1zM35 39h1v1h-1zM38 39h1v1h-1zM30 40h1v1h-1zM33 40h3v1h-3zM38 40h1v1h-1zM31 41h1v1h-1zM34 41h2v1h-2zM38 41h1v1h-1zM32 42h1v1h-1zM37 42h1v1h-1zM36 43h1v1h-1z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M57 30h1v1h-1zM53 31h1v1h-1zM58 31h1v1h-1zM52 32h1v1h-1zM55 32h2v1h-2zM59 32h1v1h-1zM51 33h1v1h-1zM54 33h2v1h-2zM59 33h1v1h-1zM47 34h1v1h-1zM51 34h1v1h-1zM54 34h1v1h-1zM56 34h1v1h-1zM59 34h1v1h-1zM43 35h1v1h-1zM48 35h1v1h-1zM51 35h1v1h-1zM54 35h3v1h-3zM59 35h1v1h-1zM42 36h1v1h-1zM45 36h2v1h-2zM49 36h1v1h-1zM51 36h1v1h-1zM56 36h1v1h-1zM59 36h1v1h-1zM41 37h1v1h-1zM44 37h2v1h-2zM49 37h1v1h-1zM51 37h1v1h-1zM54 37h2v1h-2zM58 37h1v1h-1zM41 38h1v1h-1zM44 38h1v1h-1zM46 38h1v1h-1zM49 38h1v1h-1zM52 38h1v1h-1zM55 38h1v1h-1zM57 38h1v1h-1zM41 39h1v1h-1zM44 39h3v1h-3zM49 39h1v1h-1zM53 39h1v1h-1zM41 40h1v1h-1zM46 40h1v1h-1zM49 40h1v1h-1zM41 41h1v1h-1zM44 41h2v1h-2zM48 41h1v1h-1zM42 42h1v1h-1zM45 42h1v1h-1zM47 42h1v1h-1zM43 43h1v1h-1z\"/></g>"
+      ],
+      "haunt": 2,
+      "name": "amUSDC"
+    },
+    {
+      "collateralType": "0x5c2ed810328349100A66B82b78a1791B101C9D61",
+      "modifiers": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "primaryColor": "0xff5e00",
+      "secondaryColor": "0xffcaa2",
+      "cheekColor": "0xf696c6",
+      "svgId": 10,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M28 20h3v1h-3zM27 21h1v1h-1zM31 21h2v1h-2zM26 22h1v1h-1zM33 22h1v1h-1zM25 23h1v1h-1zM33 23h1v1h-1zM25 24h1v1h-1zM34 24h1v1h-1zM25 25h1v1h-1zM34 25h1v1h-1zM25 26h1v1h-1zM34 26h1v1h-1zM26 27h1v1h-1zM34 27h1v1h-1zM26 28h1v1h-1zM33 28h1v1h-1zM27 29h1v1h-1zM33 29h1v1h-1zM28 30h2v1h-2zM32 30h1v1h-1zM30 31h2v1h-2z\" fill=\"#000000\"/><path d=\"M29 22h1v1h-1zM28 23h2v1h-2zM29 24h2v1h-2zM29 25h1v1h-1zM31 25h1v1h-1zM29 26h2v1h-2zM28 27h2v1h-2zM31 27h1v1h-1zM29 28h2v1h-2z\" fill=\"#ff5e00\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M50 20h2v1h-2zM49 21h1v1h-1zM52 21h2v1h-2zM48 22h1v1h-1zM54 22h1v1h-1zM47 23h1v1h-1zM54 23h1v1h-1zM46 24h1v1h-1zM55 24h1v1h-1zM46 25h1v1h-1zM55 25h1v1h-1zM46 26h1v1h-1zM55 26h1v1h-1zM46 27h1v1h-1zM55 27h1v1h-1zM47 28h1v1h-1zM54 28h1v1h-1zM47 29h1v1h-1zM54 29h1v1h-1zM48 30h1v1h-1zM52 30h2v1h-2zM49 31h3v1h-3z\" fill=\"#000000\"/><path d=\"M51 22h1v1h-1zM50 23h2v1h-2zM49 24h2v1h-2zM52 24h1v1h-1zM50 25h2v1h-2zM50 26h1v1h-1zM52 26h1v1h-1zM50 27h2v1h-2zM49 28h2v1h-2zM50 29h1v1h-1z\" fill=\"#ff5e00\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 21,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M24 31h1v1h-1zM22 32h3v1h-3zM23 33h1v1h-1zM25 33h1v1h-1zM23 34h2v1h-2zM23 35h1v1h-1zM25 35h1v1h-1zM34 35h1v1h-1zM22 36h3v1h-3zM33 36h2v1h-2zM34 37h2v1h-2zM34 38h1v1h-1zM36 38h1v1h-1zM34 39h2v1h-2zM33 40h2v1h-2zM36 40h1v1h-1zM34 41h2v1h-2z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M55 32h2v1h-2zM54 33h2v1h-2zM57 33h1v1h-1zM55 34h2v1h-2zM55 35h1v1h-1zM57 35h1v1h-1zM45 36h1v1h-1zM55 36h2v1h-2zM43 37h3v1h-3zM54 37h2v1h-2zM44 38h1v1h-1zM46 38h1v1h-1zM55 38h1v1h-1zM44 39h2v1h-2zM44 40h1v1h-1zM46 40h1v1h-1zM43 41h3v1h-3zM44 42h1v1h-1z\"/></g>"
+      ],
+      "haunt": 2,
+      "name": "amWBTC"
+    },
+    {
+      "collateralType": "0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4",
+      "modifiers": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "primaryColor": "0x824ee2",
+      "secondaryColor": "0xe6dcf9",
+      "cheekColor": "0xf696c6",
+      "svgId": 11,
+      "svgs": [
+        "<g class=\"gotchi-collateral\"><path d=\"M26 22h3v1h-3zM25 23h1v1h-1zM29 23h1v1h-1zM25 24h1v1h-1zM29 24h1v1h-1zM25 25h1v1h-1zM29 25h1v1h-1zM31 25h2v1h-2zM25 26h1v1h-1zM29 26h2v1h-2zM33 26h1v1h-1zM26 27h4v1h-4zM34 27h1v1h-1zM29 28h1v1h-1zM34 28h1v1h-1zM30 29h1v1h-1zM34 29h1v1h-1zM31 30h3v1h-3z\" fill=\"#824ee2\"/></g>",
+        "<g class=\"gotchi-collateral\"><path d=\"M52 22h3v1h-3zM51 23h1v1h-1zM55 23h1v1h-1zM50 24h1v1h-1zM55 24h1v1h-1zM47 25h4v1h-4zM55 25h1v1h-1zM46 26h1v1h-1zM50 26h2v1h-2zM54 26h1v1h-1zM46 27h1v1h-1zM50 27h1v1h-1zM52 27h2v1h-2zM46 28h1v1h-1zM50 28h1v1h-1zM46 29h1v1h-1zM50 29h1v1h-1zM47 30h3v1h-3z\" fill=\"#824ee2\"/></g>",
+        "",
+        ""
+      ],
+      "eyeShapeSvgId": 22,
+      "eyeShapeSvgs": [
+        "<g class=\"gotchi-eyeColor\"><path d=\"M22 32h2v1h-2zM21 33h1v1h-1zM24 33h3v1h-3zM20 34h1v1h-1zM24 34h1v1h-1zM27 34h1v1h-1zM20 35h1v1h-1zM28 35h1v1h-1zM21 36h1v1h-1zM24 36h1v1h-1zM28 36h1v1h-1zM32 36h2v1h-2zM22 37h2v1h-2zM25 37h1v1h-1zM27 37h1v1h-1zM31 37h1v1h-1zM34 37h3v1h-3zM25 38h2v1h-2zM30 38h1v1h-1zM34 38h1v1h-1zM37 38h1v1h-1zM30 39h1v1h-1zM38 39h1v1h-1zM31 40h1v1h-1zM34 40h1v1h-1zM38 40h1v1h-1zM32 41h2v1h-2zM35 41h1v1h-1zM37 41h1v1h-1zM35 42h2v1h-2z\"/></g>",
+        "<g class=\"gotchi-eyeColor\"><path d=\"M56 32h2v1h-2zM53 33h2v1h-2zM58 33h1v1h-1zM52 34h1v1h-1zM55 34h1v1h-1zM59 34h1v1h-1zM51 35h1v1h-1zM55 35h1v1h-1zM59 35h1v1h-1zM46 36h2v1h-2zM51 36h1v1h-1zM56 36h1v1h-1zM58 36h1v1h-1zM43 37h2v1h-2zM48 37h1v1h-1zM52 37h1v1h-1zM55 37h3v1h-3zM42 38h1v1h-1zM45 38h1v1h-1zM49 38h1v1h-1zM53 38h2v1h-2zM41 39h1v1h-1zM45 39h1v1h-1zM49 39h1v1h-1zM41 40h1v1h-1zM46 40h1v1h-1zM48 40h1v1h-1zM42 41h1v1h-1zM45 41h3v1h-3zM43 42h2v1h-2z\"/></g>"
+      ],
+      "haunt": 2,
+      "name": "amWMATIC"
+    }
+  ]
+}
