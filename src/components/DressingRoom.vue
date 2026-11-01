@@ -37,6 +37,12 @@
         >
           Loading…
         </div>
+        <label class="absolute top-3 right-3 text-xs text-white">
+          <span class="sr-only">View</span>
+          <select v-model="view" class="px-2 py-1 rounded bg-black/60 text-white" data-testid="voxel-view">
+            <option v-for="option in VIEWS" :key="option.id" :value="option.id">{{ option.label }}</option>
+          </select>
+        </label>
         <button
           v-if="mode === 'dress'"
           type="button"
@@ -193,6 +199,19 @@ const selectClass = 'mt-1 w-full rounded border border-gray-300 dark:border-gray
 
 const viewport = ref(null)
 const mode = ref('dress')
+// Angles are in degrees. Fixed views are orthographic, so sizes stay true across the model.
+const VIEWS = [
+  { id: 'perspective', label: 'Perspective' },
+  { id: 'dimetric', label: 'Isometric 2:1 (pixel art)', elevation: 30, azimuth: 45 },
+  { id: 'isometric', label: 'True isometric', elevation: 35.264, azimuth: 45 },
+  { id: 'front', label: 'Front', elevation: 0, azimuth: 0 },
+  { id: 'side', label: 'Side', elevation: 0, azimuth: 90 },
+  { id: 'top', label: 'Top down', elevation: 89.9, azimuth: 0 }
+]
+const ORTHO_HALF_HEIGHT = 1.15
+const ORTHO_DISTANCE = 10
+const FLOOR_POLAR_LIMIT = Math.PI / 2 - 0.03
+const view = ref('perspective')
 const manifest = shallowRef(null)
 const wearableDb = shallowRef([])
 const loadError = ref('')
@@ -248,7 +267,7 @@ const itemClass = (id) => [
 ]
 
 // ---------- scene ----------
-let renderer, scene, camera, controls, frame, resizeObserver
+let renderer, scene, camera, perspectiveCamera, orthoCamera, controls, frame, resizeObserver
 let groundMesh, gotchiRoot, gotchiModel, voxRoot, baseModel, eyeModel
 const loader = new GLTFLoader()
 const glbCache = new Map()
@@ -278,8 +297,10 @@ function loadGlb(file) {
 function initScene() {
   scene = new THREE.Scene()
   scene.background = new THREE.Color('#1f2937')
-  camera = new THREE.PerspectiveCamera(35, 1, 0.01, 200)
-  camera.position.set(0, 1.2, 4.4)
+  perspectiveCamera = new THREE.PerspectiveCamera(35, 1, 0.01, 200)
+  perspectiveCamera.position.set(0, 1.2, 4.4)
+  orthoCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 200)
+  camera = perspectiveCamera
 
   renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -290,7 +311,7 @@ function initScene() {
   controls.target.set(0, 0.6, 0)
   controls.enableDamping = true
   // The floor is one-sided, so keep the camera above it.
-  controls.maxPolarAngle = Math.PI / 2 - 0.03
+  controls.maxPolarAngle = FLOOR_POLAR_LIMIT
 
   scene.add(new THREE.HemisphereLight('#ffffff', '#8888aa', 1.8))
   const sun = new THREE.DirectionalLight('#ffffff', 2.2)
@@ -580,8 +601,31 @@ function resize() {
   const { clientWidth: width, clientHeight: height } = viewport.value
   if (!width || !height) return
   renderer.setSize(width, height)
-  camera.aspect = width / height
-  camera.updateProjectionMatrix()
+  perspectiveCamera.aspect = width / height
+  perspectiveCamera.updateProjectionMatrix()
+  orthoCamera.top = ORTHO_HALF_HEIGHT
+  orthoCamera.bottom = -ORTHO_HALF_HEIGHT
+  orthoCamera.right = ORTHO_HALF_HEIGHT * (width / height)
+  orthoCamera.left = -orthoCamera.right
+  orthoCamera.updateProjectionMatrix()
+}
+
+/** Fixed views lock the angle so renders line up; zoom and pan still work. Turn sets the facing. */
+function applyView() {
+  const selected = VIEWS.find((option) => option.id === view.value)
+  const fixed = selected.elevation !== undefined
+  camera = fixed ? orthoCamera : perspectiveCamera
+  controls.object = camera
+  controls.enableRotate = !fixed
+  controls.maxPolarAngle = fixed ? Math.PI / 2 : FLOOR_POLAR_LIMIT
+  if (fixed) {
+    const elevation = THREE.MathUtils.degToRad(selected.elevation)
+    const azimuth = THREE.MathUtils.degToRad(selected.azimuth)
+    camera.zoom = 1
+    camera.updateProjectionMatrix()
+    camera.position.setFromSphericalCoords(ORTHO_DISTANCE, Math.PI / 2 - elevation, azimuth).add(controls.target)
+  }
+  controls.update()
 }
 
 function turn() {
@@ -813,6 +857,8 @@ watch(animation, playClip)
 watch(eyeShape, () => manifest.value && loadEye())
 watch(voxFile, loadVox)
 watch(voxModel, showVoxModel)
+watch(view, applyView)
+
 watch(mode, (value) => {
   gotchiRoot.visible = value === 'dress'
   voxRoot.visible = value === 'vox'
