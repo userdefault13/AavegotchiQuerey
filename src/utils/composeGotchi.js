@@ -195,12 +195,33 @@ function handWearableLayers(wearables, lib, viewIndex) {
   return layers
 }
 
+/**
+ * Body wearable SVGs already nest `<svg x y>`. Sleeve fragments are drawn in that
+ * same local space, so they need the same offset or they sit at the canvas origin.
+ */
+function wearableViewOffset(wearable, viewIndex) {
+  const frag = pickViewFragment(wearable?.svgs, viewIndex) || ''
+  const mx = frag.match(/\bx="([^"]+)"/i)
+  const my = frag.match(/\by="([^"]+)"/i)
+  if (mx || my) {
+    return { x: mx?.[1] || '0', y: my?.[1] || '0' }
+  }
+  const off = wearable?.previewoffsets?.[viewIndex] || wearable?.previewoffsets?.[0]
+  if (off && (off.x != null || off.y != null)) {
+    return { x: String(off.x ?? 0), y: String(off.y ?? 0) }
+  }
+  return null
+}
+
 function sleevesForWearable(wearable, viewIndex, hasBodyWearable) {
   if (!wearable?.sleeves || !hasBodyWearable) return ''
   const sleeve = pickViewFragment(wearable.sleeves, viewIndex)
   if (!sleeve) return ''
-  // Prefer sleeves-down content when present; CSS hides sleeves-up
-  return `<g class="gotchi-wearable wearable-sleeves">${sleeve}</g>`
+  const off = wearableViewOffset(wearable, viewIndex)
+  const alreadyPlaced = /<svg\b[^>]*\bx="/i.test(sleeve)
+  const inner = off && !alreadyPlaced ? `<svg x="${off.x}" y="${off.y}">${sleeve}</svg>` : sleeve
+  // CSS hides sleeves-up; sleeves-down shows with the hands-down pose
+  return `<g class="gotchi-wearable wearable-sleeves">${inner}</g>`
 }
 
 /**
