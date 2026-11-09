@@ -157,6 +157,23 @@ function shouldRenderHandWearable(slot, viewIndex) {
  * - Front RH (slot 5): mirror across canvas
  * - Back LH (slot 4): mirror across canvas (from behind, character left is viewer right)
  */
+/**
+ * Wearable art is stored as `<svg x y>`. A nested svg is its own viewport, and
+ * browsers paint that viewport under the gotchi body. Translate the inner art
+ * instead so it stays in the parent paint order, above the body.
+ */
+function placeFragment(fragment) {
+  if (!fragment) return ''
+  const match = String(fragment).match(/^<svg\b([^>]*)>([\s\S]*)<\/svg>$/i)
+  if (!match) return fragment
+  const attrs = match[1]
+  const inner = match[2]
+  const x = (attrs.match(/\bx="([^"]*)"/i) || [])[1] || '0'
+  const y = (attrs.match(/\by="([^"]*)"/i) || [])[1] || '0'
+  if (x === '0' && y === '0') return inner
+  return `<g transform="translate(${x}, ${y})">${inner}</g>`
+}
+
 function wrapWearable(fragment, slot, viewIndex = 0) {
   if (!fragment) return ''
   const classBySlot = {
@@ -171,12 +188,12 @@ function wrapWearable(fragment, slot, viewIndex = 0) {
   }
   const cls = classBySlot[slot] || 'wearable'
 
-  let content = fragment
+  let content = placeFragment(fragment)
   const mirrorFrontRight = slot === RIGHT_HAND_SLOT && viewIndex === 0
   const mirrorBackLeft = slot === LEFT_HAND_SLOT && viewIndex === 3
   if (mirrorFrontRight || mirrorBackLeft) {
     // Match on-chain: flip across the 64px canvas so LH/RH land on the correct side
-    content = `<g transform="translate(64, 0) scale(-1, 1)">${fragment}</g>`
+    content = `<g transform="translate(64, 0) scale(-1, 1)">${content}</g>`
   }
 
   return `<g class="gotchi-wearable ${cls}">${content}</g>`
@@ -219,9 +236,11 @@ function sleevesForWearable(wearable, viewIndex, hasBodyWearable) {
   if (!sleeve) return ''
   const off = wearableViewOffset(wearable, viewIndex)
   const alreadyPlaced = /<svg\b[^>]*\bx="/i.test(sleeve)
-  const inner = off && !alreadyPlaced ? `<svg x="${off.x}" y="${off.y}">${sleeve}</svg>` : sleeve
+  const positioned = off && !alreadyPlaced
+    ? `<g transform="translate(${off.x}, ${off.y})">${sleeve}</g>`
+    : placeFragment(sleeve)
   // CSS hides sleeves-up; sleeves-down shows with the hands-down pose
-  return `<g class="gotchi-wearable wearable-sleeves">${inner}</g>`
+  return `<g class="gotchi-wearable wearable-sleeves">${positioned}</g>`
 }
 
 /**
